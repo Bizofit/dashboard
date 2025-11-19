@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Placements - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search placements..." id="searchInput" oninput="filterPlacements()">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>External Placements & Revenue</h1>
+                <p>Track your virtual resource placements and commission earnings</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="exportPlacementReport()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Export Report
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='virtual-resources.html'">
+                    Browse Resources
+                </button>
+            </div>
+        </div>
+
+        <!-- Revenue Stats -->
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Active Placements</h3>
+                    <p class="stat-number" id="activePlacementsCount">0</p>
+                    <p class="stat-change positive" id="activePlacementsChange">Resources working externally</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Total Hours Worked</h3>
+                    <p class="stat-number" id="totalHoursWorked">0h</p>
+                    <p class="stat-change positive" id="hoursChange">This month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Your Earnings</h3>
+                    <p class="stat-number" id="totalRevenue">$0</p>
+                    <p class="stat-change positive" id="revenueChange">Revenue after platform fee</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Platform Fees</h3>
+                    <p class="stat-number" id="totalCommission">$0</p>
+                    <p class="stat-change positive" id="commissionChange">Paid to Bizoforce</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commission Breakdown Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Commission Breakdown by Resource</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="commissionChart" style="max-height: 300px;"></canvas>
+                <div id="commissionBreakdown" style="margin-top: 20px;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Placements Table -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Placement Details</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="statusFilter" onchange="filterPlacements()">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select class="form-select" id="periodFilter" onchange="filterPlacements()">
+                        <option value="">All Time</option>
+                        <option value="this-month">This Month</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="this-quarter">This Quarter</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Resource</th>
+                            <th>Hired By</th>
+                            <th>Duration</th>
+                            <th>Hours Worked</th>
+                            <th>Hourly Rate</th>
+                            <th>Revenue</th>
+                            <th>Commission</th>
+                            <th>Earnings</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="placementsTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monthly Revenue Trend -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Monthly Revenue Trend</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueTrendChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- Log Hours Modal -->
+    <div class="modal" id="logHoursModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Log Hours for Placement</h2>
+                <button class="close-modal" onclick="closeModal('logHoursModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="logHoursForm">
+                    <input type="hidden" id="logPlacementId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hours Worked *</label>
+                        <input type="number" id="hoursToLog" class="form-input" min="0.5" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Work Date *</label>
+                        <input type="date" id="workDate" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="workDescription" class="form-textarea" rows="3" placeholder="What was accomplished..."></textarea>
+                    </div>
+                    
+                    <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Hours:</span>
+                            <strong id="logHoursDisplay">0</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Rate:</span>
+                            <strong id="logRateDisplay">$0/hr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Your Earnings:</span>
+                            <strong style="color: var(--success);" id="logRevenueDisplay">$0</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 2px solid #e5e7eb;">
+                            <span>Platform Fee:</span>
+                            <strong style="color: var(--danger);" id="logCommissionDisplay">$0</strong>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('logHoursModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitHoursLog()">Log Hours</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        localStorage.setItem('userType', 'company');
+        generateNavigation('placements');
+
+        // Initialize placements data
+        function initializePlacements() {
+            // Force load demo data if no placements exist or empty
+            const existingPlacements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            if (existingPlacements.length === 0) {
+                const demoPlacementsData = [
+                    {
+                        id: 'placement_001',
+                        bookingId: 'booking_001',
+                        resourceUserId: 'user_002',
+                        resourceName: 'John Smith',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_008',
+                        hiringCompanyName: 'E-Commerce Solutions Ltd',
+                        startDate: '2025-10-15',
+                        endDate: '2025-12-15',
+                        hourlyRate: 65,
+                        commissionRate: 15,
+                        hoursWorked: 120,
+                        revenueGenerated: 7800,
+                        commissionEarned: 1170,
+                        status: 'active',
+                        createdDate: '2025-10-10',
+                        lastUpdated: '2025-11-13'
+                    },
+                    {
+                        id: 'placement_002',
+                        bookingId: 'booking_002',
+                        resourceUserId: 'user_003',
+                        resourceName: 'Sarah Johnson',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_009',
+                        hiringCompanyName: 'StartupHub Ventures',
+                        startDate: '2025-09-20',
+                        endDate: '2025-11-20',
+                        hourlyRate: 70,
+                        commissionRate: 20,
+                        hoursWorked: 95,
+                        revenueGenerated: 6650,
+                        commissionEarned: 1330,
+                        status: 'active',
+                        createdDate: '2025-09-15',
+                        lastUpdated: '2025-11-12'
+                    },
+                    {
+                        id: 'placement_003',
+                        bookingId: 'booking_003',
+                        resourceUserId: 'user_004',
+                        resourceName: 'Michael Chen',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_010',
+                        hiringCompanyName: 'FinTech Global Inc',
+                        startDate: '2025-08-01',
+                        endDate: '2025-10-01',
+                        hourlyRate: 40,
+                        commissionRate: 15,
+                        hoursWorked: 160,
+                        revenueGenerated: 6400,
+                        commissionEarned: 960,
+                        status: 'completed',
+                        createdDate: '2025-07-25',
+                        lastUpdated: '2025-10-01'
+                    },
+                    {
+                        id: 'placement_004',
+                        bookingId: 'booking_004',
+                        resourceUserId: 'user_005',
+                        resourceName: 'Emily Rodriguez',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_011',
+                        hiringCompanyName: 'Healthcare Systems Co',
+                        startDate: '2025-10-01',
+                        endDate: '2026-01-01',
+                        hourlyRate: 55,
+                        commissionRate: 18,
+                        hoursWorked: 88,
+                        revenueGenerated: 4840,
+                        commissionEarned: 871,
+                        status: 'active',
+                        createdDate: '2025-09-28',
+                        lastUpdated: '2025-11-11'
+                    },
+                    {
+                        id: 'placement_005',
+                        bookingId: 'booking_005',
+                        resourceUserId: 'user_006',
+                        resourceName: 'David Thompson',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_012',
+                        hiringCompanyName: 'Media & Entertainment Group',
+                        startDate: '2025-07-15',
+                        endDate: '2025-09-15',
+                        hourlyRate: 50,
+                        commissionRate: 20,
+                        hoursWorked: 140,
+                        revenueGenerated: 7000,
+                        commissionEarned: 1400,
+                        status: 'completed',
+                        createdDate: '2025-07-10',
+                        lastUpdated: '2025-09-15'
+                    },
+                    {
+                        id: 'placement_006',
+                        bookingId: 'booking_006',
+                        resourceUserId: 'user_007',
+                        resourceName: 'Lisa Anderson',
+                        providerCompanyId: 'company_001',
+                        providerCompanyName: 'TechCorp Inc',
+                        hiringCompanyId: 'company_013',
+                        hiringCompanyName: 'Retail Solutions Network',
+                        startDate: '2025-11-01',
+                        endDate: '2025-12-31',
+                        hourlyRate: 45,
+                        commissionRate: 15,
+                        hoursWorked: 32,
+                        revenueGenerated: 1440,
+                        commissionEarned: 216,
+                        status: 'active',
+                        createdDate: '2025-10-28',
+                        lastUpdated: '2025-11-13'
+                    }
+                ];
+                localStorage.setItem('resourcePlacements', JSON.stringify(demoPlacementsData));
+            }
+            
+            updateStats();
+            loadPlacements();
+            renderCommissionBreakdown();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            
+            // Filter placements where current company is the provider
+            const myPlacements = placements.filter(p => p.providerCompanyId === currentCompanyId);
+            
+            const activePlacements = myPlacements.filter(p => p.status === 'active');
+            const totalHours = myPlacements.reduce((sum, p) => sum + (p.hoursWorked || 0), 0);
+            const totalRevenue = myPlacements.reduce((sum, p) => sum + (p.revenueGenerated || 0), 0);
+            const totalPlatformFee = myPlacements.reduce((sum, p) => sum + (p.commissionEarned || 0), 0);
+            const totalEarnings = totalRevenue - totalPlatformFee;
+            
+            document.getElementById('activePlacementsCount').textContent = activePlacements.length;
+            document.getElementById('totalHoursWorked').textContent = `${totalHours.toFixed(1)}h`;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString()}`;
+            document.getElementById('totalCommission').textContent = `$${totalCommission.toLocaleString()}`;
+            
+            // Calculate changes (mock data for demo)
+            const avgCommission = totalCommission > 0 ? (totalCommission / myPlacements.length).toFixed(0) : 0;
+            document.getElementById('commissionChange').textContent = `Avg $${avgCommission} per placement`;
+        }
+
+        // Load and display placements
+        function loadPlacements() {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            const tbody = document.getElementById('placementsTableBody');
+            
+            // Filter placements where current company is the provider
+            const myPlacements = placements.filter(p => p.providerCompanyId === currentCompanyId);
+            
+            if (myPlacements.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 40px; color: #64748b;">
+                            <p style="margin-bottom: 8px;">No placements yet</p>
+                            <p style="font-size: 14px;">Offer your team members as virtual resources to start earning commissions</p>
+                            <button class="btn btn-primary btn-sm" onclick="window.location.href='users-roles.html'" style="margin-top: 12px;">
+                                Manage Resources
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            const statusFilter = document.getElementById('statusFilter').value;
+            const filteredPlacements = statusFilter ? 
+                myPlacements.filter(p => p.status === statusFilter) : myPlacements;
+            
+            tbody.innerHTML = filteredPlacements.map(placement => {
+                const duration = calculateDuration(placement.startDate, placement.endDate);
+                
+                return `
+                    <tr data-placement-id="${placement.id}">
+                        <td>
+                            <div class="company-info">
+                                <div>
+                                    <div class="company-name">${placement.resourceName}</div>
+                                    <div class="company-email">${placement.providerCompanyName}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${placement.hiringCompanyName}</td>
+                        <td>
+                            <div style="font-size: 12px;">
+                                <div>${formatDate(placement.startDate)}</div>
+                                <div style="color: #64748b;">to ${formatDate(placement.endDate)}</div>
+                                <div style="color: #64748b; margin-top: 4px;">${duration}</div>
+                            </div>
+                        </td>
+                        <td><strong>${placement.hoursWorked || 0}h</strong></td>
+                        <td>$${placement.hourlyRate}/hr</td>
+                        <td><strong style="color: var(--success);">$${((placement.revenueGenerated || 0) - (placement.commissionEarned || 0)).toLocaleString()}</strong></td>
+                        <td>${placement.commissionRate}%</td>
+                        <td><strong style="color: var(--danger);">$${(placement.commissionEarned || 0).toLocaleString()}</strong></td>
+                        <td><span class="status-badge ${placement.status}">${capitalize(placement.status)}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                ${placement.status === 'active' ? `
+                                    <button class="btn-icon" style="color: var(--primary-blue);" onclick="openLogHoursModal('${placement.id}')" title="Log Hours">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                                <button class="btn-icon" onclick="viewPlacementDetails('${placement.id}')" title="View Details">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Open log hours modal
+        function openLogHoursModal(placementId) {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const placement = placements.find(p => p.id === placementId);
+            
+            if (!placement) return;
+            
+            document.getElementById('logPlacementId').value = placementId;
+            document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('hoursToLog').value = '';
+            document.getElementById('workDescription').value = '';
+            
+            // Update display fields
+            document.getElementById('logRateDisplay').textContent = `$${placement.hourlyRate}/hr`;
+            
+            // Add event listener for real-time calculation
+            document.getElementById('hoursToLog').addEventListener('input', () => {
+                const hours = parseFloat(document.getElementById('hoursToLog').value) || 0;
+                const revenue = hours * placement.hourlyRate;
+                const platformFee = revenue * (placement.commissionRate / 100);
+                const earnings = revenue - platformFee;
+                
+                document.getElementById('logHoursDisplay').textContent = `${hours}h`;
+                document.getElementById('logRevenueDisplay').textContent = `$${earnings.toFixed(2)}`;
+                document.getElementById('logCommissionDisplay').textContent = `$${platformFee.toFixed(2)}`;
+            });
+            
+            openModal('logHoursModal');
+        }
+
+        // Submit hours log
+        function submitHoursLog() {
+            const form = document.getElementById('logHoursForm');
+            
+            if (!form.checkValidity()) {
+                showNotification('Please fill all required fields', 'error');
+                form.reportValidity();
+                return;
+            }
+            
+            const placementId = document.getElementById('logPlacementId').value;
+            const hours = parseFloat(document.getElementById('hoursToLog').value);
+            
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const placementIndex = placements.findIndex(p => p.id === placementId);
+            
+            if (placementIndex === -1) return;
+            
+            const placement = placements[placementIndex];
+            const revenue = hours * placement.hourlyRate;
+            const commission = revenue * (placement.commissionRate / 100);
+            
+            // Update placement data
+            placements[placementIndex].hoursWorked = (placement.hoursWorked || 0) + hours;
+            placements[placementIndex].revenueGenerated = (placement.revenueGenerated || 0) + revenue;
+            placements[placementIndex].commissionEarned = (placement.commissionEarned || 0) + commission;
+            placements[placementIndex].lastUpdated = new Date().toISOString().split('T')[0];
+            
+            localStorage.setItem('resourcePlacements', JSON.stringify(placements));
+            
+            // Create timesheet entry for the resource
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            const booking = JSON.parse(localStorage.getItem('resourceBookings') || '[]').find(b => b.id === placement.bookingId);
+            
+            if (booking) {
+                timesheets.push({
+                    id: `ts_${Date.now()}`,
+                    employeeId: placement.resourceUserId,
+                    employeeName: placement.resourceName,
+                    employeeAvatar: 'https://i.pravatar.cc/150?img=2',
+                    projectId: booking.projectId,
+                    projectName: booking.projectName,
+                    date: document.getElementById('workDate').value,
+                    hours: hours,
+                    hourlyRate: placement.hourlyRate,
+                    description: document.getElementById('workDescription').value || 'External placement work',
+                    status: 'approved',
+                    submittedDate: new Date().toISOString().split('T')[0],
+                    reviewedBy: 'Auto-approved (External)',
+                    reviewedDate: new Date().toISOString().split('T')[0],
+                    rejectReason: null,
+                    isExternalPlacement: true,
+                    placementId: placementId
+                });
+                localStorage.setItem('timesheets', JSON.stringify(timesheets));
+            }
+            
+            showNotification(`${hours} hours logged successfully! Commission earned: $${commission.toFixed(2)}`, 'success');
+            closeModal('logHoursModal');
+            form.reset();
+            updateStats();
+            loadPlacements();
+            renderCommissionBreakdown();
+        }
+
+        // View placement details
+        function viewPlacementDetails(placementId) {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const placement = placements.find(p => p.id === placementId);
+            
+            if (!placement) return;
+            
+            const details = `
+External Placement Details
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Resource: ${placement.resourceName}
+Provider: ${placement.providerCompanyName}
+Hired By: ${placement.hiringCompanyName}
+
+Duration: ${formatDate(placement.startDate)} to ${formatDate(placement.endDate)}
+
+Performance:
+  Hours Worked: ${placement.hoursWorked || 0}h
+  Hourly Rate: $${placement.hourlyRate}/hr
+  Revenue Generated: $${(placement.revenueGenerated || 0).toLocaleString()}
+  
+Commission:
+  Rate: ${placement.commissionRate}%
+  Earned: $${(placement.commissionEarned || 0).toLocaleString()}
+
+Status: ${capitalize(placement.status)}
+Created: ${formatDate(placement.createdDate)}
+            `;
+            alert(details.trim());
+        }
+
+        // Render commission breakdown
+        function renderCommissionBreakdown() {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            const myPlacements = placements.filter(p => p.providerCompanyId === currentCompanyId);
+            
+            const breakdown = document.getElementById('commissionBreakdown');
+            
+            if (myPlacements.length === 0) {
+                breakdown.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No placement data available</p>';
+                return;
+            }
+            
+            const sorted = myPlacements
+                .filter(p => p.revenueGenerated > 0)
+                .sort((a, b) => (b.revenueGenerated - b.commissionEarned) - (a.revenueGenerated - a.commissionEarned))
+                .slice(0, 5);
+            
+            breakdown.innerHTML = `
+                <h3 style="font-size: 16px; margin-bottom: 16px;">Top Revenue Generating Resources</h3>
+                ${sorted.map((p, index) => `
+                    <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 12px; background: #f9fafb; border-radius: 8px;">
+                        <div style="width: 32px; height: 32px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px;">
+                            ${index + 1}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 2px;">${p.resourceName}</div>
+                            <div style="font-size: 12px; color: #64748b;">
+                                ${p.hoursWorked}h worked • ${p.commissionRate}% platform fee
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; font-weight: 700; color: var(--success);">
+                                $${(p.revenueGenerated - p.commissionEarned).toLocaleString()}
+                            </div>
+                            <div style="font-size: 12px; color: #64748b;">
+                                $${p.commissionEarned.toLocaleString()} platform fee
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Filter placements
+        function filterPlacements() {
+            loadPlacements();
+        }
+
+        // Export placement report
+        function exportPlacementReport() {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            const myPlacements = placements.filter(p => p.providerCompanyId === currentCompanyId);
+            
+            if (myPlacements.length === 0) {
+                alert('No placement data to export');
+                return;
+            }
+            
+            const report = `
+External Placements Report
+Generated: ${new Date().toLocaleDateString()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Placements: ${myPlacements.length}
+Active Placements: ${myPlacements.filter(p => p.status === 'active').length}
+Total Hours Worked: ${myPlacements.reduce((sum, p) => sum + (p.hoursWorked || 0), 0).toFixed(1)}h
+Total Revenue Generated: $${myPlacements.reduce((sum, p) => sum + (p.revenueGenerated || 0), 0).toLocaleString()}
+Total Platform Fees: $${myPlacements.reduce((sum, p) => sum + (p.commissionEarned || 0), 0).toLocaleString()}
+Your Total Earnings: $${(myPlacements.reduce((sum, p) => sum + (p.revenueGenerated || 0), 0) - myPlacements.reduce((sum, p) => sum + (p.commissionEarned || 0), 0)).toLocaleString()}
+
+DETAILED BREAKDOWN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${myPlacements.map(p => `
+Resource: ${p.resourceName}
+Hired By: ${p.hiringCompanyName}
+Duration: ${formatDate(p.startDate)} to ${formatDate(p.endDate)}
+Hours: ${p.hoursWorked || 0}h @ $${p.hourlyRate}/hr
+Gross Revenue: $${(p.revenueGenerated || 0).toLocaleString()}
+Platform Fee (${p.commissionRate}%): $${(p.commissionEarned || 0).toLocaleString()}
+Your Earnings: $${((p.revenueGenerated || 0) - (p.commissionEarned || 0)).toLocaleString()}
+Status: ${capitalize(p.status)}
+`).join('\n' + '─'.repeat(60) + '\n')}
+            `;
+            
+            alert(report.trim() + '\n\n(In production, this would download as CSV/PDF)');
+        }
+
+        // Utility functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function calculateDuration(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            const weeks = Math.ceil(days / 7);
+            return `${weeks} week${weeks !== 1 ? 's' : ''}`;
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Initialize on page load
+        initializePlacements();
+    </script>
+</body>
+</html>

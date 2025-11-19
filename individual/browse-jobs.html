@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Jobs - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* Job Browser for Individual Users */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
+        }
+
+        .job-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-blue), var(--accent-orange));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .job-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .job-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 12px 32px rgba(37, 99, 235, 0.18);
+            transform: translateY(-4px);
+        }
+
+        .company-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-orange));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .job-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .company-name {
+            font-size: 14px;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .job-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .job-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .job-description {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .job-salary {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .apply-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+        }
+
+        .job-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .job-tag {
+            padding: 4px 12px;
+            background: var(--blue-light);
+            color: var(--primary-blue);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search jobs by title, skills, or company..." id="searchJobs">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $0</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="user-avatar">JD</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(249, 115, 22, 0.05)); padding: 32px; border-radius: 16px; margin-bottom: 32px;">
+            <div>
+                <h1 class="gradient-text" style="font-size: 36px; margin-bottom: 8px;">Browse Jobs</h1>
+                <p style="font-size: 16px; opacity: 0.8;">Discover opportunities that match your skills and preferences</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stats-icon">💼</div>
+                <div class="stats-value">1,248</div>
+                <div class="stats-label">Total Jobs</div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stats-icon">✨</div>
+                <div class="stats-value">342</div>
+                <div class="stats-label">Matched to You</div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stats-icon">🆕</div>
+                <div class="stats-value">87</div>
+                <div class="stats-label">Posted Today</div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stats-icon">📄</div>
+                <div class="stats-value">12</div>
+                <div class="stats-label">Applied</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All Jobs</button>
+            <button class="filter-btn" data-filter="matched">Matched to Me</button>
+            <button class="filter-btn" data-filter="remote">Remote Only</button>
+            <button class="filter-btn" data-filter="full-time">Full-time</button>
+            <button class="filter-btn" data-filter="contract">Contract</button>
+            <button class="filter-btn" data-filter="saved">Saved Jobs</button>
+        </div>
+
+        <!-- Jobs Grid -->
+        <div class="jobs-grid" id="jobsGrid">
+            <!-- Job Card 1 -->
+            <div class="job-card" onclick="viewJobDetails(1)">
+                <div class="company-logo">TC</div>
+                <div class="job-title">Senior Full Stack Developer</div>
+                <div class="company-name">TechCorp Inc.</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">Remote</span>
+                    <span class="job-tag">Full-time</span>
+                    <span class="job-tag">95% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>San Francisco, CA (Remote)</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Full-time</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted 2 days ago</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    We're looking for an experienced Full Stack Developer to join our growing team. You'll work on cutting-edge projects using React, Node.js, and AWS...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$120k - $180k/year</div>
+                    <button class="apply-btn" onclick="applyToJob(1, event)">Apply Now</button>
+                </div>
+            </div>
+
+            <!-- Job Card 2 -->
+            <div class="job-card" onclick="viewJobDetails(2)">
+                <div class="company-logo">DS</div>
+                <div class="job-title">Product Manager</div>
+                <div class="company-name">DataSystems LLC</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">Hybrid</span>
+                    <span class="job-tag">Full-time</span>
+                    <span class="job-tag">87% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>New York, NY</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Full-time</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted 1 week ago</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    Lead product strategy and development for our enterprise SaaS platform. Work with cross-functional teams to deliver innovative solutions...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$140k - $200k/year</div>
+                    <button class="apply-btn" onclick="applyToJob(2, event)">Apply Now</button>
+                </div>
+            </div>
+
+            <!-- Job Card 3 -->
+            <div class="job-card" onclick="viewJobDetails(3)">
+                <div class="company-logo">CS</div>
+                <div class="job-title">UX/UI Designer</div>
+                <div class="company-name">CloudServices Pro</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">Remote</span>
+                    <span class="job-tag">Contract</span>
+                    <span class="job-tag">78% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>Remote Worldwide</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Contract (6 months)</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted 3 days ago</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    Design beautiful and intuitive user interfaces for our cloud platform. Collaborate with product and engineering teams to create seamless experiences...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$80 - $120/hour</div>
+                    <button class="apply-btn" onclick="applyToJob(3, event)">Apply Now</button>
+                </div>
+            </div>
+
+            <!-- Job Card 4 -->
+            <div class="job-card" onclick="viewJobDetails(4)">
+                <div class="company-logo">MI</div>
+                <div class="job-title">Marketing Specialist</div>
+                <div class="company-name">Marketing Innovations</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">On-site</span>
+                    <span class="job-tag">Full-time</span>
+                    <span class="job-tag">65% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>Los Angeles, CA</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Full-time</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted 5 days ago</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    Drive marketing campaigns and strategies for B2B clients. Manage social media, content creation, and digital advertising initiatives...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$70k - $95k/year</div>
+                    <button class="apply-btn" onclick="applyToJob(4, event)">Apply Now</button>
+                </div>
+            </div>
+
+            <!-- Job Card 5 -->
+            <div class="job-card" onclick="viewJobDetails(5)">
+                <div class="company-logo">AI</div>
+                <div class="job-title">Data Scientist</div>
+                <div class="company-name">AI Innovations Lab</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">Remote</span>
+                    <span class="job-tag">Full-time</span>
+                    <span class="job-tag">92% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>Boston, MA (Remote)</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Full-time</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted today</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    Build and deploy machine learning models to solve complex business problems. Work with Python, TensorFlow, and cloud infrastructure...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$130k - $190k/year</div>
+                    <button class="apply-btn" onclick="applyToJob(5, event)">Apply Now</button>
+                </div>
+            </div>
+
+            <!-- Job Card 6 -->
+            <div class="job-card" onclick="viewJobDetails(6)">
+                <div class="company-logo">FT</div>
+                <div class="job-title">Frontend Developer</div>
+                <div class="company-name">FinTech Solutions</div>
+                
+                <div class="job-tags">
+                    <span class="job-tag">Hybrid</span>
+                    <span class="job-tag">Full-time</span>
+                    <span class="job-tag">88% Match</span>
+                </div>
+
+                <div class="job-details">
+                    <div class="job-detail-item">
+                        <span>📍</span>
+                        <span>Austin, TX</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>⏰</span>
+                        <span>Full-time</span>
+                    </div>
+                    <div class="job-detail-item">
+                        <span>📅</span>
+                        <span>Posted 1 day ago</span>
+                    </div>
+                </div>
+
+                <div class="job-description">
+                    Create responsive and performant web applications using React and modern JavaScript. Join a fast-paced fintech startup revolutionizing payments...
+                </div>
+
+                <div class="job-footer">
+                    <div class="job-salary">$100k - $150k/year</div>
+                    <button class="apply-btn" onclick="applyToJob(6, event)">Apply Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set userType for individual users
+        localStorage.setItem('userType', 'individual');
+        generateNavigation('browse-jobs');
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterJobs(this.dataset.filter);
+            });
+        });
+
+        function filterJobs(filter) {
+            console.log('Filtering jobs:', filter);
+            // Filter logic would be implemented here
+        }
+
+        function viewJobDetails(jobId) {
+            console.log('Viewing job:', jobId);
+            // Redirect to job detail page or open modal
+            window.location.href = `job-detail.html?id=${jobId}`;
+        }
+
+        function applyToJob(jobId, event) {
+            event.stopPropagation();
+            alert(`Application submitted for job ${jobId}!\n\nYour profile and resume have been sent to the employer. You'll receive updates via email and in your Applications dashboard.`);
+            
+            // Update application count
+            const appliedCount = document.querySelector('.stat-card-colored.purple .stats-value');
+            if (appliedCount) {
+                const current = parseInt(appliedCount.textContent);
+                appliedCount.textContent = current + 1;
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchJobs').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Searching for:', searchTerm);
+            // Search logic would be implemented here
+        });
+    </script>
+</body>
+</html>

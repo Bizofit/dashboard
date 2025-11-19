@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search candidates..." id="searchInput">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(249, 115, 22, 0.05)); padding: 32px; border-radius: 16px; margin-bottom: 32px;">
+            <div>
+                <h1 class="gradient-text" style="font-size: 36px; margin-bottom: 8px;">Candidates</h1>
+                <p style="font-size: 16px; opacity: 0.8;">Browse and manage candidate profiles</p>
+            </div>
+            <button class="btn btn-primary" style="display: flex; align-items: center; gap: 8px;" onclick="openModal('addCandidateModal')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add Candidate
+            </button>
+        </div>
+
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Total Candidates</h3>
+                    <p class="stat-number">3,842</p>
+                    <p class="stat-change positive">↑ 18% from last month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Active Applications</h3>
+                    <p class="stat-number">1,256</p>
+                    <p class="stat-change positive">↑ 22% from last month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Shortlisted</h3>
+                    <p class="stat-number">487</p>
+                    <p class="stat-change neutral">Under review</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Hired This Month</h3>
+                    <p class="stat-number">156</p>
+                    <p class="stat-change positive">↑ 28% from last month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.07 8.33 14.05 10 17.42 10c.78 0 1.53-.09 2.25-.26.21.71.33 1.47.33 2.26 0 4.41-3.59 8-8 8z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Candidate Directory</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="hired">Hired</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <select class="form-select" id="skillFilter">
+                        <option value="">All Skills</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="react">React</option>
+                        <option value="design">Design</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Skills</th>
+                            <th>Experience</th>
+                            <th>Location</th>
+                            <th>Applications</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="company-info">
+                                    <img src="https://i.pravatar.cc/150?img=2" alt="Candidate" class="company-logo">
+                                    <div>
+                                        <div class="company-name">John Smith</div>
+                                        <div class="company-email">john.smith@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <span class="status-badge active" style="font-size: 11px;">JavaScript</span>
+                                    <span class="status-badge active" style="font-size: 11px;">React</span>
+                                    <span class="status-badge active" style="font-size: 11px;">Node.js</span>
+                                </div>
+                            </td>
+                            <td>7 years</td>
+                            <td>San Francisco, CA</td>
+                            <td><span class="application-count">5</span></td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" onclick="viewCandidate('1')" title="View">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon" title="Message">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="company-info">
+                                    <img src="https://i.pravatar.cc/150?img=3" alt="Candidate" class="company-logo">
+                                    <div>
+                                        <div class="company-name">Sarah Johnson</div>
+                                        <div class="company-email">sarah.j@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <span class="status-badge active" style="font-size: 11px;">UI/UX</span>
+                                    <span class="status-badge active" style="font-size: 11px;">Figma</span>
+                                </div>
+                            </td>
+                            <td>5 years</td>
+                            <td>New York, NY</td>
+                            <td><span class="application-count">8</span></td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" onclick="viewCandidate('2')" title="View">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon" title="Message">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="addCandidateModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Add Candidate</h2>
+                <button class="modal-close" onclick="closeModal('addCandidateModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addCandidateForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="candidateName">Full Name *</label>
+                            <input type="text" id="candidateName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="candidateEmail">Email *</label>
+                            <input type="email" id="candidateEmail" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="candidatePhone">Phone</label>
+                            <input type="tel" id="candidatePhone" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="candidateLocation">Location</label>
+                            <input type="text" id="candidateLocation" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="candidateSkills">Skills</label>
+                        <input type="text" id="candidateSkills" class="form-input" placeholder="JavaScript, React, Node.js">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidateResume">Resume</label>
+                        <input type="file" id="candidateResume" class="form-input" accept=".pdf,.doc,.docx">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addCandidateModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCandidate()">Save Candidate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set user type for navigation
+        localStorage.setItem('userType', 'company');
+        
+        generateNavigation('candidates');
+        
+        function viewCandidate(id) {
+            window.location.href = `candidate-detail.html?id=${id}`;
+        }
+        
+        function saveCandidate() {
+            const form = document.getElementById('addCandidateForm');
+            if (form.checkValidity()) {
+                showNotification('Candidate added successfully', 'success');
+                closeModal('addCandidateModal');
+                form.reset();
+            } else {
+                showNotification('Please fill all required fields', 'error');
+            }
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

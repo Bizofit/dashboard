@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users & Roles - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        .modal-lg {
+            max-width: 900px;
+        }
+        .form-section-divider {
+            margin: 24px 0 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .form-section-divider h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .form-section-note {
+            margin: 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search users...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Users & Roles</h1>
+                <p>Manage user accounts and permissions</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="openBulkUploadModal()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Bulk Upload
+                </button>
+                <button class="btn btn-primary" onclick="openAddUserModal()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add User
+                </button>
+            </div>
+        </div>
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Total Users</h3>
+                    <p class="stat-number">486</p>
+                    <p class="stat-change positive">↑ 24 this month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Active Users</h3>
+                    <p class="stat-number">412</p>
+                    <p class="stat-change positive">85% active rate</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Admins</h3>
+                    <p class="stat-number">12</p>
+                    <p class="stat-change neutral">System access</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V9.99h7V3.66l8 3.99v5.34h-8z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Roles Defined</h3>
+                    <p class="stat-number">6</p>
+                    <p class="stat-change neutral">Essential roles only</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2>User Directory</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="roleFilter" onchange="filterUsers()">
+                        <option value="">All Roles</option>
+                        <option value="admin">Company Admin (Full Access)</option>
+                        <option value="hr">HR</option>
+                        <option value="team-lead">Team Lead</option>
+                        <option value="team-member">Team Member</option>
+                        <option value="finance">Finance</option>
+                        <option value="vendor">Vendor</option>
+                    </select>
+                    <select class="form-select" id="statusFilter" onchange="filterUsers()">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <select class="form-select" id="resourceFilter" onchange="filterUsers()">
+                        <option value="">All Resources</option>
+                        <option value="virtual">Virtual Resources Only</option>
+                        <option value="internal">Internal Only</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Hourly Rate</th>
+                            <th>Virtual Resource</th>
+                            <th>Last Active</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="editUserModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit User</h2>
+                <button class="close-modal" onclick="closeModal('editUserModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" id="editUserName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email *</label>
+                            <input type="email" id="editUserEmail" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Role *</label>
+                            <select id="editUserRole" class="form-select" required>
+                                <option value="">Select Role</option>
+                                <option value="admin">Company Admin (Full Access)</option>
+                                <option value="hr">HR (Hiring & Recruitment)</option>
+                                <option value="team-lead">Team Lead (Project Manager)</option>
+                                <option value="team-member">Team Member (Employee)</option>
+                                <option value="finance">Finance (Billing & Payments)</option>
+                                <option value="vendor">Vendor (Products/Services)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Department</label>
+                            <input type="text" id="editUserDepartment" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Hourly Rate ($)</label>
+                            <input type="number" id="editUserRate" class="form-input" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select id="editUserStatus" class="form-select">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Virtual Resource Section -->
+                    <div class="form-section-divider">
+                        <h3>Virtual Resource Settings</h3>
+                        <p class="form-section-note">Offer this team member as a virtual resource to other companies via Giglancer marketplace</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="offerAsVirtualResource" onchange="toggleVirtualResourceFields()">
+                            <span>Offer as Virtual Resource</span>
+                        </label>
+                        <small class="form-helper">Enable to make this resource available for hire by other companies</small>
+                    </div>
+                    
+                    <div id="virtualResourceFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Public Profile Title *</label>
+                            <input type="text" id="virtualResourceTitle" class="form-input" placeholder="e.g., Senior Full-Stack Developer">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Skills (comma-separated) *</label>
+                            <input type="text" id="virtualResourceSkills" class="form-input" placeholder="JavaScript, React, Node.js">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Public Description *</label>
+                            <textarea id="virtualResourceDesc" class="form-textarea" rows="3" placeholder="Brief description for marketplace listing"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Marketplace Rate ($/hr) *</label>
+                                <input type="number" id="marketplaceRate" class="form-input" min="0" step="0.01">
+                                <small class="form-helper">Rate visible to other companies (can be higher than internal rate)</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Free Hours per Week *</label>
+                                <input type="number" id="virtualResourceAvailability" class="form-input" min="1" max="40" placeholder="20" required>
+                                <small class="form-helper">How many hours per week this resource is available for external work</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Platform Fee Rate (%) *</label>
+                            <input type="number" id="commissionRate" class="form-input" min="5" max="50" value="15" step="0.5" required>
+                            <small class="form-helper">Bizoforce platform fee (15-25% recommended). You receive: Total Revenue - Platform Fee</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-checkbox">
+                                <input type="checkbox" id="requireApproval">
+                                <span>Require manual approval for bookings</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editUserModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUserChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New User</h2>
+                <button class="close-modal" onclick="closeModal('addUserModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" id="addUserName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" id="addUserEmail" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Role *</label>
+                            <select id="addUserRole" class="form-select" required>
+                                <option value="">Select Role</option>
+                                <option value="admin">Company Admin (Full Access)</option>
+                                <option value="hr">HR (Hiring & Recruitment)</option>
+                                <option value="team-lead">Team Lead (Project Manager)</option>
+                                <option value="team-member">Team Member (Employee)</option>
+                                <option value="finance">Finance (Billing & Payments)</option>
+                                <option value="vendor">Vendor (Products/Services)</option>
+                            </select>
+                            <small class="form-helper">Admin handles all functions by default. Assign specific roles to delegate responsibilities to team members.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Department</label>
+                            <select id="addUserDepartment" class="form-select">
+                                <option value="Engineering">Engineering</option>
+                                <option value="Design">Design</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="HR">HR</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Operations">Operations</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Hourly Rate ($)</label>
+                            <input type="number" id="addUserRate" class="form-input" min="0" step="0.01" placeholder="50.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" id="addUserPhone" class="form-input" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+                    
+                    <!-- Virtual Resource Section -->
+                    <div class="form-section-divider">
+                        <h3>Virtual Resource Settings (Optional)</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="addOfferAsVirtualResource" onchange="toggleAddVirtualResourceFields()">
+                            <span>Offer as Virtual Resource</span>
+                        </label>
+                    </div>
+                    
+                    <div id="addVirtualResourceFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Public Profile Title *</label>
+                            <input type="text" id="addVirtualResourceTitle" class="form-input" placeholder="e.g., Senior Full-Stack Developer">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Skills (comma-separated) *</label>
+                            <input type="text" id="addVirtualResourceSkills" class="form-input" placeholder="JavaScript, React, Node.js">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Public Description *</label>
+                            <textarea id="addVirtualResourceDesc" class="form-textarea" rows="3" placeholder="Brief description for marketplace listing"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Marketplace Rate ($/hr) *</label>
+                                <input type="number" id="addMarketplaceRate" class="form-input" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Free Hours per Week *</label>
+                                <input type="number" id="addVirtualResourceAvailability" class="form-input" min="1" max="40" placeholder="20" required>
+                                <small class="form-helper">Available hours for external work</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Platform Fee Rate (%) *</label>
+                            <input type="number" id="addCommissionRate" class="form-input" min="5" max="50" value="15" step="0.5" required>
+                            <small class="form-helper">Bizoforce platform fee (15-25% recommended)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-checkbox">
+                                <input type="checkbox" id="addRequireApproval">
+                                <span>Require manual approval for bookings</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNewUser()">Add User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Modal -->
+    <div class="modal" id="bulkUploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Bulk Upload Users</h2>
+                <button class="close-modal" onclick="closeModal('bulkUploadModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Upload Method</label>
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                        <button class="btn btn-secondary btn-sm" onclick="showUploadTab('excel')">Excel File</button>
+                        <button class="btn btn-secondary btn-sm" onclick="showUploadTab('csv')">CSV File</button>
+                        <button class="btn btn-secondary btn-sm" onclick="showUploadTab('text')">Text/Paste</button>
+                    </div>
+                </div>
+                
+                <!-- Excel/CSV Upload -->
+                <div id="fileUploadTab">
+                    <div class="form-group">
+                        <label class="form-label">Select File</label>
+                        <input type="file" id="bulkUploadFile" class="form-input" accept=".xlsx,.xls,.csv">
+                        <small class="form-helper">Upload Excel (.xlsx, .xls) or CSV (.csv) file</small>
+                    </div>
+                    
+                    <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; margin: 20px 0;">
+                        <h4 style="margin: 0 0 12px 0; color: #0369a1;">Required Columns:</h4>
+                        <div style="font-family: monospace; font-size: 13px; line-height: 1.8;">
+                            <strong>Basic Info (Required):</strong><br>
+                            • name, email, role<br><br>
+                            
+                            <strong>Optional Info:</strong><br>
+                            • department, hourly_rate, phone<br><br>
+                            
+                            <strong>Virtual Resource (Optional):</strong><br>
+                            • is_virtual_resource (yes/no)<br>
+                            • virtual_title<br>
+                            • virtual_skills (comma-separated)<br>
+                            • virtual_description<br>
+                            • marketplace_rate<br>
+                            • free_hours_per_week<br>
+                            • platform_fee_rate<br>
+                            • require_approval (yes/no)
+                        </div>
+                        <button class="btn btn-sm btn-secondary\" onclick=\"downloadTemplate()\" style=\"margin-top: 12px;\">
+                            Download Template
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Text/Paste Upload -->
+                <div id="textUploadTab" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Paste User Data</label>
+                        <textarea id="bulkUploadText" class="form-textarea" rows="12" placeholder="Paste data in this format (one user per line):
+name, email, role, department, hourly_rate, is_virtual_resource, marketplace_rate, free_hours_per_week
+
+Example:
+John Smith, john@company.com, team-member, Engineering, 45, yes, 65, 20
+Sarah Johnson, sarah@company.com, hr, HR, 50, no
+Michael Chen, michael@company.com, team-lead, Engineering, 60, yes, 80, 15"></textarea>
+                    </div>
+                </div>
+                
+                <div id="uploadPreview" style="display: none; margin-top: 20px;">
+                    <h4>Preview (First 5 records)</h4>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead id="previewTableHead"></thead>
+                            <tbody id="previewTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <span id="uploadSummary" style="color: #64748b;"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('bulkUploadModal')">Cancel</button>
+                <button class="btn btn-secondary" onclick="previewBulkUpload()" id="previewBtn">Preview</button>
+                <button class="btn btn-primary" onclick="processBulkUpload()" id="uploadBtn" style="display: none;">Upload Users</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        localStorage.setItem('userType', 'company');
+        generateNavigation('users-roles');
+
+        let bulkUploadData = [];
+
+        // Open modals
+        function openAddUserModal() {
+            openModal('addUserModal');
+        }
+
+        function openBulkUploadModal() {
+            openModal('bulkUploadModal');
+            showUploadTab('excel');
+        }
+
+        // Toggle upload tabs
+        function showUploadTab(type) {
+            document.getElementById('fileUploadTab').style.display = type === 'text' ? 'none' : 'block';
+            document.getElementById('textUploadTab').style.display = type === 'text' ? 'block' : 'none';
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('previewBtn').style.display = 'block';
+            document.getElementById('uploadBtn').style.display = 'none';
+        }
+
+        // Toggle virtual resource fields for add user
+        function toggleAddVirtualResourceFields() {
+            const checkbox = document.getElementById('addOfferAsVirtualResource');
+            const fields = document.getElementById('addVirtualResourceFields');
+            fields.style.display = checkbox.checked ? 'block' : 'none';
+            
+            // Set required attributes
+            const inputs = fields.querySelectorAll('input[type=\"text\"], input[type=\"number\"], textarea');
+            inputs.forEach(input => {
+                if (checkbox.checked && (input.id.includes('Title') || input.id.includes('Skills') || input.id.includes('Desc') || input.id.includes('Rate') || input.id.includes('Availability'))) {
+                    input.setAttribute('required', 'required');
+                } else {
+                    input.removeAttribute('required');
+                }
+            });
+        }
+
+        // Save new user
+        function saveNewUser() {
+            const form = document.getElementById('addUserForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: document.getElementById('addUserName').value,
+                email: document.getElementById('addUserEmail').value,
+                role: document.getElementById('addUserRole').value,
+                department: document.getElementById('addUserDepartment').value,
+                hourlyRate: parseFloat(document.getElementById('addUserRate').value) || 0,
+                phone: document.getElementById('addUserPhone').value,
+                status: 'active',
+                lastActive: new Date().toISOString().split('T')[0],
+                joinDate: new Date().toISOString().split('T')[0],
+                isVirtualResource: document.getElementById('addOfferAsVirtualResource').checked
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Add to marketplace if virtual resource
+            if (newUser.isVirtualResource) {
+                const virtualResourceData = {
+                    userId: newUser.id,
+                    companyId: localStorage.getItem('currentCompanyId') || 'company_001',
+                    companyName: JSON.parse(localStorage.getItem('companyProfile') || '{}').companyName || 'My Company',
+                    name: newUser.name,
+                    email: newUser.email,
+                    avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+                    title: document.getElementById('addVirtualResourceTitle').value,
+                    skills: document.getElementById('addVirtualResourceSkills').value.split(',').map(s => s.trim()),
+                    description: document.getElementById('addVirtualResourceDesc').value,
+                    hourlyRate: parseFloat(document.getElementById('addMarketplaceRate').value),
+                    availability: parseInt(document.getElementById('addVirtualResourceAvailability').value),
+                    commissionRate: parseFloat(document.getElementById('addCommissionRate').value),
+                    requireApproval: document.getElementById('addRequireApproval').checked,
+                    totalBookings: 0,
+                    rating: 0,
+                    status: 'available',
+                    createdDate: new Date().toISOString().split('T')[0]
+                };
+                
+                addToGiglancerMarketplace(virtualResourceData);
+            }
+            
+            closeModal('addUserModal');
+            form.reset();
+            loadUsers();
+            showNotification('User added successfully', 'success');
+        }
+
+        // Download template
+        function downloadTemplate() {
+            const template = `name,email,role,department,hourly_rate,phone,is_virtual_resource,virtual_title,virtual_skills,virtual_description,marketplace_rate,free_hours_per_week,platform_fee_rate,require_approval
+John Smith,john@company.com,team-member,Engineering,45,+1-555-0001,yes,Senior Full-Stack Developer,"JavaScript,React,Node.js",5+ years experience in full-stack development,65,20,15,no
+Sarah Johnson,sarah@company.com,hr,HR,50,+1-555-0002,no,,,,,,
+Michael Chen,michael@company.com,team-lead,Engineering,60,+1-555-0003,yes,DevOps Engineer,"AWS,Docker,Kubernetes",DevOps expert with cloud architecture experience,80,15,18,yes`;
+            
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bulk_upload_template.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Preview bulk upload
+        function previewBulkUpload() {
+            const fileInput = document.getElementById('bulkUploadFile');
+            const textInput = document.getElementById('bulkUploadText');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    parseBulkData(text);
+                };
+                
+                reader.readAsText(file);
+            } else if (textInput.value.trim()) {
+                parseBulkData(textInput.value);
+            } else {
+                showNotification('Please select a file or paste data', 'error');
+            }
+        }
+
+        // Parse bulk data
+        function parseBulkData(text) {
+            const lines = text.trim().split('\\n');
+            if (lines.length < 2) {
+                showNotification('No data found', 'error');
+                return;
+            }
+            
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            bulkUploadData = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                if (values.length < 3) continue;
+                
+                const user = {};
+                headers.forEach((header, index) => {
+                    user[header] = values[index] ? values[index].trim() : '';
+                });
+                
+                bulkUploadData.push(user);
+            }
+            
+            if (bulkUploadData.length === 0) {
+                showNotification('No valid data found', 'error');
+                return;
+            }
+            
+            // Show preview
+            renderPreview();
+            document.getElementById('uploadPreview').style.display = 'block';
+            document.getElementById('previewBtn').style.display = 'none';
+            document.getElementById('uploadBtn').style.display = 'block';
+        }
+
+        // Render preview table
+        function renderPreview() {
+            const preview = bulkUploadData.slice(0, 5);
+            const thead = document.getElementById('previewTableHead');
+            const tbody = document.getElementById('previewTableBody');
+            
+            thead.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Virtual Resource</th>
+                    <th>Marketplace Rate</th>
+                    <th>Free Hours/Week</th>
+                </tr>
+            `;
+            
+            tbody.innerHTML = preview.map(user => `
+                <tr>
+                    <td>${user.name || ''}</td>
+                    <td>${user.email || ''}</td>
+                    <td>${user.role || ''}</td>
+                    <td>${user.department || ''}</td>
+                    <td>${user.is_virtual_resource === 'yes' ? '<span class=\"badge badge-success\">Yes</span>' : '<span class=\"badge badge-secondary\">No</span>'}</td>
+                    <td>${user.marketplace_rate ? '$' + user.marketplace_rate + '/hr' : '-'}</td>
+                    <td>${user.free_hours_per_week ? user.free_hours_per_week + ' hrs' : '-'}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('uploadSummary').textContent = `Total users to upload: ${bulkUploadData.length} | Virtual resources: ${bulkUploadData.filter(u => u.is_virtual_resource === 'yes').length}`;
+        }
+
+        // Process bulk upload
+        function processBulkUpload() {
+            if (bulkUploadData.length === 0) {
+                showNotification('No data to upload', 'error');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            let addedCount = 0;
+            let virtualCount = 0;
+            
+            bulkUploadData.forEach(data => {
+                if (!data.name || !data.email || !data.role) return;
+                
+                const newUser = {
+                    id: 'user_' + Date.now() + '_' + addedCount,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                    department: data.department || 'General',
+                    hourlyRate: parseFloat(data.hourly_rate) || 0,
+                    phone: data.phone || '',
+                    status: 'active',
+                    lastActive: new Date().toISOString().split('T')[0],
+                    joinDate: new Date().toISOString().split('T')[0],
+                    isVirtualResource: data.is_virtual_resource === 'yes'
+                };
+                
+                users.push(newUser);
+                addedCount++;
+                
+                // Add to marketplace if virtual resource
+                if (newUser.isVirtualResource && data.virtual_title && data.marketplace_rate && data.free_hours_per_week) {
+                    const virtualResourceData = {
+                        userId: newUser.id,
+                        companyId: localStorage.getItem('currentCompanyId') || 'company_001',
+                        companyName: JSON.parse(localStorage.getItem('companyProfile') || '{}').companyName || 'My Company',
+                        name: newUser.name,
+                        email: newUser.email,
+                        avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+                        title: data.virtual_title,
+                        skills: data.virtual_skills ? data.virtual_skills.split(',').map(s => s.trim()) : [],
+                        description: data.virtual_description || '',
+                        hourlyRate: parseFloat(data.marketplace_rate),
+                        availability: parseInt(data.free_hours_per_week),
+                        commissionRate: parseFloat(data.platform_fee_rate) || 15,
+                        requireApproval: data.require_approval === 'yes',
+                        totalBookings: 0,
+                        rating: 0,
+                        status: 'available',
+                        createdDate: new Date().toISOString().split('T')[0]
+                    };
+                    
+                    addToGiglancerMarketplace(virtualResourceData);
+                    virtualCount++;
+                }
+            });
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            closeModal('bulkUploadModal');
+            loadUsers();
+            bulkUploadData = [];
+            
+            showNotification(`Successfully uploaded ${addedCount} users (${virtualCount} virtual resources)`, 'success');
+        }
+
+        // Initialize demo users data
+        function initializeUsers() {
+            if (!localStorage.getItem('users')) {
+                const demoUsers = [
+                    {
+                        id: 'user_001',
+                        name: 'Admin User',
+                        email: 'admin@bizoforce.com',
+                        role: 'admin',
+                        department: 'Administration',
+                        hourlyRate: 0,
+                        status: 'active',
+                        lastActive: 'Just now',
+                        avatar: 'https://i.pravatar.cc/150?img=1',
+                        isVirtualResource: false
+                    },
+                    {
+                        id: 'user_002',
+                        name: 'John Smith',
+                        email: 'john.smith@bizoforce.com',
+                        role: 'team-member',
+                        department: 'Engineering',
+                        hourlyRate: 45,
+                        status: 'active',
+                        lastActive: '2 hours ago',
+                        avatar: 'https://i.pravatar.cc/150?img=2',
+                        isVirtualResource: true,
+                        virtualResourceData: {
+                            title: 'Senior Full-Stack Developer',
+                            skills: 'JavaScript, React, Node.js, Python, AWS',
+                            description: 'Experienced developer with 8+ years in web development',
+                            marketplaceRate: 65,
+                            availability: 20,
+                            commissionRate: 15,
+                            requireApproval: true,
+                            totalBookings: 3,
+                            rating: 4.8
+                        }
+                    },
+                    {
+                        id: 'user_003',
+                        name: 'Sarah Johnson',
+                        email: 'sarah.j@bizoforce.com',
+                        role: 'team-member',
+                        department: 'Design',
+                        hourlyRate: 50,
+                        status: 'active',
+                        lastActive: '5 hours ago',
+                        avatar: 'https://i.pravatar.cc/150?img=3',
+                        isVirtualResource: true,
+                        virtualResourceData: {
+                            title: 'UI/UX Designer',
+                            skills: 'Figma, Adobe XD, UI Design, UX Research',
+                            description: 'Creative designer specializing in modern web interfaces',
+                            marketplaceRate: 70,
+                            availability: 15,
+                            commissionRate: 20,
+                            requireApproval: false,
+                            totalBookings: 5,
+                            rating: 4.9
+                        }
+                    },
+                    {
+                        id: 'user_004',
+                        name: 'Michael Chen',
+                        email: 'michael.c@bizoforce.com',
+                        role: 'team-member',
+                        department: 'Engineering',
+                        hourlyRate: 40,
+                        status: 'active',
+                        lastActive: '1 day ago',
+                        avatar: 'https://i.pravatar.cc/150?img=4',
+                        isVirtualResource: false
+                    }
+                ];
+                localStorage.setItem('users', JSON.stringify(demoUsers));
+            }
+        }
+
+        // Load and display users
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const resourceFilter = document.getElementById('resourceFilter').value;
+
+            const filteredUsers = users.filter(user => {
+                const roleMatch = !roleFilter || user.role === roleFilter;
+                const statusMatch = !statusFilter || user.status === statusFilter;
+                const resourceMatch = !resourceFilter || 
+                    (resourceFilter === 'virtual' && user.isVirtualResource) ||
+                    (resourceFilter === 'internal' && !user.isVirtualResource);
+                return roleMatch && statusMatch && resourceMatch;
+            });
+
+            filteredUsers.forEach(user => {
+                const row = `
+                    <tr data-user-id="${user.id}">
+                        <td>
+                            <div class="company-info">
+                                <img src="${user.avatar}" class="company-logo" alt="${user.name}">
+                                <div>
+                                    <div class="company-name">${user.name}</div>
+                                    <div class="company-email">${user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="subscription-badge professional">${formatRole(user.role)}</span></td>
+                        <td>${user.department}</td>
+                        <td>${user.hourlyRate > 0 ? `$${user.hourlyRate}/hr` : '-'}</td>
+                        <td>
+                            ${user.isVirtualResource ? 
+                                `<span class="status-badge active">
+                                    ✓ Active ($${user.virtualResourceData.marketplaceRate}/hr)
+                                </span>` : 
+                                `<span class="status-badge inactive">Not Offered</span>`}
+                        </td>
+                        <td>${user.lastActive}</td>
+                        <td><span class="status-badge ${user.status}">${capitalize(user.status)}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" onclick="editUser('${user.id}')" title="Edit">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                    </svg>
+                                </button>
+                                ${user.isVirtualResource ? `
+                                    <button class="btn-icon" style="color: var(--primary-blue);" onclick="viewVirtualResourceProfile('${user.id}')" title="View Virtual Resource Profile">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                                ${user.role !== 'admin' ? `
+                                    <button class="btn-icon danger" onclick="deactivateUser('${user.id}')" title="Deactivate">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Edit user
+        function editUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) return;
+
+            // Populate form
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUserName').value = user.name;
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUserRole').value = user.role;
+            document.getElementById('editUserDepartment').value = user.department;
+            document.getElementById('editUserRate').value = user.hourlyRate;
+            document.getElementById('editUserStatus').value = user.status;
+            
+            // Virtual resource fields
+            document.getElementById('offerAsVirtualResource').checked = user.isVirtualResource;
+            
+            if (user.isVirtualResource && user.virtualResourceData) {
+                const vr = user.virtualResourceData;
+                document.getElementById('virtualResourceTitle').value = vr.title || '';
+                document.getElementById('virtualResourceSkills').value = vr.skills || '';
+                document.getElementById('virtualResourceDesc').value = vr.description || '';
+                document.getElementById('marketplaceRate').value = vr.marketplaceRate || '';
+                document.getElementById('virtualResourceAvailability').value = vr.availability || '';
+                document.getElementById('commissionRate').value = vr.commissionRate || 15;
+                document.getElementById('requireApproval').checked = vr.requireApproval || false;
+            }
+            
+            toggleVirtualResourceFields();
+            openModal('editUserModal');
+        }
+
+        // Toggle virtual resource fields
+        function toggleVirtualResourceFields() {
+            const isChecked = document.getElementById('offerAsVirtualResource').checked;
+            document.getElementById('virtualResourceFields').style.display = isChecked ? 'block' : 'none';
+            
+            // Make fields required/optional based on checkbox
+            ['virtualResourceTitle', 'virtualResourceSkills', 'virtualResourceDesc', 'marketplaceRate'].forEach(id => {
+                document.getElementById(id).required = isChecked;
+            });
+        }
+
+        // Save user changes
+        function saveUserChanges() {
+            const form = document.getElementById('editUserForm');
+            
+            if (!form.checkValidity()) {
+                showNotification('Please fill all required fields', 'error');
+                form.reportValidity();
+                return;
+            }
+
+            const userId = document.getElementById('editUserId').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex === -1) return;
+
+            const isVirtual = document.getElementById('offerAsVirtualResource').checked;
+
+            // Update user data
+            users[userIndex] = {
+                ...users[userIndex],
+                name: document.getElementById('editUserName').value,
+                email: document.getElementById('editUserEmail').value,
+                role: document.getElementById('editUserRole').value,
+                department: document.getElementById('editUserDepartment').value,
+                hourlyRate: parseFloat(document.getElementById('editUserRate').value) || 0,
+                status: document.getElementById('editUserStatus').value,
+                isVirtualResource: isVirtual
+            };
+
+            // Update virtual resource data if enabled
+            if (isVirtual) {
+                users[userIndex].virtualResourceData = {
+                    title: document.getElementById('virtualResourceTitle').value,
+                    skills: document.getElementById('virtualResourceSkills').value,
+                    description: document.getElementById('virtualResourceDesc').value,
+                    marketplaceRate: parseFloat(document.getElementById('marketplaceRate').value),
+                    availability: parseInt(document.getElementById('virtualResourceAvailability').value) || 0,
+                    commissionRate: parseFloat(document.getElementById('commissionRate').value) || 15,
+                    requireApproval: document.getElementById('requireApproval').checked,
+                    totalBookings: users[userIndex].virtualResourceData?.totalBookings || 0,
+                    rating: users[userIndex].virtualResourceData?.rating || 0
+                };
+
+                // Add to Giglancer marketplace
+                addToGiglancerMarketplace(users[userIndex]);
+            } else {
+                // Remove virtual resource data
+                delete users[userIndex].virtualResourceData;
+                
+                // Remove from Giglancer marketplace
+                removeFromGiglancerMarketplace(userId);
+            }
+
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            showNotification(
+                isVirtual ? 
+                'User updated and added to Giglancer marketplace!' : 
+                'User updated successfully',
+                'success'
+            );
+            
+            closeModal('editUserModal');
+            loadUsers();
+        }
+
+        // Add virtual resource to Giglancer marketplace
+        function addToGiglancerMarketplace(user) {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            
+            // Check if already exists
+            const existingIndex = marketplace.findIndex(r => r.userId === user.id);
+            
+            const resourceListing = {
+                userId: user.id,
+                companyId: localStorage.getItem('currentCompanyId') || 'company_001',
+                companyName: JSON.parse(localStorage.getItem('companyProfile') || '{}').name || 'TechCorp Inc',
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                title: user.virtualResourceData.title,
+                skills: user.virtualResourceData.skills.split(',').map(s => s.trim()),
+                description: user.virtualResourceData.description,
+                hourlyRate: user.virtualResourceData.marketplaceRate,
+                availability: user.virtualResourceData.availability,
+                commissionRate: user.virtualResourceData.commissionRate,
+                requireApproval: user.virtualResourceData.requireApproval,
+                totalBookings: user.virtualResourceData.totalBookings || 0,
+                rating: user.virtualResourceData.rating || 0,
+                status: 'available',
+                createdDate: new Date().toISOString().split('T')[0]
+            };
+
+            if (existingIndex !== -1) {
+                marketplace[existingIndex] = resourceListing;
+            } else {
+                marketplace.push(resourceListing);
+            }
+
+            localStorage.setItem('giglancerMarketplace', JSON.stringify(marketplace));
+            console.log('Added to Giglancer marketplace:', resourceListing);
+        }
+
+        // Remove virtual resource from marketplace
+        function removeFromGiglancerMarketplace(userId) {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const updated = marketplace.filter(r => r.userId !== userId);
+            localStorage.setItem('giglancerMarketplace', JSON.stringify(updated));
+        }
+
+        // View virtual resource profile
+        function viewVirtualResourceProfile(userId) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.id === userId);
+            
+            if (!user || !user.virtualResourceData) return;
+
+            const vr = user.virtualResourceData;
+            const details = `
+Virtual Resource Profile
+━━━━━━━━━━━━━━━━━━━━━
+Name: ${user.name}
+Title: ${vr.title}
+Skills: ${vr.skills}
+Marketplace Rate: $${vr.marketplaceRate}/hr
+Availability: ${vr.availability} hrs/week
+Commission Rate: ${vr.commissionRate}%
+Total Bookings: ${vr.totalBookings}
+Rating: ${vr.rating > 0 ? `⭐ ${vr.rating}/5.0` : 'No ratings yet'}
+Requires Approval: ${vr.requireApproval ? 'Yes' : 'No'}
+
+Description:
+${vr.description}
+            `;
+            alert(details.trim());
+        }
+
+        // Deactivate user
+        function deactivateUser(userId) {
+            if (!confirm('Are you sure you want to deactivate this user?')) return;
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex !== -1) {
+                users[userIndex].status = 'inactive';
+                localStorage.setItem('users', JSON.stringify(users));
+                showNotification('User deactivated successfully', 'success');
+                loadUsers();
+            }
+        }
+
+        // Filter users
+        function filterUsers() {
+            loadUsers();
+        }
+
+        // Utility functions
+        function formatRole(role) {
+            return role.split('-').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function viewVirtualResourceProfile(userId) {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const resource = marketplace.find(r => r.userId === userId);
+            
+            if (resource) {
+                localStorage.setItem('selectedResourceId', userId);
+                window.location.href = 'virtual-resources.html';
+            } else {
+                showNotification('Virtual resource profile not found', 'error');
+            }
+        }
+
+        // Initialize on page load
+        initializeUsers();
+        loadUsers();
+    </script>
+</body>
+</html>

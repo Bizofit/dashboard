@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            border: 4px solid #e0e7ff;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .profile-role {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .profile-status {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Section Card */
+        .section-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .section-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .btn-edit {
+            padding: 6px 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: #1e40af;
+        }
+
+        /* Info Row */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .skill-tag {
+            padding: 8px 14px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Projects List */
+        .project-item {
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .project-item:hover {
+            background: #f1f5f9;
+        }
+
+        .project-item-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .project-item-role {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .project-item-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* GitHub/Portfolio */
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .link-item:hover {
+            background: #e0e7ff;
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .link-info {
+            flex: 1;
+        }
+
+        .link-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .link-url {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search...">
+        </div>
+        <div class="user-section">
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">5</div>
+            </div>
+            <div class="user-avatar">JD</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">My Profile</h1>
+                <p class="page-subtitle">Manage your professional information</p>
+            </div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar-large">JD</div>
+            <div class="profile-info">
+                <h2 class="profile-name">John Doe</h2>
+                <div class="profile-role">Senior Frontend Developer</div>
+                <div class="profile-meta">
+                    <div class="meta-item">
+                        <span>📧</span>
+                        <span>john.doe@company.com</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📱</span>
+                        <span>+1 (555) 123-4567</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📍</span>
+                        <span>San Francisco, CA</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span>Joined: Jan 15, 2024</span>
+                    </div>
+                </div>
+                <span class="profile-status">Active Employee</span>
+            </div>
+            <div class="profile-actions">
+                <button class="btn-primary" onclick="editProfile()">Edit Profile</button>
+            </div>
+        </div>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- About -->
+                <div class="section-card" style="margin-bottom: 24px;">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">About</h3>
+                        <button class="btn-edit" onclick="editSection('about')">Edit</button>
+                    </div>
+                    <p style="color: #475569; line-height: 1.6; font-size: 14px;">
+                        Experienced Frontend Developer with 5+ years of expertise in React, Vue.js, and modern web technologies. 
+                        Passionate about creating intuitive user interfaces and optimizing application performance. 
+                        Strong team player with excellent communication skills and a track record of delivering high-quality projects on time.
+                    </p>
+                </div>
+
+                <!-- Skills & Expertise -->
+                <div class="section-card" style="margin-bottom: 24px;">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Skills & Expertise</h3>
+                        <button class="btn-edit" onclick="editSection('skills')">Edit</button>
+                    </div>
+                    <div class="skills-grid">
+                        <span class="skill-tag">React.js</span>
+                        <span class="skill-tag">Vue.js</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">TypeScript</span>
+                        <span class="skill-tag">HTML5/CSS3</span>
+                        <span class="skill-tag">Tailwind CSS</span>
+                        <span class="skill-tag">Git</span>
+                        <span class="skill-tag">REST APIs</span>
+                        <span class="skill-tag">Responsive Design</span>
+                        <span class="skill-tag">UI/UX</span>
+                    </div>
+                </div>
+
+                <!-- Current Projects -->
+                <div class="section-card" style="margin-bottom: 24px;">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Current Projects</h3>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-item-title">Website Redesign</div>
+                        <div class="project-item-role">Frontend Developer</div>
+                        <div class="project-item-meta">
+                            <span>⏰ 85 hours logged</span>
+                            <span>✓ 12/18 tasks completed</span>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-item-title">Mobile App Development</div>
+                        <div class="project-item-role">UI/UX Designer</div>
+                        <div class="project-item-meta">
+                            <span>⏰ 52 hours logged</span>
+                            <span>✓ 8/15 tasks completed</span>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-item-title">CRM Implementation</div>
+                        <div class="project-item-role">Backend Developer</div>
+                        <div class="project-item-meta">
+                            <span>⏰ 19 hours logged</span>
+                            <span>✓ 3/10 tasks completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio & Links -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Portfolio & Links</h3>
+                        <button class="btn-edit" onclick="editSection('links')">Edit</button>
+                    </div>
+                    <a href="https://github.com/johndoe" target="_blank" class="link-item">
+                        <div class="link-icon">🔗</div>
+                        <div class="link-info">
+                            <div class="link-title">GitHub</div>
+                            <div class="link-url">github.com/johndoe</div>
+                        </div>
+                    </a>
+                    <a href="https://linkedin.com/in/johndoe" target="_blank" class="link-item">
+                        <div class="link-icon">💼</div>
+                        <div class="link-info">
+                            <div class="link-title">LinkedIn</div>
+                            <div class="link-url">linkedin.com/in/johndoe</div>
+                        </div>
+                    </a>
+                    <a href="https://johndoe.dev" target="_blank" class="link-item">
+                        <div class="link-icon">🌐</div>
+                        <div class="link-info">
+                            <div class="link-title">Portfolio Website</div>
+                            <div class="link-url">johndoe.dev</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Personal Information -->
+                <div class="section-card" style="margin-bottom: 24px;">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Personal Information</h3>
+                        <button class="btn-edit" onclick="editSection('personal')">Edit</button>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Employee ID</span>
+                        <span class="info-value">EMP-2024-001</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Department</span>
+                        <span class="info-value">Engineering</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Job Title</span>
+                        <span class="info-value">Senior Frontend Developer</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Employment Type</span>
+                        <span class="info-value">Full-time</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Work Location</span>
+                        <span class="info-value">Hybrid</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Manager</span>
+                        <span class="info-value">Sarah Miller</span>
+                    </div>
+                </div>
+
+                <!-- Performance Stats -->
+                <div class="section-card" style="margin-bottom: 24px;">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Performance Stats</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Hours This Month</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Active Projects</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">Tasks Completed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">98%</div>
+                            <div class="stat-label">On-Time Delivery</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <h3 class="section-card-title">Certifications</h3>
+                        <button class="btn-edit" onclick="editSection('certifications')">Edit</button>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">AWS Certified Developer</span>
+                        <span class="info-value">2024</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">React Professional</span>
+                        <span class="info-value">2023</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Scrum Master (PSM I)</span>
+                        <span class="info-value">2022</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+        });
+
+        function editProfile() {
+            alert('Edit profile - Coming soon!');
+        }
+
+        function editSection(section) {
+            alert(`Edit ${section} section - Coming soon!`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Projects - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-blue), var(--accent-orange));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .project-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 12px 32px rgba(37, 99, 235, 0.18);
+            transform: translateY(-4px);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .project-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .project-company {
+            font-size: 14px;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .project-status {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e3a8a;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .project-progress {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-text {
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .progress-value {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-orange));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .project-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 10px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            flex: 1;
+        }
+
+        .btn-sm.primary {
+            background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+            color: white;
+            border-color: var(--accent-orange);
+        }
+
+        .btn-sm.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn-sm:hover {
+            background: #f8fafc;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search projects..." id="searchProjects">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $0</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">5</div>
+            </div>
+            <div class="user-avatar">JD</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(236, 72, 153, 0.05)); padding: 32px; border-radius: 16px; margin-bottom: 32px;">
+            <div>
+                <h1 class="gradient-text" style="font-size: 36px; margin-bottom: 8px;">My Projects</h1>
+                <p style="font-size: 16px; opacity: 0.8;">Track your work and deliverables across assigned projects</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards-row">
+            <div class="stat-card-colored purple">
+                <div class="stats-icon">💼</div>
+                <div class="stats-value">5</div>
+                <div class="stats-label">Total Projects</div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stats-icon">⚡</div>
+                <div class="stats-value">3</div>
+                <div class="stats-label">Active Projects</div>
+            </div>
+            <div class="stat-card-colored blue">
+                <div class="stats-icon">⏰</div>
+                <div class="stats-value">256</div>
+                <div class="stats-label">Hours Logged</div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stats-icon">✅</div>
+                <div class="stats-value">2</div>
+                <div class="stats-label">Completed</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All Projects (5)</button>
+            <button class="filter-btn" data-filter="active">Active (3)</button>
+            <button class="filter-btn" data-filter="completed">Completed (2)</button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid" id="projectsGrid">
+            <!-- Project Card 1 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-title">Website Redesign</div>
+                        <div class="project-company">TechCorp Inc.</div>
+                    </div>
+                    <span class="project-status status-active">Active</span>
+                </div>
+                
+                <div class="project-meta">
+                    <div class="meta-badge">
+                        <span>📅</span>
+                        <span>Due: Nov 30, 2025</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👤</span>
+                        <span>Frontend Developer</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👥</span>
+                        <span>6 team members</span>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-value">68%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 68%"></div>
+                    </div>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">85</div>
+                        <div class="stat-label">Hours Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">12/18</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <div class="project-actions">
+                    <button class="btn-sm primary" onclick="logHours(1)">Log Hours</button>
+                    <button class="btn-sm" onclick="viewDetails(1)">View Details</button>
+                </div>
+            </div>
+
+            <!-- Project Card 2 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-title">Mobile App Development</div>
+                        <div class="project-company">DataSystems LLC</div>
+                    </div>
+                    <span class="project-status status-active">Active</span>
+                </div>
+                
+                <div class="project-meta">
+                    <div class="meta-badge">
+                        <span>📅</span>
+                        <span>Due: Dec 15, 2025</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👤</span>
+                        <span>UI/UX Designer</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👥</span>
+                        <span>4 team members</span>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-value">45%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">52</div>
+                        <div class="stat-label">Hours Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8/15</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <div class="project-actions">
+                    <button class="btn-sm primary" onclick="logHours(2)">Log Hours</button>
+                    <button class="btn-sm" onclick="viewDetails(2)">View Details</button>
+                </div>
+            </div>
+
+            <!-- Project Card 3 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-title">CRM Implementation</div>
+                        <div class="project-company">CloudServices Pro</div>
+                    </div>
+                    <span class="project-status status-active">Active</span>
+                </div>
+                
+                <div class="project-meta">
+                    <div class="meta-badge">
+                        <span>📅</span>
+                        <span>Due: Nov 20, 2025</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👤</span>
+                        <span>Backend Developer</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👥</span>
+                        <span>5 team members</span>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-value">32%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 32%"></div>
+                    </div>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">19</div>
+                        <div class="stat-label">Hours Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3/10</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <div class="project-actions">
+                    <button class="btn-sm primary" onclick="logHours(3)">Log Hours</button>
+                    <button class="btn-sm" onclick="viewDetails(3)">View Details</button>
+                </div>
+            </div>
+
+            <!-- Project Card 4 - Completed -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-title">E-commerce Platform</div>
+                        <div class="project-company">Marketing Innovations</div>
+                    </div>
+                    <span class="project-status status-completed">Completed</span>
+                </div>
+                
+                <div class="project-meta">
+                    <div class="meta-badge">
+                        <span>📅</span>
+                        <span>Completed: Oct 31, 2025</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👤</span>
+                        <span>Frontend Developer</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👥</span>
+                        <span>8 team members</span>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-value">100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">140</div>
+                        <div class="stat-label">Hours Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">20/20</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <div class="project-actions">
+                    <button class="btn-sm" onclick="viewDetails(4)">View Details</button>
+                </div>
+            </div>
+
+            <!-- Project Card 5 - Completed -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-title">Marketing Dashboard</div>
+                        <div class="project-company">AI Innovations Lab</div>
+                    </div>
+                    <span class="project-status status-completed">Completed</span>
+                </div>
+                
+                <div class="project-meta">
+                    <div class="meta-badge">
+                        <span>📅</span>
+                        <span>Completed: Oct 15, 2025</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👤</span>
+                        <span>Full Stack Developer</span>
+                    </div>
+                    <div class="meta-badge">
+                        <span>👥</span>
+                        <span>3 team members</span>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <div class="progress-label">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-value">100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">95</div>
+                        <div class="stat-label">Hours Logged</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">15/15</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <div class="project-actions">
+                    <button class="btn-sm" onclick="viewDetails(5)">View Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set userType for individual users
+        localStorage.setItem('userType', 'individual');
+        generateNavigation('my-projects');
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterProjects(this.dataset.filter);
+            });
+        });
+
+        function filterProjects(filter) {
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                const status = card.querySelector('.project-status').textContent.toLowerCase();
+                
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else if (filter === 'active' && status === 'active') {
+                    card.style.display = 'block';
+                } else if (filter === 'completed' && status === 'completed') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function logHours(projectId) {
+            // Redirect to timesheets page with project pre-selected
+            window.location.href = `my-timesheets.html?project=${projectId}`;
+        }
+
+        function viewDetails(projectId) {
+            alert(`Viewing details for project ${projectId}\n\nThis would show:\n- Full project description\n- Team members\n- Task breakdown\n- Files & documents\n- Communication thread`);
+        }
+
+        // Search functionality
+        document.getElementById('searchProjects').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.project-title').textContent.toLowerCase();
+                const company = card.querySelector('.project-company').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || company.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

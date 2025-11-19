@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search projects...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Projects</h1>
+                <p>Manage active projects and assignments</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('createProjectModal')">Create Project</button>
+        </div>
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Active Projects</h3>
+                    <p class="stat-number">24</p>
+                    <p class="stat-change positive">↑ 3 new this week</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Completed</h3>
+                    <p class="stat-number">89</p>
+                    <p class="stat-change positive">This quarter</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>At Risk</h3>
+                    <p class="stat-number">5</p>
+                    <p class="stat-change neutral">Needs attention</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Total Hours</h3>
+                    <p class="stat-number">2,840</p>
+                    <p class="stat-change positive">This month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2>Project List</h2>
+                <div class="filter-controls">
+                    <select class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="on-hold">On Hold</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Client</th>
+                            <th>Team Size</th>
+                            <th>Progress</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Website Redesign</strong></td>
+                            <td>TechCorp Solutions</td>
+                            <td>5 members</td>
+                            <td>
+                                <div style="width: 100%; background: var(--bg-light); height: 8px; border-radius: 4px;">
+                                    <div style="width: 75%; background: var(--success); height: 100%; border-radius: 4px;"></div>
+                                </div>
+                            </td>
+                            <td>Dec 15, 2025</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="View">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile App Development</strong></td>
+                            <td>InnovateLabs Inc</td>
+                            <td>8 members</td>
+                            <td>
+                                <div style="width: 100%; background: var(--bg-light); height: 8px; border-radius: 4px;">
+                                    <div style="width: 45%; background: var(--warning); height: 100%; border-radius: 4px;"></div>
+                                </div>
+                            </td>
+                            <td>Jan 30, 2026</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="View">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Project Modal -->
+    <div class="modal" id="createProjectModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Project</h2>
+                <button class="close-modal" onclick="closeModal('createProjectModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="createProjectForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Project Name *</label>
+                            <input type="text" id="projectName" class="form-input" required placeholder="Enter project name">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Client Name *</label>
+                            <input type="text" id="clientName" class="form-input" required placeholder="Company or individual name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project Type</label>
+                            <select id="projectType" class="form-input">
+                                <option value="development">Development</option>
+                                <option value="design">Design</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="consulting">Consulting</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Start Date *</label>
+                            <input type="date" id="startDate" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Deadline</label>
+                            <input type="date" id="deadline" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Budget (USD)</label>
+                            <input type="number" id="budget" class="form-input" placeholder="$50,000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Billing Type</label>
+                            <select id="billingType" class="form-input">
+                                <option value="hourly">Hourly</option>
+                                <option value="fixed">Fixed Price</option>
+                                <option value="milestone">Milestone-based</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="projectDescription" class="form-input" rows="4" placeholder="Project details, objectives, and deliverables"></textarea>
+                    </div>
+
+                    <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border-light);">
+                    
+                    <h3 style="margin-bottom: 16px;">Team Assignment</h3>
+                    
+                    <div id="teamMembersContainer">
+                        <div class="form-group">
+                            <label class="form-label">Search Team Members</label>
+                            <input type="text" id="searchTeamMembers" class="form-input" placeholder="Search by name or email" oninput="filterTeamMembers()">
+                        </div>
+
+                        <div id="availableTeamMembers" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-light); border-radius: 8px; padding: 12px;">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+
+                        <div id="selectedTeamMembers" style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 12px;">Selected Team Members (<span id="selectedCount">0</span>)</h4>
+                            <div id="selectedTeamList">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createProjectModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createProject()">Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        localStorage.setItem('userType', 'company');
+        generateNavigation('projects');
+
+        // ============================================
+        // TEAM MEMBERS DATA & STATE
+        // ============================================
+
+        let availableTeam = [
+            {
+                id: 1,
+                name: 'John Smith',
+                email: 'john.smith@company.com',
+                role: 'Senior Developer',
+                hourlyRate: 75,
+                avatar: 'https://i.pravatar.cc/150?img=2'
+            },
+            {
+                id: 2,
+                name: 'Sarah Johnson',
+                email: 'sarah.j@company.com',
+                role: 'UI/UX Designer',
+                hourlyRate: 65,
+                avatar: 'https://i.pravatar.cc/150?img=3'
+            },
+            {
+                id: 3,
+                name: 'Michael Chen',
+                email: 'michael.chen@company.com',
+                role: 'Backend Developer',
+                hourlyRate: 70,
+                avatar: 'https://i.pravatar.cc/150?img=4'
+            },
+            {
+                id: 4,
+                name: 'Emily Davis',
+                email: 'emily.davis@company.com',
+                role: 'Project Manager',
+                hourlyRate: 80,
+                avatar: 'https://i.pravatar.cc/150?img=5'
+            },
+            {
+                id: 5,
+                name: 'David Wilson',
+                email: 'david.w@company.com',
+                role: 'QA Engineer',
+                hourlyRate: 60,
+                avatar: 'https://i.pravatar.cc/150?img=6'
+            }
+        ];
+
+        let selectedTeam = [];
+
+        // ============================================
+        // INITIALIZE PROJECT CREATION
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjects();
+            
+            // Set default start date to today
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('startDate').value = today;
+        });
+
+        // ============================================
+        // PROJECT CREATION
+        // ============================================
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            if (modalId === 'createProjectModal') {
+                renderAvailableTeamMembers();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function createProject() {
+            const projectName = document.getElementById('projectName').value;
+            const clientName = document.getElementById('clientName').value;
+            const projectType = document.getElementById('projectType').value;
+            const startDate = document.getElementById('startDate').value;
+            const deadline = document.getElementById('deadline').value;
+            const budget = document.getElementById('budget').value;
+            const billingType = document.getElementById('billingType').value;
+            const description = document.getElementById('projectDescription').value;
+
+            if (!projectName || !clientName || !startDate) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (selectedTeam.length === 0) {
+                if (!confirm('No team members assigned. Continue anyway?')) {
+                    return;
+                }
+            }
+
+            const newProject = {
+                id: Date.now(),
+                name: projectName,
+                client: clientName,
+                type: projectType,
+                startDate,
+                deadline: deadline || 'Not set',
+                budget: budget || 0,
+                billingType,
+                description,
+                teamMembers: selectedTeam.map(member => ({
+                    id: member.id,
+                    name: member.name,
+                    email: member.email,
+                    role: member.role,
+                    hourlyRate: member.hourlyRate
+                })),
+                status: 'active',
+                progress: 0,
+                hoursLogged: 0,
+                createdDate: new Date().toISOString(),
+                createdBy: localStorage.getItem('userEmail') || 'Admin'
+            };
+
+            // Save to localStorage
+            let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            projects.push(newProject);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            console.log('✅ Project created:', newProject);
+
+            // Reset form and close modal
+            document.getElementById('createProjectForm').reset();
+            selectedTeam = [];
+            closeModal('createProjectModal');
+
+            // Reload projects table
+            loadProjects();
+
+            showNotification(`Project "${projectName}" created successfully with ${selectedTeam.length} team members`, 'success');
+        }
+
+        // ============================================
+        // TEAM MEMBER SELECTION
+        // ============================================
+
+        function renderAvailableTeamMembers() {
+            const container = document.getElementById('availableTeamMembers');
+            container.innerHTML = availableTeam.map(member => {
+                const isSelected = selectedTeam.find(m => m.id === member.id);
+                return `
+                    <div class="team-member-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border-light); ${isSelected ? 'background: #f0f9ff;' : ''}">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="${member.avatar}" alt="${member.name}" style="width: 40px; height: 40px; border-radius: 50%;">
+                            <div>
+                                <div style="font-weight: 600;">${member.name}</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">${member.role} • $${member.hourlyRate}/hr</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${isSelected ? 
+                                `<button class="btn btn-secondary btn-sm" onclick="removeTeamMember(${member.id})">Remove</button>` :
+                                `<button class="btn btn-primary btn-sm" onclick="addTeamMember(${member.id})">Add</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addTeamMember(memberId) {
+            const member = availableTeam.find(m => m.id === memberId);
+            if (member && !selectedTeam.find(m => m.id === memberId)) {
+                selectedTeam.push(member);
+                renderAvailableTeamMembers();
+                renderSelectedTeamMembers();
+            }
+        }
+
+        function removeTeamMember(memberId) {
+            selectedTeam = selectedTeam.filter(m => m.id !== memberId);
+            renderAvailableTeamMembers();
+            renderSelectedTeamMembers();
+        }
+
+        function renderSelectedTeamMembers() {
+            const container = document.getElementById('selectedTeamList');
+            document.getElementById('selectedCount').textContent = selectedTeam.length;
+
+            if (selectedTeam.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-gray); font-size: 14px;">No team members selected yet</p>';
+                return;
+            }
+
+            container.innerHTML = selectedTeam.map(member => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 8px;">
+                    <img src="${member.avatar}" alt="${member.name}" style="width: 36px; height: 36px; border-radius: 50%;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 14px;">${member.name}</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">${member.role}</div>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; color: var(--primary-blue);">$${member.hourlyRate}/hr</div>
+                    <button class="btn-icon danger" onclick="removeTeamMember(${member.id})">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function filterTeamMembers() {
+            const searchTerm = document.getElementById('searchTeamMembers').value.toLowerCase();
+            const items = document.querySelectorAll('.team-member-item');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
+
+        // ============================================
+        // LOAD & DISPLAY PROJECTS
+        // ============================================
+
+        function loadProjects() {
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            
+            // Update stats
+            const activeProjects = projects.filter(p => p.status === 'active').length;
+            const completedProjects = projects.filter(p => p.status === 'completed').length;
+            const atRiskProjects = projects.filter(p => p.status === 'at-risk').length;
+
+            // Render projects table
+            const tbody = document.querySelector('.data-table tbody');
+            if (projects.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-gray);">
+                            No projects yet. Click "Create Project" to get started.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = projects.map(project => `
+                <tr>
+                    <td><strong>${project.name}</strong></td>
+                    <td>${project.client}</td>
+                    <td>${project.teamMembers ? project.teamMembers.length : 0} members</td>
+                    <td>
+                        <div style="width: 100%; background: var(--bg-light); height: 8px; border-radius: 4px;">
+                            <div style="width: ${project.progress}%; background: var(--success); height: 100%; border-radius: 4px;"></div>
+                        </div>
+                    </td>
+                    <td>${formatDate(project.deadline)}</td>
+                    <td>${getStatusBadge(project.status)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" title="View" onclick="viewProject(${project.id})">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr === 'Not set') return 'Not set';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'active': '<span class="status-badge active">Active</span>',
+                'completed': '<span class="status-badge success">Completed</span>',
+                'at-risk': '<span class="status-badge danger">At Risk</span>',
+                'on-hold': '<span class="status-badge pending">On Hold</span>'
+            };
+            return badges[status] || badges['active'];
+        }
+
+        function viewProject(projectId) {
+            // In production, navigate to project detail page
+            console.log('Viewing project:', projectId);
+            showNotification('Project detail view coming soon', 'info');
+        }
+
+        function showNotification(message, type) {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            // In production, use a proper notification system
+        }
+    </script>
+</body>
+</html>

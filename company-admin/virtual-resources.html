@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Resources Marketplace - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search virtual resources by skills..." id="searchInput" oninput="filterResources()">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Virtual Resources Marketplace</h1>
+                <p>Hire verified professionals from other companies via Giglancer</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="window.location.href='users-roles.html'">
+                    Manage Your Resources
+                </button>
+                <button class="btn btn-primary" onclick="viewMyBookings()">
+                    My Bookings
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Available Resources</h3>
+                    <p class="stat-number" id="availableCount">0</p>
+                    <p class="stat-change neutral">Across all companies</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Active Bookings</h3>
+                    <p class="stat-number" id="activeBookingsCount">0</p>
+                    <p class="stat-change positive">Currently hired</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Pending Approvals</h3>
+                    <p class="stat-number" id="pendingApprovalsCount">0</p>
+                    <p class="stat-change neutral">Awaiting response</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Total Spent</h3>
+                    <p class="stat-number" id="totalSpent">$0</p>
+                    <p class="stat-change neutral">On external resources</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Filter Resources</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="skillFilter" onchange="filterResources()">
+                        <option value="">All Skills</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="react">React</option>
+                        <option value="node.js">Node.js</option>
+                        <option value="python">Python</option>
+                        <option value="figma">Figma</option>
+                        <option value="ui design">UI Design</option>
+                    </select>
+                    <select class="form-select" id="rateFilter" onchange="filterResources()">
+                        <option value="">All Rates</option>
+                        <option value="0-50">$0 - $50/hr</option>
+                        <option value="51-100">$51 - $100/hr</option>
+                        <option value="101-150">$101 - $150/hr</option>
+                        <option value="151-999">$151+/hr</option>
+                    </select>
+                    <select class="form-select" id="availabilityFilter" onchange="filterResources()">
+                        <option value="">All Availability</option>
+                        <option value="0-10">0-10 hrs/week</option>
+                        <option value="11-20">11-20 hrs/week</option>
+                        <option value="21-40">21-40 hrs/week</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resources Grid -->
+        <div class="product-grid" id="resourcesGrid">
+            <!-- Populated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Hire Resource Modal -->
+    <div class="modal" id="hireResourceModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 class="modal-title">Hire Virtual Resource</h2>
+                <button class="close-modal" onclick="closeModal('hireResourceModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="hireResourceForm">
+                    <input type="hidden" id="hireResourceId">
+                    <input type="hidden" id="hireResourceUserId">
+                    <input type="hidden" id="hireProviderCompanyId">
+                    
+                    <!-- Resource Info Summary -->
+                    <div class="form-section-divider">
+                        <h3>Resource Information</h3>
+                    </div>
+                    <div class="resource-summary" id="resourceSummary">
+                        <!-- Populated dynamically -->
+                    </div>
+                    
+                    <!-- Booking Details -->
+                    <div class="form-section-divider">
+                        <h3>Booking Details</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date *</label>
+                            <input type="date" id="bookingStartDate" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date *</label>
+                            <input type="date" id="bookingEndDate" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Hours per Week *</label>
+                            <input type="number" id="bookingHoursPerWeek" class="form-input" min="1" max="40" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project Assignment *</label>
+                            <select id="bookingProject" class="form-select" required>
+                                <option value="">Select Project</option>
+                                <!-- Populated from projects -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Special Requirements</label>
+                        <textarea id="bookingRequirements" class="form-textarea" rows="3" placeholder="Any specific requirements or expectations..."></textarea>
+                    </div>
+                    
+                    <!-- Cost Breakdown -->
+                    <div class="form-section-divider">
+                        <h3>Payment Breakdown</h3>
+                    </div>
+                    <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Hourly Rate:</span>
+                            <strong id="costHourlyRate">$0/hr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Hours per Week:</span>
+                            <strong id="costHoursPerWeek">0 hrs</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Duration:</span>
+                            <strong id="costDuration">0 weeks</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 2px solid #e5e7eb; margin-top: 12px;">
+                            <span style="font-size: 18px; font-weight: 600;">Total Payment:</span>
+                            <strong style="font-size: 20px; color: var(--primary-blue);" id="costTotal">$0</strong>
+                        </div>
+                        <small style="display: block; margin-top: 8px; color: #6b7280;">
+                            * Provider receives full payment minus Bizoforce platform fee
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('hireResourceModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitBooking()">Submit Booking Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        localStorage.setItem('userType', 'company');
+        generateNavigation('virtual-resources');
+
+        // Initialize marketplace data
+        function initializeMarketplace() {
+            // Initialize with demo data if empty
+            if (!localStorage.getItem('giglancerMarketplace')) {
+                const demoMarketplace = [
+                    {
+                        userId: 'user_002',
+                        companyId: 'company_002',
+                        companyName: 'TechSolutions Inc',
+                        name: 'John Smith',
+                        email: 'john.smith@techsolutions.com',
+                        avatar: 'https://i.pravatar.cc/150?img=2',
+                        title: 'Senior Full-Stack Developer',
+                        skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'],
+                        description: 'Experienced full-stack developer with 8+ years in web development. Specialized in React, Node.js, and cloud infrastructure. Built and maintained 20+ production applications.',
+                        hourlyRate: 65,
+                        availability: 20,
+                        commissionRate: 15,
+                        requireApproval: true,
+                        totalBookings: 3,
+                        rating: 4.8,
+                        status: 'available',
+                        createdDate: '2025-10-01'
+                    },
+                    {
+                        userId: 'user_003',
+                        companyId: 'company_002',
+                        companyName: 'TechSolutions Inc',
+                        name: 'Sarah Johnson',
+                        email: 'sarah.j@techsolutions.com',
+                        avatar: 'https://i.pravatar.cc/150?img=3',
+                        title: 'UI/UX Designer',
+                        skills: ['Figma', 'Adobe XD', 'UI Design', 'UX Research', 'Prototyping'],
+                        description: 'Creative designer specializing in modern web interfaces. Expert in user research, wireframing, and high-fidelity prototyping. Portfolio includes Fortune 500 clients.',
+                        hourlyRate: 70,
+                        availability: 15,
+                        commissionRate: 20,
+                        requireApproval: false,
+                        totalBookings: 5,
+                        rating: 4.9,
+                        status: 'available',
+                        createdDate: '2025-09-15'
+                    },
+                    {
+                        userId: 'user_005',
+                        companyId: 'company_003',
+                        companyName: 'DataMinds Corp',
+                        name: 'Michael Chen',
+                        email: 'michael.c@dataminds.com',
+                        avatar: 'https://i.pravatar.cc/150?img=4',
+                        title: 'DevOps Engineer',
+                        skills: ['AWS', 'Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
+                        description: 'DevOps specialist with expertise in cloud infrastructure and automation. Certified AWS Solutions Architect. Reduced deployment time by 70% for multiple clients.',
+                        hourlyRate: 75,
+                        availability: 25,
+                        commissionRate: 18,
+                        requireApproval: true,
+                        totalBookings: 7,
+                        rating: 5.0,
+                        status: 'available',
+                        createdDate: '2025-08-20'
+                    },
+                    {
+                        userId: 'user_006',
+                        companyId: 'company_004',
+                        companyName: 'Creative Studios Ltd',
+                        name: 'Emily Rodriguez',
+                        email: 'emily.r@creativestudios.com',
+                        avatar: 'https://i.pravatar.cc/150?img=5',
+                        title: 'Mobile App Developer',
+                        skills: ['React Native', 'Flutter', 'iOS', 'Android', 'Firebase'],
+                        description: 'Mobile development expert with 6+ years building cross-platform apps. Published 15+ apps with 1M+ downloads. Specializes in React Native and Flutter.',
+                        hourlyRate: 60,
+                        availability: 30,
+                        commissionRate: 15,
+                        requireApproval: false,
+                        totalBookings: 4,
+                        rating: 4.7,
+                        status: 'available',
+                        createdDate: '2025-10-10'
+                    },
+                    {
+                        userId: 'user_007',
+                        companyId: 'company_005',
+                        companyName: 'SecureNet Solutions',
+                        name: 'David Kim',
+                        email: 'david.k@securenet.com',
+                        avatar: 'https://i.pravatar.cc/150?img=6',
+                        title: 'Cybersecurity Consultant',
+                        skills: ['Security Audit', 'Penetration Testing', 'Compliance', 'Risk Assessment'],
+                        description: 'Cybersecurity professional with CISSP certification. Conducted 50+ security audits for enterprise clients. Expert in compliance and risk management.',
+                        hourlyRate: 90,
+                        availability: 10,
+                        commissionRate: 25,
+                        requireApproval: true,
+                        totalBookings: 2,
+                        rating: 5.0,
+                        status: 'available',
+                        createdDate: '2025-09-01'
+                    },
+                    {
+                        userId: 'user_008',
+                        companyId: 'company_006',
+                        companyName: 'MarketBoost Agency',
+                        name: 'Jessica Martinez',
+                        email: 'jessica.m@marketboost.com',
+                        avatar: 'https://i.pravatar.cc/150?img=9',
+                        title: 'Digital Marketing Specialist',
+                        skills: ['SEO', 'Google Ads', 'Social Media', 'Content Marketing', 'Analytics'],
+                        description: 'Digital marketing expert with proven ROI results. Managed $2M+ in ad spend. Increased organic traffic by 300% for multiple clients. Google Ads certified.',
+                        hourlyRate: 55,
+                        availability: 20,
+                        commissionRate: 20,
+                        requireApproval: false,
+                        totalBookings: 6,
+                        rating: 4.8,
+                        status: 'available',
+                        createdDate: '2025-10-05'
+                    },
+                    {
+                        userId: 'user_009',
+                        companyId: 'company_003',
+                        companyName: 'DataMinds Corp',
+                        name: 'Alex Thompson',
+                        email: 'alex.t@dataminds.com',
+                        avatar: 'https://i.pravatar.cc/150?img=7',
+                        title: 'Data Scientist',
+                        skills: ['Python', 'Machine Learning', 'TensorFlow', 'SQL', 'Data Visualization'],
+                        description: 'Data science expert with PhD in Computer Science. Built ML models for predictive analytics and recommendation systems. Published researcher with 10+ papers.',
+                        hourlyRate: 85,
+                        availability: 15,
+                        commissionRate: 22,
+                        requireApproval: true,
+                        totalBookings: 3,
+                        rating: 4.9,
+                        status: 'available',
+                        createdDate: '2025-09-25'
+                    },
+                    {
+                        userId: 'user_010',
+                        companyId: 'company_007',
+                        companyName: 'CloudFirst Technologies',
+                        name: 'Sophia Anderson',
+                        email: 'sophia.a@cloudfirst.com',
+                        avatar: 'https://i.pravatar.cc/150?img=10',
+                        title: 'Backend Developer',
+                        skills: ['Java', 'Spring Boot', 'Microservices', 'PostgreSQL', 'Redis'],
+                        description: 'Backend specialist with 7 years of experience in enterprise applications. Expert in microservices architecture and high-performance systems. Built APIs serving 10M+ requests/day.',
+                        hourlyRate: 68,
+                        availability: 25,
+                        commissionRate: 16,
+                        requireApproval: false,
+                        totalBookings: 8,
+                        rating: 4.8,
+                        status: 'available',
+                        createdDate: '2025-08-15'
+                    }
+                ];
+                localStorage.setItem('giglancerMarketplace', JSON.stringify(demoMarketplace));
+            }
+            
+            // Load resources from Giglancer marketplace
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            
+            // Initialize bookings if not exists
+            if (!localStorage.getItem('resourceBookings')) {
+                localStorage.setItem('resourceBookings', JSON.stringify([]));
+            }
+            
+            updateStats();
+            loadResources();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const bookings = JSON.parse(localStorage.getItem('resourceBookings') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            
+            const myBookings = bookings.filter(b => b.hiringCompanyId === currentCompanyId);
+            const activeBookings = myBookings.filter(b => b.status === 'active' || b.status === 'approved');
+            const pendingBookings = myBookings.filter(b => b.status === 'pending');
+            
+            const totalSpent = myBookings
+                .filter(b => b.status === 'active' || b.status === 'completed')
+                .reduce((sum, b) => sum + (b.totalCost || 0), 0);
+            
+            document.getElementById('availableCount').textContent = marketplace.filter(r => r.status === 'available').length;
+            document.getElementById('activeBookingsCount').textContent = activeBookings.length;
+            document.getElementById('pendingApprovalsCount').textContent = pendingBookings.length;
+            document.getElementById('totalSpent').textContent = `$${totalSpent.toLocaleString()}`;
+        }
+
+        // Load and display resources
+        function loadResources() {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const grid = document.getElementById('resourcesGrid');
+            
+            if (marketplace.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                        <svg width="64" height="64" fill="#cbd5e1" viewBox="0 0 24 24" style="margin-bottom: 16px;">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                        <h3 style="color: #64748b; margin-bottom: 8px;">No Virtual Resources Available</h3>
+                        <p style="color: #94a3b8;">Companies haven't listed any virtual resources yet. Check back later or <a href="users-roles.html" style="color: var(--primary-blue);">offer your own resources</a>.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = marketplace.map(resource => `
+                <div class="product-card" data-resource-id="${resource.userId}">
+                    <div class="product-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                        <img src="${resource.avatar}" alt="${resource.name}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white;">
+                    </div>
+                    <div class="product-content">
+                        <div class="product-category">${resource.title}</div>
+                        <h3 class="product-title">${resource.name}</h3>
+                        <p class="product-description">${resource.description}</p>
+                        
+                        <div style="margin: 12px 0;">
+                            <strong style="font-size: 13px; color: #64748b; display: block; margin-bottom: 6px;">Skills:</strong>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                ${resource.skills.slice(0, 3).map(skill => 
+                                    `<span class="skill-badge">${skill}</span>`
+                                ).join('')}
+                                ${resource.skills.length > 3 ? 
+                                    `<span class="skill-badge" style="background: #e5e7eb; color: #6b7280;">+${resource.skills.length - 3} more</span>` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="product-vendor">
+                            <span style="font-size: 12px; color: #64748b;">Provided by</span>
+                            <span style="font-weight: 600; color: var(--primary-blue);">${resource.companyName}</span>
+                        </div>
+                        
+                        <div class="product-footer">
+                            <div class="product-price">$${resource.hourlyRate}/hr</div>
+                            <div class="product-rating">
+                                ${resource.rating > 0 ? `⭐ ${resource.rating} (${resource.totalBookings})` : 'New'}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                            <span style="font-size: 12px; color: #64748b;">
+                                📅 ${resource.availability} hrs/week
+                            </span>
+                            <span style="font-size: 12px; color: #64748b;">
+                                ${resource.requireApproval ? '⏳ Approval Required' : '✓ Instant Booking'}
+                            </span>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="btn btn-primary btn-sm" onclick="openHireModal('${resource.userId}')">
+                                Hire Resource
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="viewResourceDetails('${resource.userId}')">
+                                View Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter resources
+        function filterResources() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const skillFilter = document.getElementById('skillFilter').value.toLowerCase();
+            const rateFilter = document.getElementById('rateFilter').value;
+            const availabilityFilter = document.getElementById('availabilityFilter').value;
+            
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            
+            const filtered = marketplace.filter(resource => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    resource.name.toLowerCase().includes(searchTerm) ||
+                    resource.title.toLowerCase().includes(searchTerm) ||
+                    resource.skills.some(s => s.toLowerCase().includes(searchTerm)) ||
+                    resource.description.toLowerCase().includes(searchTerm);
+                
+                // Skill filter
+                const matchesSkill = !skillFilter || 
+                    resource.skills.some(s => s.toLowerCase().includes(skillFilter));
+                
+                // Rate filter
+                let matchesRate = true;
+                if (rateFilter) {
+                    const [min, max] = rateFilter.split('-').map(Number);
+                    matchesRate = resource.hourlyRate >= min && resource.hourlyRate <= (max || 9999);
+                }
+                
+                // Availability filter
+                let matchesAvailability = true;
+                if (availabilityFilter) {
+                    const [min, max] = availabilityFilter.split('-').map(Number);
+                    matchesAvailability = resource.availability >= min && resource.availability <= max;
+                }
+                
+                return matchesSearch && matchesSkill && matchesRate && matchesAvailability;
+            });
+            
+            // Update grid with filtered results
+            const grid = document.getElementById('resourcesGrid');
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <p style="color: #64748b;">No resources match your filters. Try adjusting your search criteria.</p>
+                    </div>
+                `;
+            } else {
+                grid.innerHTML = filtered.map(resource => `
+                    <div class="product-card" data-resource-id="${resource.userId}">
+                        <div class="product-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                            <img src="${resource.avatar}" alt="${resource.name}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white;">
+                        </div>
+                        <div class="product-content">
+                            <div class="product-category">${resource.title}</div>
+                            <h3 class="product-title">${resource.name}</h3>
+                            <p class="product-description">${resource.description}</p>
+                            
+                            <div style="margin: 12px 0;">
+                                <strong style="font-size: 13px; color: #64748b; display: block; margin-bottom: 6px;">Skills:</strong>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    ${resource.skills.slice(0, 3).map(skill => 
+                                        `<span class="skill-badge">${skill}</span>`
+                                    ).join('')}
+                                    ${resource.skills.length > 3 ? 
+                                        `<span class="skill-badge" style="background: #e5e7eb; color: #6b7280;">+${resource.skills.length - 3} more</span>` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="product-vendor">
+                                <span style="font-size: 12px; color: #64748b;">Provided by</span>
+                                <span style="font-weight: 600; color: var(--primary-blue);">${resource.companyName}</span>
+                            </div>
+                            
+                            <div class="product-footer">
+                                <div class="product-price">$${resource.hourlyRate}/hr</div>
+                                <div class="product-rating">
+                                    ${resource.rating > 0 ? `⭐ ${resource.rating} (${resource.totalBookings})` : 'New'}
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                                <span style="font-size: 12px; color: #64748b;">
+                                    📅 ${resource.availability} hrs/week
+                                </span>
+                                <span style="font-size: 12px; color: #64748b;">
+                                    ${resource.requireApproval ? '⏳ Approval Required' : '✓ Instant Booking'}
+                                </span>
+                            </div>
+                            
+                            <div class="product-actions">
+                                <button class="btn btn-primary btn-sm" onclick="openHireModal('${resource.userId}')">
+                                    Hire Resource
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewResourceDetails('${resource.userId}')">
+                                    View Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Open hire modal
+        function openHireModal(userId) {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const resource = marketplace.find(r => r.userId === userId);
+            
+            if (!resource) return;
+            
+            // Populate hidden fields
+            document.getElementById('hireResourceId').value = resource.userId;
+            document.getElementById('hireResourceUserId').value = resource.userId;
+            document.getElementById('hireProviderCompanyId').value = resource.companyId;
+            
+            // Populate resource summary
+            document.getElementById('resourceSummary').innerHTML = `
+                <div style="display: flex; gap: 16px; background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <img src="${resource.avatar}" alt="${resource.name}" style="width: 80px; height: 80px; border-radius: 50%;">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 4px 0;">${resource.name}</h3>
+                        <p style="margin: 0 0 8px 0; color: #64748b;">${resource.title}</p>
+                        <div style="display: flex; gap: 12px; font-size: 14px;">
+                            <span><strong>Rate:</strong> $${resource.hourlyRate}/hr</span>
+                            <span><strong>Available:</strong> ${resource.availability} hrs/week</span>
+                            <span><strong>Company:</strong> ${resource.companyName}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Load projects for dropdown
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const projectSelect = document.getElementById('bookingProject');
+            projectSelect.innerHTML = '<option value="">Select Project</option>' + 
+                projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            
+            // Set default dates
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            
+            document.getElementById('bookingStartDate').value = today.toISOString().split('T')[0];
+            document.getElementById('bookingEndDate').value = nextMonth.toISOString().split('T')[0];
+            document.getElementById('bookingHoursPerWeek').value = Math.min(20, resource.availability);
+            
+            // Update cost breakdown
+            updateCostBreakdown();
+            
+            // Add event listeners for cost calculation
+            ['bookingStartDate', 'bookingEndDate', 'bookingHoursPerWeek'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateCostBreakdown);
+                document.getElementById(id).addEventListener('input', updateCostBreakdown);
+            });
+            
+            openModal('hireResourceModal');
+        }
+
+        // Update cost breakdown
+        function updateCostBreakdown() {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const userId = document.getElementById('hireResourceUserId').value;
+            const resource = marketplace.find(r => r.userId === userId);
+            
+            if (!resource) return;
+            
+            const startDate = new Date(document.getElementById('bookingStartDate').value);
+            const endDate = new Date(document.getElementById('bookingEndDate').value);
+            const hoursPerWeek = parseFloat(document.getElementById('bookingHoursPerWeek').value) || 0;
+            
+            if (startDate && endDate && hoursPerWeek > 0) {
+                const weeks = Math.ceil((endDate - startDate) / (7 * 24 * 60 * 60 * 1000));
+                const totalHours = weeks * hoursPerWeek;
+                const subtotal = totalHours * resource.hourlyRate;
+                const commission = subtotal * (resource.commissionRate / 100);
+                const total = subtotal + commission;
+                
+                document.getElementById('costHourlyRate').textContent = `$${resource.hourlyRate}/hr`;
+                document.getElementById('costHoursPerWeek').textContent = `${hoursPerWeek} hrs`;
+                document.getElementById('costDuration').textContent = `${weeks} weeks`;
+                document.getElementById('costTotal').textContent = `$${total.toLocaleString()}`;
+            }
+        }
+
+        // Submit booking
+        function submitBooking() {
+            const form = document.getElementById('hireResourceForm');
+            
+            if (!form.checkValidity()) {
+                showNotification('Please fill all required fields', 'error');
+                form.reportValidity();
+                return;
+            }
+            
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const userId = document.getElementById('hireResourceUserId').value;
+            const resource = marketplace.find(r => r.userId === userId);
+            
+            if (!resource) return;
+            
+            const startDate = new Date(document.getElementById('bookingStartDate').value);
+            const endDate = new Date(document.getElementById('bookingEndDate').value);
+            const hoursPerWeek = parseFloat(document.getElementById('bookingHoursPerWeek').value);
+            
+            const weeks = Math.ceil((endDate - startDate) / (7 * 24 * 60 * 60 * 1000));
+            const totalHours = weeks * hoursPerWeek;
+            const subtotal = totalHours * resource.hourlyRate;
+            const commission = subtotal * (resource.commissionRate / 100);
+            const total = subtotal + commission;
+            
+            const booking = {
+                id: `booking_${Date.now()}`,
+                resourceUserId: userId,
+                resourceName: resource.name,
+                resourceTitle: resource.title,
+                providerCompanyId: resource.companyId,
+                providerCompanyName: resource.companyName,
+                hiringCompanyId: localStorage.getItem('currentCompanyId') || 'company_001',
+                hiringCompanyName: JSON.parse(localStorage.getItem('companyProfile') || '{}').name || 'TechCorp Inc',
+                projectId: document.getElementById('bookingProject').value,
+                projectName: JSON.parse(localStorage.getItem('projects') || '[]').find(p => p.id === document.getElementById('bookingProject').value)?.name || '',
+                startDate: document.getElementById('bookingStartDate').value,
+                endDate: document.getElementById('bookingEndDate').value,
+                hoursPerWeek: hoursPerWeek,
+                hourlyRate: resource.hourlyRate,
+                commissionRate: resource.commissionRate,
+                weeks: weeks,
+                totalHours: totalHours,
+                subtotal: subtotal,
+                commission: commission,
+                totalCost: total,
+                requirements: document.getElementById('bookingRequirements').value,
+                status: resource.requireApproval ? 'pending' : 'approved',
+                createdDate: new Date().toISOString().split('T')[0],
+                approvedDate: resource.requireApproval ? null : new Date().toISOString().split('T')[0]
+            };
+            
+            // Save booking
+            const bookings = JSON.parse(localStorage.getItem('resourceBookings') || '[]');
+            bookings.push(booking);
+            localStorage.setItem('resourceBookings', JSON.stringify(bookings));
+            
+            // If approved immediately, create placement tracking
+            if (!resource.requireApproval) {
+                createPlacementTracking(booking);
+            }
+            
+            showNotification(
+                resource.requireApproval ? 
+                'Booking request submitted! Waiting for provider approval.' : 
+                'Resource booked successfully! You can start working together.',
+                'success'
+            );
+            
+            closeModal('hireResourceModal');
+            form.reset();
+            updateStats();
+            
+            // Reload page to show updated bookings
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        // Create placement tracking entry
+        function createPlacementTracking(booking) {
+            const placements = JSON.parse(localStorage.getItem('resourcePlacements') || '[]');
+            
+            const placement = {
+                id: `placement_${Date.now()}`,
+                bookingId: booking.id,
+                resourceUserId: booking.resourceUserId,
+                resourceName: booking.resourceName,
+                providerCompanyId: booking.providerCompanyId,
+                providerCompanyName: booking.providerCompanyName,
+                hiringCompanyId: booking.hiringCompanyId,
+                hiringCompanyName: booking.hiringCompanyName,
+                startDate: booking.startDate,
+                endDate: booking.endDate,
+                hourlyRate: booking.hourlyRate,
+                commissionRate: booking.commissionRate,
+                hoursWorked: 0,
+                revenueGenerated: 0,
+                commissionEarned: 0,
+                status: 'active',
+                createdDate: new Date().toISOString().split('T')[0]
+            };
+            
+            placements.push(placement);
+            localStorage.setItem('resourcePlacements', JSON.stringify(placements));
+        }
+
+        // View resource details
+        function viewResourceDetails(userId) {
+            const marketplace = JSON.parse(localStorage.getItem('giglancerMarketplace') || '[]');
+            const resource = marketplace.find(r => r.userId === userId);
+            
+            if (!resource) return;
+            
+            const details = `
+Virtual Resource Profile
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name: ${resource.name}
+Title: ${resource.title}
+Company: ${resource.companyName}
+
+Skills: ${resource.skills.join(', ')}
+
+Description:
+${resource.description}
+
+Availability: ${resource.availability} hrs/week
+Hourly Rate: $${resource.hourlyRate}/hr
+Commission: ${resource.commissionRate}%
+
+Total Bookings: ${resource.totalBookings}
+Rating: ${resource.rating > 0 ? `⭐ ${resource.rating}/5.0` : 'No ratings yet'}
+
+Booking Process: ${resource.requireApproval ? 'Requires approval from provider' : 'Instant booking available'}
+            `;
+            alert(details.trim());
+        }
+
+        // View my bookings
+        function viewMyBookings() {
+            const bookings = JSON.parse(localStorage.getItem('resourceBookings') || '[]');
+            const currentCompanyId = localStorage.getItem('currentCompanyId') || 'company_001';
+            const myBookings = bookings.filter(b => b.hiringCompanyId === currentCompanyId);
+            
+            if (myBookings.length === 0) {
+                alert('You have no bookings yet. Hire a virtual resource to get started!');
+                return;
+            }
+            
+            const bookingsList = myBookings.map(b => `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Resource: ${b.resourceName} (${b.resourceTitle})
+Provider: ${b.providerCompanyName}
+Project: ${b.projectName}
+Duration: ${b.startDate} to ${b.endDate} (${b.weeks} weeks)
+Hours: ${b.hoursPerWeek} hrs/week
+Rate: $${b.hourlyRate}/hr
+Total Cost: $${b.totalCost.toLocaleString()}
+Status: ${b.status.toUpperCase()}
+            `).join('\n');
+            
+            alert(`My Bookings (${myBookings.length})\n${bookingsList}`);
+        }
+
+        // Initialize on page load
+        initializeMarketplace();
+    </script>
+</body>
+</html>

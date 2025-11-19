@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talent Pool - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search talent pool..." id="searchInput">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Talent Pool</h1>
+                <p>Curated collection of top candidates</p>
+            </div>
+            <button class="btn btn-primary">Export Pool</button>
+        </div>
+
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>Pool Size</h3>
+                    <p class="stat-number">487</p>
+                    <p class="stat-change positive">↑ 15% growth</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Actively Seeking</h3>
+                    <p class="stat-number">342</p>
+                    <p class="stat-change positive">Available now</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Avg Response Rate</h3>
+                    <p class="stat-number">78%</p>
+                    <p class="stat-change neutral">Within 48hrs</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Placements</h3>
+                    <p class="stat-number">89</p>
+                    <p class="stat-change positive">This quarter</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Sourced Candidates</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="sourceFilter">
+                        <option value="">All Sources</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="referral">Referral</option>
+                        <option value="direct">Direct Application</option>
+                    </select>
+                    <button class="btn btn-icon" title="Refresh" onclick="loadCandidates()">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                    <button class="btn btn-icon" title="Advanced Search">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidate Cards matching Screenly design -->
+        <div id="candidatesContainer">
+            <!-- Candidate 1: Devendra Dhande -->
+            <div class="card candidate-card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 12px; align-items: start; flex: 1;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0;">Devendra Dhande</h3>
+                        <span class="status-badge pending" style="font-size: 11px; padding: 4px 8px;">giglancer</span>
+                        <span class="badge success" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 4px 10px; background: #10b981; color: white; border-radius: 12px;">
+                            ⚡ 100/100
+                        </span>
+                        <span class="badge info" style="font-size: 11px; padding: 4px 10px; background: #3b82f6; color: white; border-radius: 12px;">Has Email</span>
+                        <span class="badge warning" style="font-size: 11px; padding: 4px 10px; background: #f59e0b; color: white; border-radius: 12px;">Has Phone</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn btn-icon" onclick="viewProfile('1')" title="View Profile">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-primary" style="padding: 8px 16px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Process Resume
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Add to Pipeline
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 20px; padding: 16px; background: #f9fafb; border-radius: 8px;">
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Title & Company</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">Developer</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px; background: #e5e7eb; padding: 2px 8px; border-radius: 4px; display: inline-block;">Not Available</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Contact & Location</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #10b981;">dhande.devendra774@gmail.com</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <a href="#" style="font-size: 13px; color: #3b82f6; margin-top: 4px; display: inline-block;">LinkedIn Profile</a>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Professional Info</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">$25/hr</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Quality & Processing</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">Completeness</div>
+                        <div style="width: 100%; background: #e5e7eb; height: 6px; border-radius: 3px; margin-top: 6px; overflow: hidden;">
+                            <div style="width: 75%; background: #f59e0b; height: 100%;"></div>
+                        </div>
+                        <div style="font-size: 12px; color: #f59e0b; margin-top: 4px;">75%</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Basic Profile
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 8px;">About / Summary</div>
+                    <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin: 0;">I am a highly motivated and skilled computer science graduate with a passion for AI and robotics. I have experience in web development and a strong understanding of various programming languages and tools.</p>
+                </div>
+
+                <div>
+                    <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 8px;">Skills</div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Java</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">GitHub</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Basic Javascript</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">CSS</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">HTML</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Python</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">+1 more</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 12px; color: #6b7280;">Added: 10/29/2025</div>
+                    <div style="font-size: 12px; color: #6b7280;">Cost: $0.00</div>
+                </div>
+            </div>
+
+            <!-- Candidate 2: Sachin Mishra -->
+            <div class="card candidate-card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 12px; align-items: start; flex: 1;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0;">Sachin Mishra</h3>
+                        <span class="status-badge pending" style="font-size: 11px; padding: 4px 8px;">giglancer</span>
+                        <span class="badge success" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 4px 10px; background: #10b981; color: white; border-radius: 12px;">
+                            ⚡ 100/100
+                        </span>
+                        <span class="badge info" style="font-size: 11px; padding: 4px 10px; background: #3b82f6; color: white; border-radius: 12px;">Has Email</span>
+                        <span class="badge warning" style="font-size: 11px; padding: 4px 10px; background: #f59e0b; color: white; border-radius: 12px;">Has Phone</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn btn-icon" onclick="viewProfile('2')" title="View Profile">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-primary" style="padding: 8px 16px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Process Resume
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Add to Pipeline
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 20px; padding: 16px; background: #f9fafb; border-radius: 8px;">
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Title & Company</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">Student</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px; background: #e5e7eb; padding: 2px 8px; border-radius: 4px; display: inline-block;">Beginner</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Contact & Location</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #10b981;">sachin2005mishra@gmail.com</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Not Available</div>
+                        <a href="#" style="font-size: 13px; color: #3b82f6; margin-top: 4px; display: inline-block;">LinkedIn Profile</a>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Professional Info</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">$5/hr</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">Hourly</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Quality & Processing</div>
+                        <div style="font-size: 14px; font-weight: 500; color: #111827;">Completeness</div>
+                        <div style="width: 100%; background: #e5e7eb; height: 6px; border-radius: 3px; margin-top: 6px; overflow: hidden;">
+                            <div style="width: 100%; background: #10b981; height: 100%;"></div>
+                        </div>
+                        <div style="font-size: 12px; color: #10b981; margin-top: 4px;">100%</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Basic Profile
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 8px;">About / Summary</div>
+                    <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin: 0;">You should hire me because I bring a solid blend of full-stack development experience, problem-solving ability, and adaptability. I have built and deployed production-ready applications using technologies like MERN stack, Django, and Flask, while also working with cloud platforms such as AWS to ensure scalability and...</p>
+                </div>
+
+                <div>
+                    <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 8px;">Skills</div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Tail Wind CSS</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">SQL/TSQL</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Aptitude and Real-Time Problem Solving</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">CCC</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Image Processing (OpenCV)</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">Java Basics</span>
+                        <span class="badge" style="background: #f3f4f6; color: #374151; padding: 6px 12px; border-radius: 6px; font-size: 12px;">+1 more</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 12px; color: #6b7280;">Added: 10/29/2025</div>
+                    <div style="font-size: 12px; color: #6b7280;">Cost: $0.00</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set user type for navigation
+        localStorage.setItem('userType', 'company');
+        
+        generateNavigation('talent-pool');
+
+        // View profile function
+        function viewProfile(id) {
+            window.location.href = `candidate-detail.html?id=${id}`;
+        }
+
+        // Load candidates function
+        function loadCandidates() {
+            showNotification('Refreshing candidates...', 'info');
+            // In a real implementation, this would fetch from API
+            setTimeout(() => {
+                showNotification('Candidates refreshed', 'success');
+            }, 1000);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.candidate-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Source filter
+        document.getElementById('sourceFilter').addEventListener('change', (e) => {
+            const source = e.target.value;
+            if (source) {
+                showNotification(`Filtering by ${source}...`, 'info');
+            } else {
+                showNotification('Showing all sources', 'info');
+            }
+        });
+
+        // Show notification helper
+        function showNotification(message, type) {
+            // Simple notification - in production, use a proper notification library
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+    </script>
+</body>
+</html>

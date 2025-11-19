@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Stats Cards */
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .task-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .task-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-stat-card.total { border-top-color: #3b82f6; }
+        .task-stat-card.todo { border-top-color: #f59e0b; }
+        .task-stat-card.progress { border-top-color: #8b5cf6; }
+        .task-stat-card.completed { border-top-color: #10b981; }
+
+        .task-stat-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .task-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .task-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s;
+            display: flex;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .task-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 4px;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox:hover {
+            border-color: #2563eb;
+        }
+
+        .task-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .task-project {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .task-priority {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .meta-icon {
+            font-size: 14px;
+        }
+
+        .task-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-todo {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-progress {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .btn-sm.primary {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-sm.primary:hover {
+            background: #1e40af;
+        }
+
+        .btn-sm:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .due-overdue {
+            color: #dc2626;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search tasks...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">TM</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">My Tasks</h1>
+                <p class="page-subtitle">Track your assignments and deadlines</p>
+            </div>
+            <button class="btn-primary" onclick="addTask()">
+                <span style="margin-right: 8px;">+</span> Add Task
+            </button>
+        </div>
+
+        <div class="task-stats">
+            <div class="task-stat-card total">
+                <div class="task-stat-icon">📋</div>
+                <div class="task-stat-value">28</div>
+                <div class="task-stat-label">Total Tasks</div>
+            </div>
+            <div class="task-stat-card todo">
+                <div class="task-stat-icon">⏳</div>
+                <div class="task-stat-value">12</div>
+                <div class="task-stat-label">To Do</div>
+            </div>
+            <div class="task-stat-card progress">
+                <div class="task-stat-icon">🚀</div>
+                <div class="task-stat-value">8</div>
+                <div class="task-stat-label">In Progress</div>
+            </div>
+            <div class="task-stat-card completed">
+                <div class="task-stat-icon">✅</div>
+                <div class="task-stat-value">8</div>
+                <div class="task-stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All (28)</button>
+            <button class="filter-btn" data-filter="todo">To Do (12)</button>
+            <button class="filter-btn" data-filter="progress">In Progress (8)</button>
+            <button class="filter-btn" data-filter="completed">Completed (8)</button>
+            <button class="filter-btn" data-filter="high">High Priority (6)</button>
+            <button class="filter-btn" data-filter="overdue">Overdue (2)</button>
+        </div>
+
+        <div class="task-list" id="taskList"></div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+            loadTasks();
+        });
+
+        const tasks = [
+            { id: 1, title: 'Complete authentication module', project: 'Website Redesign', description: 'Implement Google OAuth and email login with OTP verification', status: 'In Progress', priority: 'High', due: 'Nov 18, 2025', hours: 8, completed: false, overdue: false },
+            { id: 2, title: 'Design dashboard wireframes', project: 'Mobile App Development', description: 'Create low-fidelity wireframes for user dashboard and navigation', status: 'To Do', priority: 'Medium', due: 'Nov 20, 2025', hours: 4, completed: false, overdue: false },
+            { id: 3, title: 'Fix responsive layout bugs', project: 'Website Redesign', description: 'Resolve CSS issues on mobile and tablet breakpoints', status: 'In Progress', priority: 'High', due: 'Nov 16, 2025', hours: 6, completed: false, overdue: true },
+            { id: 4, title: 'Update API documentation', project: 'CRM Implementation', description: 'Document all REST endpoints with request/response examples', status: 'To Do', priority: 'Low', due: 'Nov 25, 2025', hours: 3, completed: false, overdue: false },
+            { id: 5, title: 'Code review for payment module', project: 'E-commerce Platform', description: 'Review pull request #234 for Stripe integration', status: 'To Do', priority: 'High', due: 'Nov 17, 2025', hours: 2, completed: false, overdue: false },
+            { id: 6, title: 'Write unit tests for user service', project: 'CRM Implementation', description: 'Achieve 80% code coverage for UserService class', status: 'In Progress', priority: 'Medium', due: 'Nov 22, 2025', hours: 5, completed: false, overdue: false },
+            { id: 7, title: 'Optimize database queries', project: 'Website Redesign', description: 'Improve slow queries identified in performance audit', status: 'Completed', priority: 'High', due: 'Nov 15, 2025', hours: 4, completed: true, overdue: false },
+            { id: 8, title: 'Set up CI/CD pipeline', project: 'Mobile App Development', description: 'Configure GitHub Actions for automated testing and deployment', status: 'Completed', priority: 'Medium', due: 'Nov 14, 2025', hours: 6, completed: true, overdue: false }
+        ];
+
+        function loadTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = tasks.map(task => `
+                <div class="task-card">
+                    <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask(${task.id})">
+                        ${task.completed ? '✓' : ''}
+                    </div>
+                    <div class="task-content">
+                        <div class="task-header">
+                            <div>
+                                <div class="task-title">${task.title}</div>
+                                <div class="task-project">📁 ${task.project}</div>
+                            </div>
+                            <span class="task-priority priority-${task.priority.toLowerCase()}">${task.priority}</span>
+                        </div>
+                        <div class="task-description">${task.description}</div>
+                        <div class="task-meta">
+                            <span class="task-status status-${task.status.toLowerCase().replace(' ', '')}">${task.status}</span>
+                            <span class="meta-badge ${task.overdue ? 'due-overdue' : ''}">
+                                <span class="meta-icon">📅</span>
+                                ${task.due}
+                            </span>
+                            <span class="meta-badge">
+                                <span class="meta-icon">⏰</span>
+                                ${task.hours} hours
+                            </span>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-sm primary" onclick="startTask(${task.id})">Start Working</button>
+                            <button class="btn-sm" onclick="editTask(${task.id})">Edit</button>
+                            <button class="btn-sm" onclick="viewDetails(${task.id})">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            task.completed = !task.completed;
+            task.status = task.completed ? 'Completed' : 'In Progress';
+            loadTasks();
+        }
+
+        function addTask() {
+            alert('Add new task - Coming soon!');
+        }
+
+        function startTask(id) {
+            window.location.href = `timesheets.html?task=${id}`;
+        }
+
+        function editTask(id) {
+            alert(`Edit task ${id}`);
+        }
+
+        function viewDetails(id) {
+            alert(`View task ${id} details`);
+        }
+    </script>
+</body>
+</html>

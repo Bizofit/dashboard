@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - Bizoforce Ecosystem</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* HR Dashboard Modern Styles */
+        
+        /* Override main container background */
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Stats Cards Eye-Catching Design */
+        .stats-cards-row {
+            margin-bottom: 32px;
+        }
+
+        .stats-card {
+            background: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-orange));
+        }
+
+        .stats-card.blue::before {
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+        }
+
+        .stats-card.orange::before {
+            background: linear-gradient(90deg, #f97316, #ea580c);
+        }
+
+        .stats-card.purple::before {
+            background: linear-gradient(90deg, #a855f7, #9333ea);
+        }
+
+        .stats-card.pink::before {
+            background: linear-gradient(90deg, #ec4899, #db2777);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .stats-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            margin-bottom: 12px;
+        }
+
+        .stats-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .stats-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .stats-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .stats-change {
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .stats-card.blue .stats-value {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-card.orange .stats-value {
+            background: linear-gradient(135deg, #ea580c, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-card.purple .stats-value {
+            background: linear-gradient(135deg, #9333ea, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-card.pink .stats-value {
+            background: linear-gradient(135deg, #db2777, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-change.positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .stats-change.neutral {
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        /* Card Header with Action Button */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(to right, #ffffff, #fafbfc);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .btn-primary-small {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-small:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        /* Card Body */
+        .card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Hiring Funnel Modern */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .funnel-stage {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .funnel-stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .funnel-label {
+            font-weight: 500;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .funnel-count {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .progress-bar-container {
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Interview Cards Modern */
+        .interview-card {
+            padding: 16px;
+            background: white;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .interview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .interview-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .interview-card:hover::before {
+            opacity: 1;
+        }
+
+        .interview-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .interview-info {
+            flex: 1;
+        }
+
+        .interview-candidate {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .interview-position {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .interview-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .interview-time {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Candidate Avatar Modern */
+        .candidate-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        .interview-card:hover .candidate-avatar {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Alternate gradient colors for avatars */
+        .interview-card:nth-child(1) .candidate-avatar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .interview-card:nth-child(2) .candidate-avatar {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .interview-card:nth-child(3) .candidate-avatar {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .interview-card:nth-child(4) .candidate-avatar {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        /* Badge Modern */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+        }
+
+        /* Job Performance Modern */
+        .job-performance-card {
+            padding: 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-performance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .job-performance-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .job-performance-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .job-perf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .job-perf-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .job-perf-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Table Modern */
+        .table-container {
+            padding: 0;
+        }
+
+        .data-table {
+            border: none;
+        }
+
+        .data-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table tbody td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Candidate Info */
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .candidate-name {
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        /* Score Badge Modern */
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .score-badge.high {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .score-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .score-badge.low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Task List Modern */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 0;
+        }
+
+        .task-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+            border-radius: 0;
+            transition: background 0.2s;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            background: #f8fafc;
+        }
+
+        .task-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563eb;
+            margin-top: 2px;
+        }
+
+        .task-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .task-title {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .task-item input[type="checkbox"]:checked ~ .task-label .task-title {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+
+        /* Quick Actions Modern */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 20px 24px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            font-size: 24px;
+        }
+
+        .action-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        /* Content Grid Spacing */
+        .content-grid > div > .card {
+            margin-bottom: 24px;
+        }
+
+        .content-grid > div > .card:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <!-- Navigation items will be generated by JavaScript -->
+        </nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search candidates, jobs, interviews...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">HR Dashboard</h1>
+            <p class="page-subtitle">Recruitment overview and hiring pipeline management</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards-row">
+            <div class="stats-card blue">
+                <div class="stats-icon">💼</div>
+                <div class="stats-content">
+                    <div class="stats-value">24</div>
+                    <div class="stats-label">Open Positions</div>
+                    <div class="stats-change positive">+3 this week</div>
+                </div>
+            </div>
+            <div class="stats-card orange">
+                <div class="stats-icon">📄</div>
+                <div class="stats-content">
+                    <div class="stats-value">342</div>
+                    <div class="stats-label">Total Applications</div>
+                    <div class="stats-change positive">+47 today</div>
+                </div>
+            </div>
+            <div class="stats-card purple">
+                <div class="stats-icon">✓</div>
+                <div class="stats-content">
+                    <div class="stats-value">89</div>
+                    <div class="stats-label">Screened Candidates</div>
+                    <div class="stats-change neutral">26% conversion</div>
+                </div>
+            </div>
+            <div class="stats-card pink">
+                <div class="stats-icon">🗓️</div>
+                <div class="stats-content">
+                    <div class="stats-value">15</div>
+                    <div class="stats-label">Interviews This Week</div>
+                    <div class="stats-change positive">+5 scheduled</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Hiring Funnel -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hiring Funnel (Last 30 Days)</h3>
+                    </div>
+                    <div class="funnel-container">
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">Applications</span>
+                                <span class="funnel-count">342</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 100%; background: #3b82f6;"></div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">AI Screened</span>
+                                <span class="funnel-count">189 (55%)</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 55%; background: #8b5cf6;"></div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">Phone Screens</span>
+                                <span class="funnel-count">89 (26%)</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 26%; background: #f59e0b;"></div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">Interviews</span>
+                                <span class="funnel-count">34 (10%)</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 10%; background: #ec4899;"></div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">Offers Extended</span>
+                                <span class="funnel-count">12 (3.5%)</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 3.5%; background: #10b981;"></div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-stage-header">
+                                <span class="funnel-label">Hired</span>
+                                <span class="funnel-count">8 (2.3%)</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: 2.3%; background: #059669;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Applications -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Applications (Today)</h3>
+                        <button class="btn-primary-small" onclick="window.location.href='hr-candidates.html'">View All</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Position</th>
+                                    <th>Experience</th>
+                                    <th>AI Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentApplicationsTable">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Upcoming Interviews -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upcoming Interviews</h3>
+                        <button class="btn-primary-small" onclick="window.location.href='hr-interviews.html'">View Calendar</button>
+                    </div>
+                    <div id="upcomingInterviewsList" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Top Performing Jobs -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Performing Jobs</h3>
+                    </div>
+                    <div id="topJobsList" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions-grid">
+                        <button class="action-btn" onclick="window.location.href='hr-jobs.html'">
+                            <span class="action-icon">💼</span>
+                            <span class="action-label">Post New Job</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='hr-candidates.html'">
+                            <span class="action-icon">👤</span>
+                            <span class="action-label">Review Candidates</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='hr-screening.html'">
+                            <span class="action-icon">🤖</span>
+                            <span class="action-label">AI Screening</span>
+                        </button>
+                        <button class="action-btn" onclick="window.location.href='hr-interviews.html'">
+                            <span class="action-icon">🗓️</span>
+                            <span class="action-label">Schedule Interview</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pending Tasks -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Pending Tasks</h3>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">
+                            <div class="task-checkbox">
+                                <input type="checkbox" id="task1">
+                            </div>
+                            <label for="task1" class="task-label">
+                                <div class="task-title">Review 12 new applications for Senior Developer</div>
+                                <div class="task-meta">Due: Today</div>
+                            </label>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-checkbox">
+                                <input type="checkbox" id="task2">
+                            </div>
+                            <label for="task2" class="task-label">
+                                <div class="task-title">Schedule phone screen with Sarah Johnson</div>
+                                <div class="task-meta">Due: Tomorrow</div>
+                            </label>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-checkbox">
+                                <input type="checkbox" id="task3">
+                            </div>
+                            <label for="task3" class="task-label">
+                                <div class="task-title">Send offer letter to Michael Chen</div>
+                                <div class="task-meta">Due: Nov 16</div>
+                            </label>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-checkbox">
+                                <input type="checkbox" id="task4">
+                            </div>
+                            <label for="task4" class="task-label">
+                                <div class="task-title">Complete onboarding docs for 2 new hires</div>
+                                <div class="task-meta">Due: Nov 18</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+            loadDashboardData();
+        });
+
+        function loadDashboardData() {
+            // Load recent applications
+            const recentApplications = [
+                { name: 'Emily Rodriguez', position: 'Marketing Manager', experience: '5 years', score: 92, status: 'screening' },
+                { name: 'David Thompson', position: 'Senior Developer', experience: '8 years', score: 88, status: 'screening' },
+                { name: 'Lisa Anderson', position: 'UI/UX Designer', experience: '4 years', score: 85, status: 'new' },
+                { name: 'James Wilson', position: 'Product Manager', experience: '6 years', score: 91, status: 'screening' },
+                { name: 'Maria Garcia', position: 'Data Analyst', experience: '3 years', score: 78, status: 'new' }
+            ];
+
+            const tableBody = document.getElementById('recentApplicationsTable');
+            tableBody.innerHTML = recentApplications.map(app => `
+                <tr>
+                    <td>
+                        <div class="candidate-info">
+                            <div class="candidate-avatar">${app.name.charAt(0)}</div>
+                            <div class="candidate-name">${app.name}</div>
+                        </div>
+                    </td>
+                    <td>${app.position}</td>
+                    <td>${app.experience}</td>
+                    <td>
+                        <div class="score-badge ${app.score >= 85 ? 'high' : app.score >= 70 ? 'medium' : 'low'}">
+                            ${app.score}%
+                        </div>
+                    </td>
+                    <td><span class="badge badge-${app.status === 'screening' ? 'warning' : 'info'}">${app.status === 'screening' ? 'AI Screening' : 'New'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" title="View Profile" onclick="window.location.href='hr-candidates.html'">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            <button class="btn-icon success" title="Approve">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                            <button class="btn-icon danger" title="Reject">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Load upcoming interviews
+            const interviews = [
+                { candidate: 'Sarah Johnson', position: 'Senior Developer', time: 'Today, 2:00 PM', type: 'Technical' },
+                { candidate: 'Michael Chen', position: 'Product Manager', time: 'Today, 4:30 PM', type: 'Behavioral' },
+                { candidate: 'Emma Wilson', position: 'Marketing Manager', time: 'Tomorrow, 10:00 AM', type: 'Phone Screen' },
+                { candidate: 'Robert Brown', position: 'Data Analyst', time: 'Tomorrow, 3:00 PM', type: 'Technical' }
+            ];
+
+            const interviewsList = document.getElementById('upcomingInterviewsList');
+            interviewsList.innerHTML = interviews.map(int => `
+                <div class="interview-card">
+                    <div class="interview-header">
+                        <div class="candidate-avatar">${int.candidate.charAt(0)}</div>
+                        <div class="interview-info">
+                            <div class="interview-candidate">${int.candidate}</div>
+                            <div class="interview-position">${int.position}</div>
+                        </div>
+                    </div>
+                    <div class="interview-meta">
+                        <div class="interview-time">🕒 ${int.time}</div>
+                        <span class="badge badge-info">${int.type}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Load top performing jobs
+            const topJobs = [
+                { title: 'Senior Developer', applications: 89, filled: 2, total: 3 },
+                { title: 'Marketing Manager', applications: 67, filled: 1, total: 2 },
+                { title: 'Product Manager', applications: 54, filled: 0, total: 1 },
+                { title: 'UI/UX Designer', applications: 43, filled: 1, total: 2 }
+            ];
+
+            const jobsList = document.getElementById('topJobsList');
+            jobsList.innerHTML = topJobs.map(job => `
+                <div class="job-performance-card">
+                    <div class="job-perf-header">
+                        <div class="job-perf-title">${job.title}</div>
+                        <span class="badge badge-success">${job.applications} apps</span>
+                    </div>
+                    <div class="job-perf-progress">
+                        <div class="progress-label">
+                            <span>Positions Filled</span>
+                            <span>${job.filled}/${job.total}</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${(job.filled/job.total)*100}%; background: #10b981;"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

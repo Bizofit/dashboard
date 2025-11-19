@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approvals - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Stats Cards */
+        .approval-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .approval-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .approval-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .approval-stat-card.pending { border-top-color: #f59e0b; }
+        .approval-stat-card.approved { border-top-color: #10b981; }
+        .approval-stat-card.rejected { border-top-color: #ef4444; }
+        .approval-stat-card.total { border-top-color: #3b82f6; }
+
+        .approval-stat-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .approval-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .approval-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Approval List */
+        .approval-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .approval-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-left: 4px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .approval-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .approval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .approval-user {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .approval-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .avatar-blue { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+        .avatar-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .avatar-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .avatar-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .approval-user-info {
+            flex: 1;
+        }
+
+        .approval-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .approval-date {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .approval-type {
+            padding: 6px 12px;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .approval-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .approval-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 10px 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .btn-sm.approve {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .btn-sm.reject {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .btn-sm.approve:hover, .btn-sm.reject:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-sm:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search approvals...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">TL</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Pending Approvals</h1>
+                <p class="page-subtitle">Review and approve timesheet submissions</p>
+            </div>
+        </div>
+
+        <div class="approval-stats">
+            <div class="approval-stat-card pending">
+                <div class="approval-stat-icon">⏳</div>
+                <div class="approval-stat-value">18</div>
+                <div class="approval-stat-label">Pending Review</div>
+            </div>
+            <div class="approval-stat-card approved">
+                <div class="approval-stat-icon">✅</div>
+                <div class="approval-stat-value">142</div>
+                <div class="approval-stat-label">Approved This Month</div>
+            </div>
+            <div class="approval-stat-card rejected">
+                <div class="approval-stat-icon">❌</div>
+                <div class="approval-stat-value">3</div>
+                <div class="approval-stat-label">Rejected</div>
+            </div>
+            <div class="approval-stat-card total">
+                <div class="approval-stat-icon">📊</div>
+                <div class="approval-stat-value">1,680</div>
+                <div class="approval-stat-label">Total Hours</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All (18)</button>
+            <button class="filter-btn" data-filter="timesheet">Timesheets (18)</button>
+            <button class="filter-btn" data-filter="leave">Leave Requests (0)</button>
+            <button class="filter-btn" data-filter="expense">Expenses (0)</button>
+        </div>
+
+        <div class="approval-list" id="approvalList"></div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+            loadApprovals();
+        });
+
+        const approvals = [
+            { id: 1, name: 'John Doe', avatar: 'JD', color: 'blue', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 40, project: 'Website Redesign', rate: '$50/hr', amount: '$2,000', submitted: '2 hours ago' },
+            { id: 2, name: 'Sarah Miller', avatar: 'SM', color: 'purple', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 38, project: 'Website Redesign', rate: '$45/hr', amount: '$1,710', submitted: '3 hours ago' },
+            { id: 3, name: 'Mike Chen', avatar: 'MC', color: 'orange', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 42, project: 'Mobile App Development', rate: '$55/hr', amount: '$2,310', submitted: '5 hours ago' },
+            { id: 4, name: 'Emily Davis', avatar: 'ED', color: 'pink', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 36, project: 'CRM Implementation', rate: '$48/hr', amount: '$1,728', submitted: '1 day ago' },
+            { id: 5, name: 'Robert Taylor', avatar: 'RT', color: 'blue', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 44, project: 'E-commerce Platform', rate: '$60/hr', amount: '$2,640', submitted: '1 day ago' },
+            { id: 6, name: 'Lisa Anderson', avatar: 'LA', color: 'purple', type: 'Timesheet', week: 'Week of Nov 6-12, 2025', hours: 40, project: 'Mobile App Development', rate: '$42/hr', amount: '$1,680', submitted: '2 days ago' }
+        ];
+
+        function loadApprovals() {
+            const list = document.getElementById('approvalList');
+            list.innerHTML = approvals.map(approval => `
+                <div class="approval-card">
+                    <div class="approval-header">
+                        <div class="approval-user">
+                            <div class="approval-avatar avatar-${approval.color}">${approval.avatar}</div>
+                            <div class="approval-user-info">
+                                <div class="approval-name">${approval.name}</div>
+                                <div class="approval-date">${approval.submitted}</div>
+                            </div>
+                        </div>
+                        <span class="approval-type">${approval.type}</span>
+                    </div>
+                    <div class="approval-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Period</span>
+                            <span class="detail-value">${approval.week}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Hours</span>
+                            <span class="detail-value">${approval.hours} hrs</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Project</span>
+                            <span class="detail-value">${approval.project}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Rate</span>
+                            <span class="detail-value">${approval.rate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Amount</span>
+                            <span class="detail-value">${approval.amount}</span>
+                        </div>
+                    </div>
+                    <div class="approval-actions">
+                        <button class="btn-sm" onclick="viewDetails(${approval.id})">View Details</button>
+                        <button class="btn-sm approve" onclick="approve(${approval.id})">✓ Approve</button>
+                        <button class="btn-sm reject" onclick="reject(${approval.id})">✗ Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewDetails(id) {
+            window.location.href = `timesheet-detail.html?id=${id}`;
+        }
+
+        function approve(id) {
+            if (confirm('Approve this timesheet?')) {
+                alert(`Timesheet ${id} approved!`);
+                loadApprovals();
+            }
+        }
+
+        function reject(id) {
+            if (confirm('Reject this timesheet? Please provide a reason.')) {
+                alert(`Timesheet ${id} rejected!`);
+                loadApprovals();
+            }
+        }
+    </script>
+</body>
+</html>

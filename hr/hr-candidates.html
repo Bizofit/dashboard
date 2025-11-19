@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates Pipeline - HR Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* HR Candidates Pipeline Styles */
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Pipeline Stats */
+        .pipeline-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .pipeline-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .pipeline-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .pipeline-stat-card.new { border-top-color: #3b82f6; }
+        .pipeline-stat-card.screening { border-top-color: #8b5cf6; }
+        .pipeline-stat-card.interview { border-top-color: #f97316; }
+        .pipeline-stat-card.offer { border-top-color: #10b981; }
+        .pipeline-stat-card.hired { border-top-color: #ec4899; }
+
+        .pipeline-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pipeline-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* Filter Bar */
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .search-input-sm {
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 250px;
+        }
+
+        /* Kanban Board */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .kanban-column {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 280px;
+        }
+
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .kanban-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kanban-count {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .kanban-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 400px;
+        }
+
+        .candidate-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: move;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .candidate-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .candidate-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .candidate-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+
+        .candidate-card:hover .candidate-avatar {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .avatar-blue { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+        .avatar-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .avatar-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .avatar-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .candidate-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .candidate-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .candidate-position {
+            font-size: 12px;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .candidate-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .score-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .score-high {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .score-medium {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .score-low {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .candidate-date {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .candidate-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .btn-icon-sm {
+            padding: 6px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon-sm:hover {
+            background: #f8fafc;
+            border-color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            bottom: 0;
+            width: 400px;
+            background: white;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .detail-panel.active {
+            right: 0;
+        }
+
+        .detail-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .detail-content {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <!-- Navigation items will be generated by JavaScript -->
+        </nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search candidates...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Candidate Pipeline</h1>
+                <p class="page-subtitle">Track and manage candidates through hiring stages</p>
+            </div>
+        </div>
+
+        <!-- Pipeline Stats -->
+        <div class="pipeline-stats">
+            <div class="pipeline-stat-card new">
+                <div class="pipeline-stat-value">142</div>
+                <div class="pipeline-stat-label">New Applications</div>
+            </div>
+            <div class="pipeline-stat-card screening">
+                <div class="pipeline-stat-value">67</div>
+                <div class="pipeline-stat-label">In Screening</div>
+            </div>
+            <div class="pipeline-stat-card interview">
+                <div class="pipeline-stat-value">28</div>
+                <div class="pipeline-stat-label">Interview Stage</div>
+            </div>
+            <div class="pipeline-stat-card offer">
+                <div class="pipeline-stat-value">12</div>
+                <div class="pipeline-stat-label">Offer Extended</div>
+            </div>
+            <div class="pipeline-stat-card hired">
+                <div class="pipeline-stat-value">8</div>
+                <div class="pipeline-stat-label">Hired This Week</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-controls">
+            <select class="filter-select">
+                <option>All Jobs</option>
+                <option>Senior Software Engineer</option>
+                <option>Product Manager</option>
+                <option>UX Designer</option>
+            </select>
+            <select class="filter-select">
+                <option>All Scores</option>
+                <option>High Score (90+)</option>
+                <option>Medium Score (70-89)</option>
+                <option>Low Score (&lt;70)</option>
+            </select>
+            <input type="text" class="search-input-sm" placeholder="Search by name, email...">
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+            <!-- New Applications -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">New</div>
+                    <div class="kanban-count">142</div>
+                </div>
+                <div class="kanban-cards" id="newCards">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Screening -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">Screening</div>
+                    <div class="kanban-count">67</div>
+                </div>
+                <div class="kanban-cards" id="screeningCards">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Interview -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">Interview</div>
+                    <div class="kanban-count">28</div>
+                </div>
+                <div class="kanban-cards" id="interviewCards">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Offer -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">Offer</div>
+                    <div class="kanban-count">12</div>
+                </div>
+                <div class="kanban-cards" id="offerCards">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Hired -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">Hired</div>
+                    <div class="kanban-count">8</div>
+                </div>
+                <div class="kanban-cards" id="hiredCards">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+            <h2 id="detailName">Candidate Details</h2>
+            <button class="close-btn" onclick="closeDetailPanel()">×</button>
+        </div>
+        <div class="detail-content" id="detailContent">
+            <!-- Details will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+            loadCandidates();
+        });
+
+        const candidates = {
+            new: [
+                { id: 1, name: 'Sarah Johnson', position: 'Senior Software Engineer', score: 95, scoreLabel: 'high', email: 'sarah.j@email.com', phone: '+1 234-567-8901', applied: '2 hours ago', avatar: 'SJ', avatarColor: 'blue' },
+                { id: 2, name: 'Michael Chen', position: 'Product Manager', score: 88, scoreLabel: 'medium', email: 'michael.c@email.com', phone: '+1 234-567-8902', applied: '5 hours ago', avatar: 'MC', avatarColor: 'purple' },
+                { id: 3, name: 'Emily Davis', position: 'UX Designer', score: 92, scoreLabel: 'high', email: 'emily.d@email.com', phone: '+1 234-567-8903', applied: '1 day ago', avatar: 'ED', avatarColor: 'orange' }
+            ],
+            screening: [
+                { id: 4, name: 'James Wilson', position: 'Senior Software Engineer', score: 91, scoreLabel: 'high', email: 'james.w@email.com', phone: '+1 234-567-8904', applied: '2 days ago', avatar: 'JW', avatarColor: 'pink' },
+                { id: 5, name: 'Lisa Anderson', position: 'Marketing Manager', score: 85, scoreLabel: 'medium', email: 'lisa.a@email.com', phone: '+1 234-567-8905', applied: '2 days ago', avatar: 'LA', avatarColor: 'blue' }
+            ],
+            interview: [
+                { id: 6, name: 'Robert Taylor', position: 'Data Analyst', score: 89, scoreLabel: 'medium', email: 'robert.t@email.com', phone: '+1 234-567-8906', applied: '4 days ago', avatar: 'RT', avatarColor: 'purple' },
+                { id: 7, name: 'Jennifer Brown', position: 'DevOps Engineer', score: 94, scoreLabel: 'high', email: 'jennifer.b@email.com', phone: '+1 234-567-8907', applied: '5 days ago', avatar: 'JB', avatarColor: 'orange' }
+            ],
+            offer: [
+                { id: 8, name: 'David Martinez', position: 'Frontend Developer', score: 96, scoreLabel: 'high', email: 'david.m@email.com', phone: '+1 234-567-8908', applied: '1 week ago', avatar: 'DM', avatarColor: 'pink' },
+                { id: 9, name: 'Amanda Garcia', position: 'Sales Representative', score: 87, scoreLabel: 'medium', email: 'amanda.g@email.com', phone: '+1 234-567-8909', applied: '1 week ago', avatar: 'AG', avatarColor: 'blue' }
+            ],
+            hired: [
+                { id: 10, name: 'Christopher Lee', position: 'Product Manager', score: 98, scoreLabel: 'high', email: 'chris.l@email.com', phone: '+1 234-567-8910', applied: '2 weeks ago', avatar: 'CL', avatarColor: 'purple' }
+            ]
+        };
+
+        function loadCandidates() {
+            Object.keys(candidates).forEach(stage => {
+                const container = document.getElementById(`${stage}Cards`);
+                container.innerHTML = candidates[stage].map(c => `
+                    <div class="candidate-card" onclick="showDetail(${c.id}, '${stage}')">
+                        <div class="candidate-header">
+                            <div class="candidate-avatar avatar-${c.avatarColor}">${c.avatar}</div>
+                            <div class="candidate-info">
+                                <div class="candidate-name">${c.name}</div>
+                                <div class="candidate-position">${c.position}</div>
+                            </div>
+                        </div>
+                        <div class="candidate-meta">
+                            <span class="score-badge score-${c.scoreLabel}">${c.score}% Match</span>
+                            <span class="candidate-date">${c.applied}</span>
+                        </div>
+                        <div class="candidate-actions">
+                            <button class="btn-icon-sm" title="View Profile">👤</button>
+                            <button class="btn-icon-sm" title="Move to Next Stage">→</button>
+                            <button class="btn-icon-sm" title="Schedule Interview">📅</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function showDetail(id, stage) {
+            const candidate = candidates[stage].find(c => c.id === id);
+            document.getElementById('detailName').textContent = candidate.name;
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">Contact Information</div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">${candidate.email}</span>
+                    </div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">${candidate.phone}</span>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title">Application Details</div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">Position</span>
+                        <span class="detail-value">${candidate.position}</span>
+                    </div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">AI Score</span>
+                        <span class="detail-value">${candidate.score}% Match</span>
+                    </div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">Applied</span>
+                        <span class="detail-value">${candidate.applied}</span>
+                    </div>
+                    <div class="detail-info-row">
+                        <span class="detail-label">Current Stage</span>
+                        <span class="detail-value">${stage.toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailPanel').classList.add('active');
+        }
+
+        function closeDetailPanel() {
+            document.getElementById('detailPanel').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Companies - Bizoforce Ecosystem</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        .company-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-gray);
+        }
+
+        .company-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .company-banner {
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .company-logo-container {
+            position: absolute;
+            bottom: -40px;
+            left: 24px;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 16px;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .company-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .company-logo-initial {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .completion-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: white;
+            border-radius: 24px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .completion-badge.complete {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .completion-badge.incomplete {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+        }
+
+        .company-body {
+            padding: 56px 24px 24px;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .company-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .company-description {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            min-height: 42px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+            min-height: 32px;
+        }
+
+        .company-tag {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: var(--primary-blue);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #bfdbfe;
+        }
+
+        .company-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-gray);
+        }
+
+        .company-credits {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid #fed7aa;
+        }
+
+        .company-credits-icon {
+            font-size: 20px;
+        }
+
+        .company-credits-amount {
+            font-weight: 700;
+            color: var(--accent-orange);
+            font-size: 16px;
+        }
+
+        .company-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #ffedd5, #fed7aa);
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .stat-content h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-content p {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .empty-state-container {
+            background: white;
+            border-radius: 20px;
+            padding: 80px 40px;
+            text-align: center;
+            border: 2px dashed var(--border-gray);
+        }
+
+        .empty-state-icon {
+            font-size: 120px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-gray);
+        }
+
+        .view-toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-gray);
+            transition: all 0.2s;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <!-- Navigation items will be generated by JavaScript -->
+        </nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">                🔔span>
+            <input type="text" class="search-input" placeholder="Search companies...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 <span id="walletBalance">$0</span></div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">8</div>
+            </div>
+            <div class="user-avatar">AU</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">My Business Listings</h1>
+                <p class="page-subtitle">View, manage, and add multiple company profiles. Click 👁️ to view details or ✏️ to edit.</p>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="setView('grid')">
+                        <span>📊</span> Grid
+                    </button>
+                    <button class="view-toggle-btn" onclick="setView('list')">
+                        <span>📋</span> List
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="window.location.href='companies.html'">
+                    <span>➕</span> Add New Business
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-summary" id="statsSummary" style="display: none;">
+            <div class="stat-box">
+                <div class="stat-icon blue">🏢</div>
+                <div class="stat-content">
+                    <h3 id="totalCompanies">0</h3>
+                    <p>Total Companies</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon orange">💰</div>
+                <div class="stat-content">
+                    <h3 id="totalCreditsDisplay">0</h3>
+                    <p>Total Credits Earned</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon green">✅</div>
+                <div class="stat-content">
+                    <h3 id="avgCompletion">0%</h3>
+                    <p>Avg. Profile Completion</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Companies Grid -->
+        <div id="companiesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px;">
+            <!-- Companies will be dynamically loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" style="display: none;">
+            <div class="empty-state-container">
+                <div class="empty-state-icon">🏢</div>
+                <h2 class="empty-state-title">No Companies Yet</h2>
+                <p class="empty-state-text">Start building your business presence by creating your first company profile. Complete your profile to earn credits and unlock premium features!</p>
+                <button class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;" onclick="window.location.href='companies.html'">
+                    <span style="font-size: 20px;">➕</span> Add Your First Business
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // @ts-nocheck
+        // Set user type for navigation
+        localStorage.setItem('userType', 'company');
+        generateNavigation('companies');
+        
+        let currentView = 'grid';
+
+        // Load companies from localStorage
+        function loadCompanies() {
+            const companiesGrid = document.getElementById('companiesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const statsSummary = document.getElementById('statsSummary');
+            
+            // Get all companies from localStorage
+            const companies = [];
+            const companyProfile = localStorage.getItem('companyProfile');
+            
+            console.log('Loading companies...', companyProfile); // Debug log
+            
+            if (companyProfile) {
+                try {
+                    const profile = JSON.parse(companyProfile);
+                    companies.push(profile);
+                    console.log('Loaded company:', profile); // Debug log
+                } catch (e) {
+                    console.error('Error parsing company profile:', e);
+                }
+            }
+            
+            if (companies.length === 0) {
+                companiesGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                statsSummary.style.display = 'none';
+                console.log('No companies found, showing empty state');
+                return;
+            }
+            
+            console.log('Found', companies.length, 'companies'); // Debug log
+            companiesGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            statsSummary.style.display = 'grid';
+            
+            // Update stats
+            const totalCredits = companies.reduce((sum, company) => sum + (company.profileCredits || 0), 0);
+            const avgCompletion = Math.round(companies.reduce((sum, company) => sum + (company.profileCompletion || 0), 0) / companies.length);
+            
+            document.getElementById('totalCompanies').textContent = companies.length;
+            document.getElementById('totalCreditsDisplay').textContent = totalCredits.toLocaleString();
+            document.getElementById('avgCompletion').textContent = avgCompletion + '%';
+            document.getElementById('walletBalance').textContent = totalCredits.toLocaleString();
+            
+            // Render companies
+            companiesGrid.innerHTML = companies.map(company => {
+                const completionPercent = company.profileCompletion || 0;
+                const isComplete = completionPercent === 100;
+                const categories = company.serviceCategories || company.categories || [];
+                
+                return `
+                    <div class="company-card" onclick="window.location.href='company-detail.html'">
+                        <div class="company-banner">
+                            ${company.banner ? `<img src="${company.banner}" alt="Company Banner">` : ''}
+                            <div class="completion-badge ${isComplete ? 'complete' : 'incomplete'}">
+                                <span>${isComplete ? '✓' : '⏱'}</span>
+                                <span>${completionPercent}%</span>
+                            </div>
+                            <div class="company-logo-container">
+                                ${company.logo ? 
+                                    `<img src="${company.logo}" alt="${company.companyName || 'Company'}">` : 
+                                    `<div class="company-logo-initial">${(company.companyName || 'C')[0].toUpperCase()}</div>`
+                                }
+                            </div>
+                        </div>
+                        <div class="company-body">
+                            <h3 class="company-name">${company.companyName || 'Unnamed Company'}</h3>
+                            <div class="company-meta">
+                                <div class="company-meta-item">
+                                    <span>🏭</span>
+                                    <span>${company.industry || 'No Industry'}</span>
+                                </div>
+                                <div class="company-meta-item">
+                                    <span>👥</span>
+                                    <span>${company.companySize || 'No Size'}</span>
+                                </div>
+                                ${company.yearIncorporated ? `
+                                    <div class="company-meta-item">
+                                        <span>📅</span>
+                                        <span>Est. ${company.yearIncorporated}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <p class="company-description">
+                                ${company.companyDescription || company.description || 'No description available. Add a compelling description to attract more opportunities.'}
+                            </p>
+                            <div class="company-tags">
+                                ${categories.length > 0 ? 
+                                    categories.slice(0, 4).map(cat => `
+                                        <span class="company-tag">${cat}</span>
+                                    `).join('') : 
+                                    '<span style="color: var(--text-gray); font-size: 13px;">No categories added</span>'
+                                }
+                                ${categories.length > 4 ? `
+                                    <span class="company-tag" style="background: var(--bg-gray); color: var(--text-dark); border-color: var(--border-gray);">
+                                        +${categories.length - 4} more
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="company-footer">
+                                <div class="company-credits">
+                                    <span class="company-credits-icon">💰</span>
+                                    <span class="company-credits-amount">${(company.profileCredits || 0).toLocaleString()}</span>
+                                    <span style="font-size: 12px; color: var(--text-gray);">Credits</span>
+                                </div>
+                                <div class="company-actions">
+                                    <button class="btn-icon success" onclick="event.stopPropagation(); viewCompany()" title="View Details">
+                                        👁️
+                                    </button>
+                                    <button class="btn-icon" onclick="event.stopPropagation(); editCompany()" title="Edit Company">
+                                        ✏️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('Rendered companies HTML, grid innerHTML length:', companiesGrid.innerHTML.length); // Debug log
+        }
+        
+        function editCompany() {
+            window.location.href = 'companies.html';
+        }
+        
+        function viewCompany() {
+            window.location.href = 'company-detail.html';
+        }
+        
+        function setView(view) {
+            currentView = view;
+            const buttons = document.querySelectorAll('.view-toggle-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.view-toggle-btn').classList.add('active');
+            
+            const grid = document.getElementById('companiesGrid');
+            if (view === 'list') {
+                grid.style.gridTemplateColumns = '1fr';
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(380px, 1fr))';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCompanies();
+            
+            // Handle hash navigation for Business Insights and Messages & Orders
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1); // Remove the #
+                const targetElement = document.getElementById(hash);
+                if (targetElement) {
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Highlight the section briefly
+                        targetElement.style.boxShadow = '0 0 0 4px rgba(37, 99, 235, 0.2)';
+                        setTimeout(() => {
+                            targetElement.style.boxShadow = '';
+                        }, 2000);
+                    }, 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

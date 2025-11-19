@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit Company - Bizoforce Ecosystem</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        .profile-completion-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .completion-info {
+            flex: 1;
+        }
+
+        .completion-percentage {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .completion-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .completion-progress {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .completion-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+
+        .credits-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .credits-amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .credits-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .reward-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--success-light);
+            color: var(--success);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .reward-icon.locked {
+            background: var(--border-light);
+            color: var(--text-gray);
+        }
+
+        .form-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-complete {
+            color: var(--success);
+        }
+
+        .status-incomplete {
+            color: var(--warning);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-grid.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-field label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: var(--bg-light);
+        }
+
+        .form-field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            min-height: 48px;
+        }
+
+        .tag-item {
+            background: var(--primary-blue);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .tag-input {
+            border: none;
+            outline: none;
+            padding: 6px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--border-light);
+            border-radius: 10px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-blue);
+            background: var(--bg-light);
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .uploaded-image {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .save-button {
+            position: sticky;
+            bottom: 20px;
+            width: 100%;
+            padding: 16px;
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+            transition: all 0.2s;
+        }
+
+        .save-button:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Animated Reward Notification */
+        .credit-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            z-index: 10000;
+            text-align: center;
+            animation: popupAppear 0.5s ease forwards;
+        }
+
+        @keyframes popupAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .credit-popup.hide {
+            animation: popupDisappear 0.4s ease forwards;
+        }
+
+        @keyframes popupDisappear {
+            to {
+                transform: translate(-50%, -50%) scale(0) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        .credit-amount-big {
+            font-size: 72px;
+            font-weight: 800;
+            margin: 20px 0;
+            animation: creditPulse 0.6s ease infinite;
+        }
+
+        @keyframes creditPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .credit-message {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .credit-description {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Floating Credits Animation */
+        .floating-credit {
+            position: fixed;
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f59e0b;
+            position: fixed;
+            z-index: 9998;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Field Success Animation */
+        .field-success {
+            animation: fieldGlow 0.5s ease;
+        }
+
+        @keyframes fieldGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        /* Credits Counter Animation */
+        .credits-earned-animation {
+            animation: creditsBounce 0.6s ease;
+        }
+
+        @keyframes creditsBounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.3) rotate(-5deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            75% {
+                transform: scale(1.3) rotate(-5deg);
+            }
+        }
+
+        /* Overlay for popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+        }
+
+        .popup-overlay.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <!-- Navigation items will be generated by JavaScript -->
+        </nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search...">
+        </div>
+        <div class="user-section">
+            <div class="wallet" id="walletDisplay">💰 $0</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="user-avatar" id="userAvatar">CO</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <div style="margin-bottom: 12px;">
+                    <a href="companies-list.html" style="color: var(--primary-blue); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                        <span>←</span> Back to My Companies
+                    </a>
+                </div>
+                <h1 class="page-title">Add/Edit Company Profile</h1>
+                <p class="page-subtitle">Complete your profile to earn credits and boost visibility</p>
+            </div>
+        </div>
+
+        <!-- Profile Completion Banner -->
+        <div class="profile-completion-banner">
+            <div class="completion-info">
+                <div class="completion-percentage" id="completionPercentage">0%</div>
+                <div class="completion-label">Profile Completion</div>
+                <div class="completion-progress">
+                    <div class="completion-progress-bar" id="completionProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="credits-card">
+                <div class="credits-amount" id="earnedCredits">0</div>
+                <div class="credits-label">Credits Earned</div>
+            </div>
+        </div>
+
+        <!-- Rewards Section -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h3 class="card-title">🎁 Profile Completion Rewards</h3>
+            </div>
+            <div style="padding: 16px;">
+                <div class="reward-item" id="reward-basic">
+                    <div class="reward-icon">✓</div>
+                    <div style="flex: 1;">
+                        <strong>Basic Info (20%)</strong>
+                        <div style="font-size: 12px; color: var(--text-gray);">Complete company basics</div>
+                    </div>
+                    <span class="badge badge-success">+50 Credits</span>
+                </div>
+                <div class="reward-item" id="reward-contact">
+                    <div class="reward-icon locked">🔒</div>
+                    <div style="flex: 1;">
+                        <strong>Contact Details (40%)</strong>
+                        <div style="font-size: 12px; color: var(--text-gray);">Add contact information</div>
+                    </div>
+                    <span class="badge badge-secondary">+100 Credits</span>
+                </div>
+                <div class="reward-item" id="reward-services">
+                    <div class="reward-icon locked">🔒</div>
+                    <div style="flex: 1;">
+                        <strong>Services & Specialization (60%)</strong>
+                        <div style="font-size: 12px; color: var(--text-gray);">Define your offerings</div>
+                    </div>
+                    <span class="badge badge-secondary">+150 Credits</span>
+                </div>
+                <div class="reward-item" id="reward-media">
+                    <div class="reward-icon locked">🔒</div>
+                    <div style="flex: 1;">
+                        <strong>Media & Links (80%)</strong>
+                        <div style="font-size: 12px; color: var(--text-gray);">Add logo, images, and social links</div>
+                    </div>
+                    <span class="badge badge-secondary">+200 Credits</span>
+                </div>
+                <div class="reward-item" id="reward-complete">
+                    <div class="reward-icon locked">🔒</div>
+                    <div style="flex: 1;">
+                        <strong>100% Complete Profile</strong>
+                        <div style="font-size: 12px; color: var(--text-gray);">Unlock premium features</div>
+                    </div>
+                    <span class="badge badge-warning">+500 Credits BONUS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Sections -->
+        <form id="companyProfileForm">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>🏢</span> Basic Information
+                    </div>
+                    <div class="section-status status-incomplete" id="status-basic">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Company Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="companyName" required placeholder="Acme Corporation">
+                    </div>
+                    <div class="form-field">
+                        <label>Company Type <span style="color: #ef4444;">*</span></label>
+                        <select id="companyType" required>
+                            <option value="">Select type</option>
+                            <option value="Startup">Startup</option>
+                            <option value="SME">Small/Medium Enterprise</option>
+                            <option value="Enterprise">Enterprise</option>
+                            <option value="Non-Profit">Non-Profit</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Industry <span style="color: #ef4444;">*</span></label>
+                        <select id="industry" required>
+                            <option value="">Select industry</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="Education">Education</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Company Size <span style="color: #ef4444;">*</span></label>
+                        <select id="companySize" required>
+                            <option value="">Select size</option>
+                            <option value="1-10">1-10 employees</option>
+                            <option value="11-50">11-50 employees</option>
+                            <option value="51-200">51-200 employees</option>
+                            <option value="201-500">201-500 employees</option>
+                            <option value="500+">500+ employees</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Year of Incorporation</label>
+                        <input type="number" id="yearIncorporated" min="1900" max="2025" placeholder="2014">
+                    </div>
+                    <div class="form-field">
+                        <label>Legal Entity</label>
+                        <select id="legalEntity">
+                            <option value="">Select entity</option>
+                            <option value="Private">Private</option>
+                            <option value="Public">Public</option>
+                            <option value="LLC">LLC</option>
+                            <option value="Partnership">Partnership</option>
+                            <option value="Sole Proprietorship">Sole Proprietorship</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid full-width">
+                    <div class="form-field">
+                        <label>Company Description <span style="color: #ef4444;">*</span></label>
+                        <textarea id="description" required placeholder="Describe your company, mission, and what makes you unique..."></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label>Core Differentiators / Value Proposition</label>
+                        <textarea id="valueProposition" placeholder="What sets you apart from competitors?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact & Location -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>📍</span> Contact & Location
+                    </div>
+                    <div class="section-status status-incomplete" id="status-contact">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Headquarters Location <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="headquarters" required placeholder="Chicago, IL">
+                    </div>
+                    <div class="form-field">
+                        <label>Region</label>
+                        <select id="region">
+                            <option value="">Select region</option>
+                            <option value="North America">North America</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Asia">Asia</option>
+                            <option value="South America">South America</option>
+                            <option value="Africa">Africa</option>
+                            <option value="Australia">Australia</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Countries of Operation</label>
+                        <input type="text" id="countries" placeholder="India, USA, Canada">
+                    </div>
+                    <div class="form-field">
+                        <label>ZIP Code</label>
+                        <input type="text" id="zipCode" placeholder="60611">
+                    </div>
+                </div>
+                <div class="form-grid full-width">
+                    <div class="form-field">
+                        <label>Street Address</label>
+                        <input type="text" id="address" placeholder="875 N Michigan Ave, 31st Floor">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Business Phone Number <span style="color: #ef4444;">*</span></label>
+                        <input type="tel" id="phoneNumber" required placeholder="+1 630 453 9104">
+                    </div>
+                    <div class="form-field">
+                        <label>Business Email</label>
+                        <input type="email" id="businessEmail" placeholder="info@company.com">
+                    </div>
+                    <div class="form-field">
+                        <label>Website Address <span style="color: #ef4444;">*</span></label>
+                        <input type="url" id="website" required placeholder="https://www.company.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive Team -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>👔</span> Executive Team
+                    </div>
+                    <div class="section-status status-incomplete" id="status-executives">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div id="executivesContainer">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Executive Name</label>
+                            <input type="text" id="executiveName" placeholder="Bala Palamadai">
+                        </div>
+                        <div class="form-field">
+                            <label>Position</label>
+                            <input type="text" id="executivePosition" placeholder="CEO & Founder">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services & Specialization -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>💼</span> Services & Specialization
+                    </div>
+                    <div class="section-status status-incomplete" id="status-services">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid full-width">
+                    <div class="form-field">
+                        <label>Service Categories</label>
+                        <div class="tag-input-container" id="serviceCategoriesContainer">
+                            <input type="text" class="tag-input" id="serviceCategoryInput" placeholder="Type and press Enter...">
+                        </div>
+                        <small style="color: var(--text-gray);">Examples: Cloud Software, Fintech, Marketing Automation, SaaS</small>
+                    </div>
+                    <div class="form-field">
+                        <label>Specializations</label>
+                        <div class="tag-input-container" id="specializationsContainer">
+                            <input type="text" class="tag-input" id="specializationInput" placeholder="Type and press Enter...">
+                        </div>
+                        <small style="color: var(--text-gray);">Examples: AI/ML, Blockchain, Mobile App Development, ChatGPT</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media & Branding -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>🎨</span> Media & Branding
+                    </div>
+                    <div class="section-status status-incomplete" id="status-media">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Company Logo</label>
+                        <div class="file-upload-area" onclick="document.getElementById('logoUpload').click()">
+                            <div class="file-upload-icon">🖼️</div>
+                            <div>Click to upload logo</div>
+                            <small style="color: var(--text-gray);">PNG, JPG up to 5MB</small>
+                        </div>
+                        <input type="file" id="logoUpload" accept="image/*" style="display: none;">
+                        <img id="logoPreview" class="uploaded-image" style="display: none;">
+                    </div>
+                    <div class="form-field">
+                        <label>Cover/Banner Image</label>
+                        <div class="file-upload-area" onclick="document.getElementById('bannerUpload').click()">
+                            <div class="file-upload-icon">🌄</div>
+                            <div>Click to upload banner</div>
+                            <small style="color: var(--text-gray);">PNG, JPG up to 5MB</small>
+                        </div>
+                        <input type="file" id="bannerUpload" accept="image/*" style="display: none;">
+                        <img id="bannerPreview" class="uploaded-image" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links & Apps -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>🔗</span> Social Links & Apps
+                    </div>
+                    <div class="section-status status-incomplete" id="status-social">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>LinkedIn Profile</label>
+                        <input type="url" id="linkedIn" placeholder="https://linkedin.com/company/...">
+                    </div>
+                    <div class="form-field">
+                        <label>Twitter/X Profile</label>
+                        <input type="url" id="twitter" placeholder="https://twitter.com/...">
+                    </div>
+                    <div class="form-field">
+                        <label>Facebook Page</label>
+                        <input type="url" id="facebook" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-field">
+                        <label>Instagram</label>
+                        <input type="url" id="instagram" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="form-field">
+                        <label>iOS App Link</label>
+                        <input type="url" id="iosApp" placeholder="https://apps.apple.com/...">
+                    </div>
+                    <div class="form-field">
+                        <label>Android App Link</label>
+                        <input type="url" id="androidApp" placeholder="https://play.google.com/...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="section-title">
+                        <span>📊</span> Additional Information
+                    </div>
+                    <div class="section-status status-incomplete" id="status-additional">
+                        <span>●</span> Incomplete
+                    </div>
+                </div>
+                <div class="form-grid full-width">
+                    <div class="form-field">
+                        <label>Freebies, Promotions, Special Offers</label>
+                        <textarea id="promotions" placeholder="Free Trial, Free Consulting Hours, Freemium Model, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button type="submit" class="save-button">
+                💾 Save Profile & Claim Credits
+            </button>
+        </form>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set user type for navigation
+        localStorage.setItem('userType', 'company');
+        generateNavigation('companies');
+        
+        let serviceCategories = [];
+        let specializations = [];
+        let totalCredits = 0;
+        let earnedCreditsThisSession = 0;
+        let completionData = {
+            basic: false,
+            contact: false,
+            services: false,
+            media: false
+        };
+        
+        // Track which fields have been rewarded
+        let rewardedFields = new Set();
+        
+        // Field rewards mapping (credits per field)
+        const fieldRewards = {
+            companyName: 10,
+            companyType: 5,
+            industry: 5,
+            companySize: 5,
+            yearIncorporated: 5,
+            legalEntity: 5,
+            description: 20,
+            valueProposition: 15,
+            headquarters: 10,
+            region: 5,
+            countries: 5,
+            zipCode: 5,
+            address: 10,
+            phoneNumber: 15,
+            businessEmail: 10,
+            website: 15,
+            executiveName: 10,
+            executivePosition: 5,
+            linkedIn: 10,
+            twitter: 10,
+            facebook: 10,
+            instagram: 10,
+            iosApp: 15,
+            androidApp: 15,
+            promotions: 10,
+            serviceCategory: 25,
+            specialization: 25,
+            logo: 50,
+            banner: 30
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load data from localStorage
+            loadProfileData();
+            
+            // Initialize tag inputs
+            initializeTagInput('serviceCategoryInput', 'serviceCategoriesContainer', serviceCategories);
+            initializeTagInput('specializationInput', 'specializationsContainer', specializations);
+            
+            // Image upload previews
+            setupImageUpload('logoUpload', 'logoPreview');
+            setupImageUpload('bannerUpload', 'bannerPreview');
+            
+            // Add reward listeners to all form fields
+            addRewardListeners();
+            
+            // Form submission
+            document.getElementById('companyProfileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProfileData();
+            });
+            
+            // Initial calculation
+            calculateCompletion();
+        });
+
+        function addRewardListeners() {
+            // Add listeners to text inputs
+            Object.keys(fieldRewards).forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element && element.type !== 'file') {
+                    element.addEventListener('blur', function() {
+                        checkAndRewardField(fieldId, element.value.trim());
+                    });
+                }
+            });
+        }
+
+        function checkAndRewardField(fieldId, value) {
+            // Check if field has value and hasn't been rewarded yet
+            if (value && !rewardedFields.has(fieldId)) {
+                const credits = fieldRewards[fieldId];
+                if (credits) {
+                    rewardedFields.add(fieldId);
+                    awardCredits(credits, fieldId);
+                    
+                    // Add success animation to field
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.classList.add('field-success');
+                        setTimeout(() => element.classList.remove('field-success'), 500);
+                    }
+                }
+            }
+        }
+
+        function loadProfileData() {
+            // Pre-fill from onboarding
+            document.getElementById('companyName').value = localStorage.getItem('companyName') || '';
+            document.getElementById('industry').value = localStorage.getItem('industry') || '';
+            document.getElementById('companySize').value = localStorage.getItem('companySize') || '';
+            document.getElementById('companyType').value = 'Startup';
+            
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail) {
+                document.getElementById('businessEmail').value = userEmail;
+            }
+            
+            // Load saved profile data if exists
+            const savedProfile = localStorage.getItem('companyProfile');
+            if (savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                Object.keys(profile).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element && element.type !== 'file') {
+                        element.value = profile[key] || '';
+                    }
+                });
+                
+                if (profile.serviceCategories) {
+                    serviceCategories = profile.serviceCategories;
+                    renderTags('serviceCategoriesContainer', serviceCategories, 'serviceCategoryInput');
+                }
+                if (profile.specializations) {
+                    specializations = profile.specializations;
+                    renderTags('specializationsContainer', specializations, 'specializationInput');
+                }
+            }
+            
+            // Load earned credits and rewarded fields
+            totalCredits = parseInt(localStorage.getItem('profileCredits') || '0');
+            document.getElementById('earnedCredits').textContent = totalCredits;
+            document.getElementById('walletDisplay').textContent = `💰 $${totalCredits}`;
+            
+            // Load previously rewarded fields
+            const savedRewardedFields = localStorage.getItem('rewardedFields');
+            if (savedRewardedFields) {
+                rewardedFields = new Set(JSON.parse(savedRewardedFields));
+            }
+        }
+
+        function initializeTagInput(inputId, containerId, tagsArray) {
+            const input = document.getElementById(inputId);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = input.value.trim();
+                    if (value && !tagsArray.includes(value)) {
+                        tagsArray.push(value);
+                        renderTags(containerId, tagsArray, inputId);
+                        input.value = '';
+                        
+                        // Award credits for first tag
+                        if (tagsArray.length === 1) {
+                            const rewardKey = containerId.includes('service') ? 'serviceCategory' : 'specialization';
+                            if (!rewardedFields.has(rewardKey)) {
+                                rewardedFields.add(rewardKey);
+                                awardCredits(fieldRewards[rewardKey], rewardKey);
+                            }
+                        }
+                        
+                        calculateCompletion();
+                    }
+                }
+            });
+        }
+
+        function renderTags(containerId, tagsArray, inputId) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            
+            // Clear existing tags except input
+            const existingTags = container.querySelectorAll('.tag-item');
+            existingTags.forEach(tag => tag.remove());
+            
+            // Render tags
+            tagsArray.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <span class="tag-remove" onclick="removeTag('${containerId}', ${index}, '${inputId}')">×</span>
+                `;
+                container.insertBefore(tagElement, input);
+            });
+        }
+
+        function removeTag(containerId, index, inputId) {
+            const container = containerId;
+            if (container.includes('service')) {
+                serviceCategories.splice(index, 1);
+                renderTags(containerId, serviceCategories, inputId);
+            } else {
+                specializations.splice(index, 1);
+                renderTags(containerId, specializations, inputId);
+            }
+            calculateCompletion();
+        }
+
+        function setupImageUpload(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        
+                        // Award credits for image upload
+                        const rewardKey = inputId === 'logoUpload' ? 'logo' : 'banner';
+                        if (!rewardedFields.has(rewardKey)) {
+                            rewardedFields.add(rewardKey);
+                            awardCredits(fieldRewards[rewardKey], rewardKey);
+                        }
+                        
+                        calculateCompletion();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function awardCredits(amount, fieldName) {
+            // Update total credits
+            earnedCreditsThisSession += amount;
+            totalCredits += amount;
+            
+            // Save to localStorage
+            localStorage.setItem('profileCredits', totalCredits.toString());
+            
+            // Create floating credit animation
+            createFloatingCredit(amount);
+            
+            // Update credits display with animation
+            animateCreditsCounter(amount);
+            
+            // Create confetti
+            createConfetti();
+            
+            // Show popup for significant rewards (20+ credits)
+            if (amount >= 20) {
+                showCreditPopup(amount, fieldName);
+            }
+            
+            // Recalculate completion
+            calculateCompletion();
+        }
+
+        function createFloatingCredit(amount) {
+            const floating = document.createElement('div');
+            floating.className = 'floating-credit';
+            floating.textContent = `+${amount} 💰`;
+            floating.style.left = Math.random() * window.innerWidth + 'px';
+            floating.style.top = window.innerHeight / 2 + 'px';
+            document.body.appendChild(floating);
+            
+            setTimeout(() => floating.remove(), 2000);
+        }
+
+        function animateCreditsCounter(amount) {
+            const creditsDisplay = document.getElementById('earnedCredits');
+            const walletDisplay = document.getElementById('walletDisplay');
+            
+            // Add bounce animation
+            creditsDisplay.classList.add('credits-earned-animation');
+            setTimeout(() => creditsDisplay.classList.remove('credits-earned-animation'), 600);
+            
+            // Animate number counting up
+            const start = totalCredits - amount;
+            const duration = 800;
+            const startTime = Date.now();
+            
+            function updateNumber() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (amount * progress));
+                
+                creditsDisplay.textContent = current;
+                walletDisplay.textContent = `💰 $${totalCredits - amount + current}`;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    creditsDisplay.textContent = totalCredits;
+                    walletDisplay.textContent = `💰 $${totalCredits}`;
+                }
+            }
+            
+            updateNumber();
+        }
+
+        function createConfetti() {
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '0px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+
+        function showCreditPopup(amount, fieldName) {
+            const overlay = document.getElementById('popupOverlay');
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.className = 'credit-popup';
+            popup.innerHTML = `
+                <div style="font-size: 64px; margin-bottom: 10px;">🎉</div>
+                <div class="credit-message">Awesome!</div>
+                <div class="credit-amount-big">+${amount}</div>
+                <div class="credit-description">Credits earned for completing ${formatFieldName(fieldName)}</div>
+            `;
+            
+            // Show overlay and popup
+            overlay.classList.add('active');
+            document.body.appendChild(popup);
+            
+            // Play sound (optional - you can add audio later)
+            // new Audio('path/to/success.mp3').play();
+            
+            // Hide after 2 seconds
+            setTimeout(() => {
+                popup.classList.add('hide');
+                overlay.classList.remove('active');
+                setTimeout(() => popup.remove(), 400);
+            }, 2000);
+        }
+
+        function formatFieldName(fieldName) {
+            const names = {
+                description: 'Company Description',
+                valueProposition: 'Value Proposition',
+                serviceCategory: 'Service Categories',
+                specialization: 'Specializations',
+                logo: 'Company Logo',
+                banner: 'Banner Image',
+                phoneNumber: 'Phone Number',
+                website: 'Website',
+                iosApp: 'iOS App',
+                androidApp: 'Android App'
+            };
+            return names[fieldName] || fieldName.replace(/([A-Z])/g, ' $1').trim();
+        }
+
+        function calculateCompletion() {
+            let totalFields = 0;
+            let filledFields = 0;
+            
+            // Basic Info (20%)
+            const basicFields = ['companyName', 'companyType', 'industry', 'companySize', 'description'];
+            const basicFilled = basicFields.filter(id => document.getElementById(id).value.trim()).length;
+            completionData.basic = basicFilled === basicFields.length;
+            updateSectionStatus('basic', completionData.basic);
+            totalFields += basicFields.length;
+            filledFields += basicFilled;
+            
+            // Contact (20%)
+            const contactFields = ['headquarters', 'phoneNumber', 'website'];
+            const contactFilled = contactFields.filter(id => document.getElementById(id).value.trim()).length;
+            completionData.contact = contactFilled === contactFields.length;
+            updateSectionStatus('contact', completionData.contact);
+            totalFields += contactFields.length;
+            filledFields += contactFilled;
+            
+            // Executives (10%)
+            const execFilled = document.getElementById('executiveName').value.trim() ? 1 : 0;
+            updateSectionStatus('executives', execFilled > 0);
+            totalFields += 1;
+            filledFields += execFilled;
+            
+            // Services (20%)
+            const servicesFilled = (serviceCategories.length > 0 && specializations.length > 0) ? 2 : (serviceCategories.length > 0 || specializations.length > 0) ? 1 : 0;
+            completionData.services = servicesFilled === 2;
+            updateSectionStatus('services', completionData.services);
+            totalFields += 2;
+            filledFields += servicesFilled;
+            
+            // Media (15%)
+            const logoFilled = document.getElementById('logoPreview').style.display === 'block' ? 1 : 0;
+            const bannerFilled = document.getElementById('bannerPreview').style.display === 'block' ? 1 : 0;
+            completionData.media = (logoFilled + bannerFilled) === 2;
+            updateSectionStatus('media', completionData.media);
+            totalFields += 2;
+            filledFields += logoFilled + bannerFilled;
+            
+            // Social (10%)
+            const socialFields = ['linkedIn', 'twitter', 'iosApp', 'androidApp'];
+            const socialFilled = socialFields.filter(id => document.getElementById(id).value.trim()).length;
+            updateSectionStatus('social', socialFilled > 0);
+            totalFields += 4;
+            filledFields += socialFilled;
+            
+            // Additional (5%)
+            const additionalFilled = document.getElementById('promotions').value.trim() ? 1 : 0;
+            updateSectionStatus('additional', additionalFilled > 0);
+            totalFields += 1;
+            filledFields += additionalFilled;
+            
+            // Calculate percentage
+            const percentage = Math.round((filledFields / totalFields) * 100);
+            document.getElementById('completionPercentage').textContent = percentage + '%';
+            document.getElementById('completionProgressBar').style.width = percentage + '%';
+            
+            // Update rewards
+            updateRewards(percentage);
+        }
+
+        function updateSectionStatus(section, isComplete) {
+            const statusElement = document.getElementById(`status-${section}`);
+            if (statusElement) {
+                if (isComplete) {
+                    statusElement.className = 'section-status status-complete';
+                    statusElement.innerHTML = '<span>●</span> Complete';
+                } else {
+                    statusElement.className = 'section-status status-incomplete';
+                    statusElement.innerHTML = '<span>●</span> Incomplete';
+                }
+            }
+        }
+
+        function updateRewards(percentage) {
+            const rewards = [
+                { id: 'reward-basic', threshold: 20, credits: 50 },
+                { id: 'reward-contact', threshold: 40, credits: 100 },
+                { id: 'reward-services', threshold: 60, credits: 150 },
+                { id: 'reward-media', threshold: 80, credits: 200 },
+                { id: 'reward-complete', threshold: 100, credits: 500 }
+            ];
+            
+            rewards.forEach(reward => {
+                const element = document.getElementById(reward.id);
+                const icon = element.querySelector('.reward-icon');
+                
+                if (percentage >= reward.threshold) {
+                    icon.classList.remove('locked');
+                    icon.textContent = '✓';
+                } else {
+                    icon.classList.add('locked');
+                    icon.textContent = '🔒';
+                }
+            });
+        }
+
+        function saveProfileData() {
+            const formData = {
+                companyName: document.getElementById('companyName').value,
+                companyType: document.getElementById('companyType').value,
+                industry: document.getElementById('industry').value,
+                companySize: document.getElementById('companySize').value,
+                yearIncorporated: document.getElementById('yearIncorporated').value,
+                legalEntity: document.getElementById('legalEntity').value,
+                description: document.getElementById('description').value,
+                valueProposition: document.getElementById('valueProposition').value,
+                headquarters: document.getElementById('headquarters').value,
+                region: document.getElementById('region').value,
+                countries: document.getElementById('countries').value,
+                zipCode: document.getElementById('zipCode').value,
+                address: document.getElementById('address').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                businessEmail: document.getElementById('businessEmail').value,
+                website: document.getElementById('website').value,
+                executiveName: document.getElementById('executiveName').value,
+                executivePosition: document.getElementById('executivePosition').value,
+                linkedIn: document.getElementById('linkedIn').value,
+                twitter: document.getElementById('twitter').value,
+                facebook: document.getElementById('facebook').value,
+                instagram: document.getElementById('instagram').value,
+                iosApp: document.getElementById('iosApp').value,
+                androidApp: document.getElementById('androidApp').value,
+                promotions: document.getElementById('promotions').value,
+                serviceCategories: serviceCategories,
+                specializations: specializations,
+                profileCompletion: parseInt(document.getElementById('completionPercentage').textContent),
+                profileCredits: totalCredits,
+                logo: document.getElementById('logoPreview').src.startsWith('data:') ? document.getElementById('logoPreview').src : null,
+                banner: document.getElementById('bannerPreview').src.startsWith('data:') ? document.getElementById('bannerPreview').src : null,
+                companyDescription: document.getElementById('description').value
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('companyProfile', JSON.stringify(formData));
+            localStorage.setItem('rewardedFields', JSON.stringify([...rewardedFields]));
+            
+            // Calculate completion percentage
+            const percentage = formData.profileCompletion;
+            
+            // Show mega success if 100% complete
+            if (percentage === 100 && !rewardedFields.has('100complete')) {
+                rewardedFields.add('100complete');
+                const bonusCredits = 500;
+                earnedCreditsThisSession += bonusCredits;
+                totalCredits += bonusCredits;
+                localStorage.setItem('profileCredits', totalCredits.toString());
+                
+                // Mega celebration
+                showMegaCelebration(bonusCredits);
+            } else {
+                // Regular save message
+                const overlay = document.getElementById('popupOverlay');
+                const popup = document.createElement('div');
+                popup.className = 'credit-popup';
+                popup.innerHTML = `
+                    <div style="font-size: 64px; margin-bottom: 10px;">✅</div>
+                    <div class="credit-message">Profile Saved!</div>
+                    <div style="font-size: 18px; margin-top: 16px;">
+                        Total Credits: <strong>${totalCredits}</strong><br>
+                        Profile Completion: <strong>${percentage}%</strong>
+                    </div>
+                `;
+                
+                overlay.classList.add('active');
+                document.body.appendChild(popup);
+                
+                setTimeout(() => {
+                    popup.classList.add('hide');
+                    overlay.classList.remove('active');
+                    setTimeout(() => {
+                        popup.remove();
+                        // Redirect to companies list
+                        window.location.href = 'companies-list.html';
+                    }, 400);
+                }, 2000);
+            }
+            
+            console.log('Profile saved:', formData);
+            console.log('Total credits:', totalCredits);
+        }
+
+        function showMegaCelebration(bonusCredits) {
+            const overlay = document.getElementById('popupOverlay');
+            
+            // Create mega confetti
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => createConfetti(), i * 20);
+            }
+            
+            const popup = document.createElement('div');
+            popup.className = 'credit-popup';
+            popup.style.maxWidth = '600px';
+            popup.innerHTML = `
+                <div style="font-size: 96px; margin-bottom: 10px;">🎊🏆🎊</div>
+                <div class="credit-message" style="font-size: 32px;">PROFILE COMPLETE!</div>
+                <div class="credit-amount-big" style="font-size: 96px;">+${bonusCredits}</div>
+                <div class="credit-description" style="font-size: 20px;">
+                    🎉 BONUS CREDITS! 🎉<br>
+                    You've unlocked premium features!
+                </div>
+                <div style="margin-top: 24px; font-size: 18px;">
+                    <strong>Total Credits: ${totalCredits}</strong>
+                </div>
+                <div style="margin-top: 16px; font-size: 14px; opacity: 0.9;">
+                    Use credits to promote jobs, boost products, and unlock premium features!
+                </div>
+            `;
+            
+            overlay.classList.add('active');
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.classList.add('hide');
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    popup.remove();
+                    // Redirect to companies list
+                    window.location.href = 'companies-list.html';
+                }, 400);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

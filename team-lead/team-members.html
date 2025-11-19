@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members - Bizoforce</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Stats Cards */
+        .team-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .team-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .team-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .team-stat-card.total { border-top-color: #3b82f6; }
+        .team-stat-card.active { border-top-color: #10b981; }
+        .team-stat-card.projects { border-top-color: #f97316; }
+        .team-stat-card.hours { border-top-color: #8b5cf6; }
+
+        .team-stat-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .team-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .team-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .member-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .member-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .member-header {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .member-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+
+        .member-card:hover .member-avatar {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .avatar-blue { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+        .avatar-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .avatar-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .avatar-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .member-role {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .member-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .member-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .member-projects {
+            margin-bottom: 16px;
+        }
+
+        .projects-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .project-tag {
+            padding: 4px 10px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            flex: 1;
+        }
+
+        .btn-sm.primary {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-sm.primary:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
+        }
+
+        .btn-sm:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu"></nav>
+    </aside>
+
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search team members...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">TL</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Team Members</h1>
+                <p class="page-subtitle">Manage your team and track performance</p>
+            </div>
+            <button class="btn-primary" onclick="addMember()">
+                <span style="margin-right: 8px;">+</span> Add Team Member
+            </button>
+        </div>
+
+        <div class="team-stats">
+            <div class="team-stat-card total">
+                <div class="team-stat-icon">👥</div>
+                <div class="team-stat-value">24</div>
+                <div class="team-stat-label">Total Members</div>
+            </div>
+            <div class="team-stat-card active">
+                <div class="team-stat-icon">✅</div>
+                <div class="team-stat-value">22</div>
+                <div class="team-stat-label">Active Now</div>
+            </div>
+            <div class="team-stat-card projects">
+                <div class="team-stat-icon">📁</div>
+                <div class="team-stat-value">12</div>
+                <div class="team-stat-label">Active Projects</div>
+            </div>
+            <div class="team-stat-card hours">
+                <div class="team-stat-icon">⏰</div>
+                <div class="team-stat-value">1,240</div>
+                <div class="team-stat-label">Total Hours</div>
+            </div>
+        </div>
+
+        <div class="team-grid" id="teamGrid"></div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation();
+            loadTeamMembers();
+        });
+
+        const teamMembers = [
+            { id: 1, name: 'John Doe', role: 'Senior Developer', avatar: 'JD', color: 'blue', status: 'Active', projects: 3, hours: 168, tasks: 24, projectNames: ['Website Redesign', 'Mobile App', 'CRM'] },
+            { id: 2, name: 'Sarah Miller', role: 'UI/UX Designer', avatar: 'SM', color: 'purple', status: 'Active', projects: 2, hours: 156, tasks: 18, projectNames: ['Website Redesign', 'Mobile App'] },
+            { id: 3, name: 'Mike Chen', role: 'Backend Developer', avatar: 'MC', color: 'orange', status: 'Active', projects: 2, hours: 172, tasks: 20, projectNames: ['CRM', 'E-commerce'] },
+            { id: 4, name: 'Emily Davis', role: 'Frontend Developer', avatar: 'ED', color: 'pink', status: 'Active', projects: 2, hours: 148, tasks: 16, projectNames: ['Website Redesign', 'E-commerce'] },
+            { id: 5, name: 'Robert Taylor', role: 'DevOps Engineer', avatar: 'RT', color: 'blue', status: 'Active', projects: 4, hours: 180, tasks: 22, projectNames: ['Website Redesign', 'Mobile App', 'CRM', 'E-commerce'] },
+            { id: 6, name: 'Lisa Anderson', role: 'QA Engineer', avatar: 'LA', color: 'purple', status: 'Active', projects: 3, hours: 152, tasks: 28, projectNames: ['Mobile App', 'CRM', 'E-commerce'] }
+        ];
+
+        function loadTeamMembers() {
+            const grid = document.getElementById('teamGrid');
+            grid.innerHTML = teamMembers.map(member => `
+                <div class="member-card">
+                    <div class="member-header">
+                        <div class="member-avatar avatar-${member.color}">${member.avatar}</div>
+                        <div class="member-info">
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-role">${member.role}</div>
+                            <span class="member-status">${member.status}</span>
+                        </div>
+                    </div>
+                    <div class="member-meta">
+                        <div class="meta-item">
+                            <div class="meta-value">${member.projects}</div>
+                            <div class="meta-label">Projects</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-value">${member.hours}</div>
+                            <div class="meta-label">Hours</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-value">${member.tasks}</div>
+                            <div class="meta-label">Tasks</div>
+                        </div>
+                    </div>
+                    <div class="member-projects">
+                        <div class="projects-label">Assigned Projects:</div>
+                        <div class="project-tags">
+                            ${member.projectNames.map(p => `<span class="project-tag">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn-sm primary" onclick="viewMember(${member.id})">View Profile</button>
+                        <button class="btn-sm" onclick="assignProject(${member.id})">Assign Project</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addMember() {
+            alert('Add Team Member - Coming soon!');
+        }
+
+        function viewMember(id) {
+            alert(`View profile for member ${id}`);
+        }
+
+        function assignProject(id) {
+            alert(`Assign project to member ${id}`);
+        }
+    </script>
+</body>
+</html>

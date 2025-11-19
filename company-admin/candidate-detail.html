@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+
+    <header class="top-bar">
+        <div class="search-bar">
+            <button class="btn btn-secondary btn-sm" onclick="history.back()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to Candidates
+            </button>
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="content-grid">
+            <div>
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display: flex; gap: 24px; align-items: start; margin-bottom: 24px;">
+                            <img src="https://i.pravatar.cc/150?img=2" alt="John Smith" style="width: 120px; height: 120px; border-radius: 12px;">
+                            <div style="flex: 1;">
+                                <h1 style="margin-bottom: 8px;">John Smith</h1>
+                                <p style="color: var(--text-gray); margin-bottom: 12px;">Senior Full Stack Developer</p>
+                                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                    <span class="status-badge active">Available</span>
+                                    <span style="color: var(--text-gray); display: flex; align-items: center; gap: 4px;">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                        </svg>
+                                        San Francisco, CA
+                                    </span>
+                                    <span style="color: var(--text-gray);">7 years experience</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-primary">Contact</button>
+                                    <button class="btn btn-secondary">Download Resume</button>
+                                    <button class="btn btn-secondary">Add to Talent Pool</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-container">
+                            <div class="tabs">
+                                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                                <button class="tab-btn" onclick="switchTab('experience')">Experience</button>
+                                <button class="tab-btn" onclick="switchTab('applications')">Applications</button>
+                            </div>
+
+                            <div class="tab-content active" id="overview">
+                                <h3 style="margin-bottom: 12px;">About</h3>
+                                <p style="color: var(--text-gray); line-height: 1.6; margin-bottom: 24px;">
+                                    Experienced Full Stack Developer with 7+ years of expertise in building scalable web applications. Proficient in modern JavaScript frameworks and cloud technologies. Strong problem-solving skills and passion for clean, maintainable code.
+                                </p>
+
+                                <h3 style="margin-bottom: 12px;">Skills</h3>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                                    <span class="status-badge active">JavaScript</span>
+                                    <span class="status-badge active">React</span>
+                                    <span class="status-badge active">Node.js</span>
+                                    <span class="status-badge active">Python</span>
+                                    <span class="status-badge active">PostgreSQL</span>
+                                    <span class="status-badge active">AWS</span>
+                                    <span class="status-badge active">Docker</span>
+                                </div>
+
+                                <h3 style="margin-bottom: 12px;">Contact Information</h3>
+                                <div style="color: var(--text-gray); line-height: 2;">
+                                    <p>📧 john.smith@email.com</p>
+                                    <p>📱 +1 (555) 123-4567</p>
+                                    <p>🔗 linkedin.com/in/johnsmith</p>
+                                    <p>🌐 github.com/johnsmith</p>
+                                </div>
+                            </div>
+
+                            <div class="tab-content" id="experience">
+                                <div style="border-left: 2px solid var(--border-light); padding-left: 24px;">
+                                    <div style="margin-bottom: 24px;">
+                                        <h3>Senior Full Stack Developer</h3>
+                                        <p style="color: var(--primary-blue); margin: 4px 0;">TechCorp Solutions</p>
+                                        <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 8px;">2021 - Present</p>
+                                        <ul style="color: var(--text-gray); line-height: 1.8;">
+                                            <li>Led development of enterprise SaaS platform serving 10,000+ users</li>
+                                            <li>Implemented microservices architecture using Node.js and Docker</li>
+                                            <li>Reduced page load times by 40% through optimization</li>
+                                        </ul>
+                                    </div>
+                                    <div style="margin-bottom: 24px;">
+                                        <h3>Full Stack Developer</h3>
+                                        <p style="color: var(--primary-blue); margin: 4px 0;">StartupXYZ</p>
+                                        <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 8px;">2018 - 2021</p>
+                                        <ul style="color: var(--text-gray); line-height: 1.8;">
+                                            <li>Built React-based frontend and REST APIs</li>
+                                            <li>Integrated third-party payment and analytics services</li>
+                                            <li>Mentored junior developers</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-content" id="applications">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Job Title</th>
+                                            <th>Company</th>
+                                            <th>Applied Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Senior Full Stack Developer</td>
+                                            <td>TechCorp Solutions</td>
+                                            <td>Nov 11, 2025</td>
+                                            <td><span class="status-badge pending">Pending</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lead Developer</td>
+                                            <td>InnovateLabs Inc</td>
+                                            <td>Nov 8, 2025</td>
+                                            <td><span class="status-badge active">Shortlisted</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Quick Stats</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 13px; color: var(--text-gray);">Total Applications</div>
+                            <div style="font-size: 32px; font-weight: 700; color: var(--text-dark);">5</div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 13px; color: var(--text-gray);">Shortlisted</div>
+                            <div style="font-size: 32px; font-weight: 700; color: var(--success);">2</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 13px; color: var(--text-gray);">Profile Views</div>
+                            <div style="font-size: 32px; font-weight: 700; color: var(--primary-blue);">124</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3>Documents</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px;">📄 Resume.pdf</span>
+                            <button class="btn-icon">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px;">📄 Cover_Letter.pdf</span>
+                            <button class="btn-icon">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Set user type for navigation
+        localStorage.setItem('userType', 'company');
+        
+        generateNavigation('candidates');
+    </script>
+</body>
+</html>

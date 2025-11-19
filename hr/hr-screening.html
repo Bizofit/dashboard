@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Screening - HR Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* HR AI Screening Styles */
+        body {
+            background: #f8fafc;
+        }
+
+        .main-container {
+            background: #f8fafc;
+        }
+
+        /* Stats Cards */
+        .screening-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .screening-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .screening-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .screening-stat-card.total { border-top-color: #3b82f6; }
+        .screening-stat-card.passed { border-top-color: #10b981; }
+        .screening-stat-card.pending { border-top-color: #f59e0b; }
+        .screening-stat-card.failed { border-top-color: #ef4444; }
+
+        .screening-stat-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .screening-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .screening-stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .bulk-actions-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .bulk-action-btn {
+            padding: 6px 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bulk-action-btn.approve {
+            background: #dcfce7;
+            border-color: #10b981;
+            color: #166534;
+        }
+
+        .bulk-action-btn.reject {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .bulk-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table */
+        .screening-table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .screening-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .screening-table thead {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .screening-table th {
+            padding: 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .screening-table th input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .screening-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .screening-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .candidate-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .candidate-avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .avatar-blue { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+        .avatar-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .avatar-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .avatar-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+
+        .candidate-details {
+            min-width: 0;
+        }
+
+        .candidate-name-link {
+            font-weight: 600;
+            color: #1e293b;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .candidate-name-link:hover {
+            color: #2563eb;
+        }
+
+        .candidate-position-sm {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .score-cell {
+            text-align: center;
+        }
+
+        .score-badge-lg {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .score-badge-lg.high {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .score-badge-lg.medium {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .score-badge-lg.low {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .criteria-item.pass {
+            color: #166534;
+        }
+
+        .criteria-item.fail {
+            color: #991b1b;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pass {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .status-badge.fail {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-icon.approve {
+            color: #10b981;
+        }
+
+        .btn-icon.reject {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <!-- Navigation items will be generated by JavaScript -->
+        </nav>
+    </aside>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search screening results...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">💰 $8,450</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">12</div>
+            </div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">AI Screening Results</h1>
+                <p class="page-subtitle">Review AI-powered candidate assessments</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="screening-stats">
+            <div class="screening-stat-card total">
+                <div class="screening-stat-icon">📊</div>
+                <div class="screening-stat-value">247</div>
+                <div class="screening-stat-label">Total Screened</div>
+            </div>
+            <div class="screening-stat-card passed">
+                <div class="screening-stat-icon">✅</div>
+                <div class="screening-stat-value">168</div>
+                <div class="screening-stat-label">Passed (68%)</div>
+            </div>
+            <div class="screening-stat-card pending">
+                <div class="screening-stat-icon">⏳</div>
+                <div class="screening-stat-value">34</div>
+                <div class="screening-stat-label">Pending Review</div>
+            </div>
+            <div class="screening-stat-card failed">
+                <div class="screening-stat-icon">❌</div>
+                <div class="screening-stat-value">45</div>
+                <div class="screening-stat-label">Not Qualified</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All Results</button>
+            <button class="filter-btn" data-filter="passed">Passed</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="failed">Not Qualified</button>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions">
+            <input type="checkbox" id="selectAll">
+            <span class="bulk-actions-label">0 selected</span>
+            <button class="bulk-action-btn approve">✓ Approve Selected</button>
+            <button class="bulk-action-btn reject">✗ Reject Selected</button>
+            <button class="bulk-action-btn">📧 Send Email</button>
+        </div>
+
+        <!-- Table -->
+        <div class="screening-table-container">
+            <table class="screening-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="headerCheckbox"></th>
+                        <th>Candidate</th>
+                        <th>Position</th>
+                        <th>AI Score</th>
+                        <th>Criteria Match</th>
+                        <th>Status</th>
+                        <th>Screened</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="screeningTableBody">
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Preserve user type for proper navigation
+        const userType = localStorage.getItem('userType') || 'company';
+        const userRole = localStorage.getItem('userRole') || 'Company Admin';
+        localStorage.setItem('userType', userType);
+        localStorage.setItem('userRole', userRole);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            generateNavigation('screening');
+            loadScreeningResults();
+            setupFilters();
+        });
+
+        const screeningResults = [
+            { 
+                id: 1, name: 'Sarah Johnson', position: 'Senior Software Engineer', 
+                score: 95, scoreLabel: 'high', status: 'pass',
+                avatar: 'SJ', avatarColor: 'blue', screened: '2 hours ago',
+                criteria: [
+                    { label: 'Experience', pass: true },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: true },
+                    { label: 'Location', pass: true }
+                ]
+            },
+            { 
+                id: 2, name: 'Michael Chen', position: 'Product Manager', 
+                score: 88, scoreLabel: 'medium', status: 'pass',
+                avatar: 'MC', avatarColor: 'purple', screened: '5 hours ago',
+                criteria: [
+                    { label: 'Experience', pass: true },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: true },
+                    { label: 'Location', pass: false }
+                ]
+            },
+            { 
+                id: 3, name: 'Emily Davis', position: 'UX Designer', 
+                score: 92, scoreLabel: 'high', status: 'pending',
+                avatar: 'ED', avatarColor: 'orange', screened: '1 day ago',
+                criteria: [
+                    { label: 'Experience', pass: true },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: true },
+                    { label: 'Location', pass: true }
+                ]
+            },
+            { 
+                id: 4, name: 'James Wilson', position: 'Senior Software Engineer', 
+                score: 78, scoreLabel: 'medium', status: 'pass',
+                avatar: 'JW', avatarColor: 'pink', screened: '1 day ago',
+                criteria: [
+                    { label: 'Experience', pass: true },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: false },
+                    { label: 'Location', pass: true }
+                ]
+            },
+            { 
+                id: 5, name: 'Lisa Anderson', position: 'Marketing Manager', 
+                score: 65, scoreLabel: 'low', status: 'fail',
+                avatar: 'LA', avatarColor: 'blue', screened: '2 days ago',
+                criteria: [
+                    { label: 'Experience', pass: false },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: true },
+                    { label: 'Location', pass: false }
+                ]
+            },
+            { 
+                id: 6, name: 'Robert Taylor', position: 'Data Analyst', 
+                score: 89, scoreLabel: 'medium', status: 'pass',
+                avatar: 'RT', avatarColor: 'purple', screened: '2 days ago',
+                criteria: [
+                    { label: 'Experience', pass: true },
+                    { label: 'Technical Skills', pass: true },
+                    { label: 'Education', pass: true },
+                    { label: 'Location', pass: false }
+                ]
+            }
+        ];
+
+        function loadScreeningResults(filter = 'all') {
+            const tbody = document.getElementById('screeningTableBody');
+            const filtered = filter === 'all' ? screeningResults : screeningResults.filter(r => r.status === filter);
+            
+            tbody.innerHTML = filtered.map(result => `
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td>
+                        <div class="candidate-cell">
+                            <div class="candidate-avatar-sm avatar-${result.avatarColor}">${result.avatar}</div>
+                            <div class="candidate-details">
+                                <a href="#" class="candidate-name-link">${result.name}</a>
+                                <div class="candidate-position-sm">${result.position}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${result.position}</td>
+                    <td class="score-cell">
+                        <span class="score-badge-lg ${result.scoreLabel}">${result.score}%</span>
+                    </td>
+                    <td>
+                        <div class="criteria-list">
+                            ${result.criteria.map(c => `
+                                <div class="criteria-item ${c.pass ? 'pass' : 'fail'}">
+                                    <span>${c.pass ? '✓' : '✗'}</span>
+                                    <span>${c.label}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${result.status}">${result.status === 'pass' ? 'Passed' : result.status === 'fail' ? 'Not Qualified' : 'Pending'}</span>
+                    </td>
+                    <td>${result.screened}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" title="View Details">👁️</button>
+                            <button class="btn-icon approve" title="Approve">✓</button>
+                            <button class="btn-icon reject" title="Reject">✗</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    loadScreeningResults(this.dataset.filter);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

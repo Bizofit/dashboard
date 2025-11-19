@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bizoforce - Upload Resume</title>
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .onboarding-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .onboarding-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .upload-section:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff, #e9ecff);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-selected {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border: 3px solid #10b981;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .file-selected.show {
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .file-icon {
+            font-size: 48px;
+        }
+
+        .file-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .file-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .remove-file {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-file:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .processing-indicator {
+            display: none;
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .processing-indicator.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #fbbf24;
+            border-top-color: #f59e0b;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .processing-hint {
+            font-size: 14px;
+            color: #b45309;
+        }
+
+        .success-indicator {
+            display: none;
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .success-indicator.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .success-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 8px;
+        }
+
+        .success-hint {
+            font-size: 14px;
+            color: #15803d;
+        }
+
+        .extracted-data {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: left;
+            border: 2px solid #10b981;
+        }
+
+        .extracted-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .extracted-item:last-child {
+            border-bottom: none;
+        }
+
+        .extracted-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .extracted-value {
+            font-size: 13px;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        .skip-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .skip-link a {
+            color: #64748b;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .skip-link a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .supported-formats {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="welcome-header">
+            <div class="logo-large">B</div>
+            <h1 class="welcome-title">Welcome to Bizoforce!</h1>
+            <p class="welcome-subtitle">Let's get started by uploading your resume. Our AI will extract your information to create your professional profile.</p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection" onclick="document.getElementById('resumeFile').click()">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">Click to upload your resume</div>
+            <div class="upload-hint">or drag and drop here</div>
+            <input type="file" id="resumeFile" class="file-input" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+        </div>
+
+        <div class="supported-formats">
+            Supported formats: PDF, DOC, DOCX (Max 5MB)
+        </div>
+
+        <!-- File Selected -->
+        <div class="file-selected" id="fileSelected">
+            <div class="file-info">
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                    <div class="file-name" id="fileName">resume.pdf</div>
+                    <div class="file-size" id="fileSize">2.5 MB</div>
+                </div>
+                <button class="remove-file" onclick="removeFile()">Remove</button>
+            </div>
+        </div>
+
+        <!-- Processing Indicator -->
+        <div class="processing-indicator" id="processingIndicator">
+            <div class="spinner"></div>
+            <div class="processing-text">Processing your resume...</div>
+            <div class="processing-hint">Our AI is extracting your information. This may take 10-20 seconds.</div>
+        </div>
+
+        <!-- Success Indicator -->
+        <div class="success-indicator" id="successIndicator">
+            <div class="success-icon">✅</div>
+            <div class="success-text">Resume Processed Successfully!</div>
+            <div class="success-hint">We've extracted the following information:</div>
+            <div class="extracted-data" id="extractedData">
+                <div class="extracted-item">
+                    <span class="extracted-label">Name:</span>
+                    <span class="extracted-value" id="extractedName">John Doe</span>
+                </div>
+                <div class="extracted-item">
+                    <span class="extracted-label">Email:</span>
+                    <span class="extracted-value" id="extractedEmail">john.doe@email.com</span>
+                </div>
+                <div class="extracted-item">
+                    <span class="extracted-label">Phone:</span>
+                    <span class="extracted-value" id="extractedPhone">+1 (555) 123-4567</span>
+                </div>
+                <div class="extracted-item">
+                    <span class="extracted-label">Current Role:</span>
+                    <span class="extracted-value" id="extractedRole">Senior Software Engineer</span>
+                </div>
+                <div class="extracted-item">
+                    <span class="extracted-label">Experience:</span>
+                    <span class="extracted-value" id="extractedExperience">8 years</span>
+                </div>
+                <div class="extracted-item">
+                    <span class="extracted-label">Skills Found:</span>
+                    <span class="extracted-value" id="extractedSkills">12 skills</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="backBtn" onclick="goBack()" style="display: none;">Back</button>
+            <button class="btn btn-primary" id="uploadBtn" disabled onclick="uploadResume()">Upload & Process</button>
+            <button class="btn btn-primary" id="continueBtn" onclick="continueToProfile()" style="display: none;">Continue to Profile</button>
+        </div>
+
+        <div class="skip-link">
+            <a href="individual/profile.html" id="skipLink">Skip for now (I'll upload later)</a>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        // Drag and drop functionality
+        const uploadSection = document.getElementById('uploadSection');
+
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#667eea';
+            uploadSection.style.background = 'linear-gradient(135deg, #f0f4ff, #e9ecff)';
+        });
+
+        uploadSection.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#cbd5e1';
+            uploadSection.style.background = 'linear-gradient(135deg, #f8fafc, #f1f5f9)';
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.style.borderColor = '#cbd5e1';
+            uploadSection.style.background = 'linear-gradient(135deg, #f8fafc, #f1f5f9)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/pdf' || file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                    handleFileSelect({ target: { files: [file] } });
+                } else {
+                    alert('Please upload a PDF, DOC, or DOCX file.');
+                }
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Check file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size exceeds 5MB. Please upload a smaller file.');
+                return;
+            }
+
+            selectedFile = file;
+
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileSelected').classList.add('show');
+            document.getElementById('uploadBtn').disabled = false;
+
+            // Hide upload section
+            document.getElementById('uploadSection').style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('fileSelected').classList.remove('show');
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('resumeFile').value = '';
+        }
+
+        function goBack() {
+            // Reset to upload state
+            document.getElementById('processingIndicator').classList.remove('show');
+            document.getElementById('successIndicator').classList.remove('show');
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('uploadBtn').style.display = 'block';
+            document.getElementById('continueBtn').style.display = 'none';
+            document.getElementById('skipLink').style.display = 'block';
+            removeFile();
+        }
+
+        async function uploadResume() {
+            if (!selectedFile) return;
+
+            // Hide upload button and file selected
+            document.getElementById('uploadBtn').style.display = 'none';
+            document.getElementById('fileSelected').classList.remove('show');
+            document.getElementById('skipLink').style.display = 'none';
+
+            // Show processing indicator
+            document.getElementById('processingIndicator').classList.add('show');
+
+            // Simulate AI processing (replace with actual API call)
+            await simulateAIProcessing();
+
+            // Hide processing, show success
+            document.getElementById('processingIndicator').classList.remove('show');
+            document.getElementById('successIndicator').classList.add('show');
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('continueBtn').style.display = 'block';
+
+            // Store that resume has been uploaded
+            localStorage.setItem('resumeUploaded', 'true');
+            localStorage.setItem('resumeFileName', selectedFile.name);
+        }
+
+        async function simulateAIProcessing() {
+            // Simulate API call with delay
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate extracted data (this would come from backend AI)
+                    const mockData = {
+                        name: 'John Doe',
+                        email: 'john.doe@email.com',
+                        phone: '+1 (555) 123-4567',
+                        role: 'Senior Software Engineer',
+                        experience: '8 years',
+                        skills: '12 skills (React, Node.js, Python, AWS, Docker, etc.)'
+                    };
+
+                    // Update UI with extracted data
+                    document.getElementById('extractedName').textContent = mockData.name;
+                    document.getElementById('extractedEmail').textContent = mockData.email;
+                    document.getElementById('extractedPhone').textContent = mockData.phone;
+                    document.getElementById('extractedRole').textContent = mockData.role;
+                    document.getElementById('extractedExperience').textContent = mockData.experience;
+                    document.getElementById('extractedSkills').textContent = mockData.skills;
+
+                    // Store extracted data
+                    localStorage.setItem('extractedResumeData', JSON.stringify(mockData));
+
+                    resolve();
+                }, 3000); // 3 second delay to simulate processing
+            });
+        }
+
+        function continueToProfile() {
+            // Mark onboarding as complete
+            localStorage.setItem('onboardingComplete', 'true');
+            
+            // Redirect to profile page
+            window.location.href = 'individual/profile.html';
+        }
+
+        // Check if already onboarded
+        window.addEventListener('DOMContentLoaded', () => {
+            const onboardingComplete = localStorage.getItem('onboardingComplete');
+            const resumeUploaded = localStorage.getItem('resumeUploaded');
+            
+            if (onboardingComplete === 'true' || resumeUploaded === 'true') {
+                // Already onboarded, redirect to profile
+                window.location.href = 'individual/profile.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheets - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search timesheets...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Timesheets</h1>
+                <p>Review and approve time entries</p>
+            </div>
+            <button class="btn btn-primary">Submit Timesheet</button>
+        </div>
+        <div class="stats-cards-row">
+            <div class="stat-card-colored blue">
+                <div class="stat-card-content">
+                    <h3>This Week</h3>
+                    <p class="stat-number">42h</p>
+                    <p class="stat-change positive">On track</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored green">
+                <div class="stat-card-content">
+                    <h3>Approved</h3>
+                    <p class="stat-number">156h</p>
+                    <p class="stat-change positive">This month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored orange">
+                <div class="stat-card-content">
+                    <h3>Pending Approval</h3>
+                    <p class="stat-number">24h</p>
+                    <p class="stat-change neutral">Awaiting review</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card-colored purple">
+                <div class="stat-card-content">
+                    <h3>Billable Hours</h3>
+                    <p class="stat-number">$6,240</p>
+                    <p class="stat-change positive">This month</p>
+                </div>
+                <div class="stat-card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2>Time Entries</h2>
+                <div class="filter-controls">
+                    <select class="form-select" id="statusFilter" onchange="filterTimesheets()">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="bulkApproveTimesheets()" style="margin-left: 12px;">
+                        Approve All Pending
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>Employee</th>
+                            <th>Project</th>
+                            <th>Date</th>
+                            <th>Hours</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timesheetsTableBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Reject Reason Modal -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reject Timesheet</h2>
+                <button class="close-modal" onclick="closeModal('rejectModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Reason for Rejection *</label>
+                    <textarea id="rejectReason" class="form-input" rows="4" placeholder="Please provide a reason..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rejectModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmReject()">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Reason Modal -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reject Timesheet</h2>
+                <button class="close-modal" onclick="closeModal('rejectModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Reason for Rejection *</label>
+                    <textarea id="rejectReason" class="form-input" rows="4" placeholder="Please provide a reason..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rejectModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmReject()">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        // Initialize userType and navigation
+        localStorage.setItem('userType', 'company');
+        generateNavigation('timesheets');
+
+        // Initialize timesheets data (demo data)
+        function initializeTimesheets() {
+            if (!localStorage.getItem('timesheets')) {
+                const demoTimesheets = [
+                    {
+                        id: 'ts_001',
+                        employeeId: 'emp_001',
+                        employeeName: 'John Smith',
+                        employeeAvatar: 'https://i.pravatar.cc/150?img=2',
+                        projectId: 'proj_001',
+                        projectName: 'Website Redesign',
+                        date: '2025-11-13',
+                        hours: 8,
+                        hourlyRate: 45,
+                        description: 'Frontend development - implemented responsive navigation',
+                        status: 'pending',
+                        submittedDate: '2025-11-13',
+                        reviewedBy: null,
+                        reviewedDate: null,
+                        rejectReason: null
+                    },
+                    {
+                        id: 'ts_002',
+                        employeeId: 'emp_002',
+                        employeeName: 'Sarah Johnson',
+                        employeeAvatar: 'https://i.pravatar.cc/150?img=3',
+                        projectId: 'proj_002',
+                        projectName: 'Mobile App',
+                        date: '2025-11-12',
+                        hours: 7.5,
+                        hourlyRate: 50,
+                        description: 'UI design updates - refined dashboard layouts',
+                        status: 'approved',
+                        submittedDate: '2025-11-12',
+                        reviewedBy: 'Admin',
+                        reviewedDate: '2025-11-12',
+                        rejectReason: null
+                    },
+                    {
+                        id: 'ts_003',
+                        employeeId: 'emp_003',
+                        employeeName: 'Michael Chen',
+                        employeeAvatar: 'https://i.pravatar.cc/150?img=4',
+                        projectId: 'proj_001',
+                        projectName: 'Website Redesign',
+                        date: '2025-11-13',
+                        hours: 6,
+                        hourlyRate: 40,
+                        description: 'Backend API integration',
+                        status: 'pending',
+                        submittedDate: '2025-11-13',
+                        reviewedBy: null,
+                        reviewedDate: null,
+                        rejectReason: null
+                    },
+                    {
+                        id: 'ts_004',
+                        employeeId: 'emp_001',
+                        employeeName: 'John Smith',
+                        employeeAvatar: 'https://i.pravatar.cc/150?img=2',
+                        projectId: 'proj_001',
+                        projectName: 'Website Redesign',
+                        date: '2025-11-12',
+                        hours: 8,
+                        hourlyRate: 45,
+                        description: 'Component development',
+                        status: 'approved',
+                        submittedDate: '2025-11-12',
+                        reviewedBy: 'Admin',
+                        reviewedDate: '2025-11-12',
+                        rejectReason: null
+                    }
+                ];
+                localStorage.setItem('timesheets', JSON.stringify(demoTimesheets));
+            }
+        }
+
+        // Load and display timesheets
+        function loadTimesheets() {
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            const tbody = document.getElementById('timesheetsTableBody');
+            tbody.innerHTML = '';
+
+            const statusFilter = document.getElementById('statusFilter').value;
+            const filteredTimesheets = statusFilter 
+                ? timesheets.filter(ts => ts.status === statusFilter)
+                : timesheets;
+
+            filteredTimesheets.forEach(timesheet => {
+                const amount = timesheet.hours * timesheet.hourlyRate;
+                const row = `
+                    <tr data-timesheet-id="${timesheet.id}">
+                        <td>
+                            <input type="checkbox" class="timesheet-checkbox" value="${timesheet.id}" 
+                                ${timesheet.status !== 'pending' ? 'disabled' : ''}>
+                        </td>
+                        <td>
+                            <div class="company-info">
+                                <img src="${timesheet.employeeAvatar}" class="company-logo-sm" alt="${timesheet.employeeName}">
+                                <span>${timesheet.employeeName}</span>
+                            </div>
+                        </td>
+                        <td>${timesheet.projectName}</td>
+                        <td>${formatDate(timesheet.date)}</td>
+                        <td><strong>${timesheet.hours}h</strong></td>
+                        <td>$${timesheet.hourlyRate}/hr</td>
+                        <td><strong>$${amount.toFixed(2)}</strong></td>
+                        <td>${timesheet.description}</td>
+                        <td><span class="status-badge ${timesheet.status}">${capitalize(timesheet.status)}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                ${timesheet.status === 'pending' ? `
+                                    <button class="btn-icon" style="color: var(--success);" 
+                                        onclick="approveTimesheet('${timesheet.id}')" title="Approve">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon danger" 
+                                        onclick="rejectTimesheet('${timesheet.id}')" title="Reject">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </svg>
+                                    </button>
+                                ` : `
+                                    <button class="btn-icon" onclick="viewTimesheetDetails('${timesheet.id}')" title="View Details">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                        </svg>
+                                    </button>
+                                `}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            updateStats();
+        }
+
+        // Update statistics cards
+        function updateStats() {
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            
+            // Calculate stats
+            const thisWeekHours = timesheets
+                .filter(ts => isThisWeek(ts.date))
+                .reduce((sum, ts) => sum + ts.hours, 0);
+            
+            const approvedHours = timesheets
+                .filter(ts => ts.status === 'approved')
+                .reduce((sum, ts) => sum + ts.hours, 0);
+            
+            const pendingHours = timesheets
+                .filter(ts => ts.status === 'pending')
+                .reduce((sum, ts) => sum + ts.hours, 0);
+            
+            const billableAmount = timesheets
+                .filter(ts => ts.status === 'approved')
+                .reduce((sum, ts) => sum + (ts.hours * ts.hourlyRate), 0);
+
+            // Update stat cards
+            document.querySelectorAll('.stat-number')[0].textContent = `${thisWeekHours}h`;
+            document.querySelectorAll('.stat-number')[1].textContent = `${approvedHours}h`;
+            document.querySelectorAll('.stat-number')[2].textContent = `${pendingHours}h`;
+            document.querySelectorAll('.stat-number')[3].textContent = `$${billableAmount.toLocaleString()}`;
+        }
+
+        // Approve single timesheet
+        function approveTimesheet(timesheetId) {
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            const timesheet = timesheets.find(ts => ts.id === timesheetId);
+            
+            if (!timesheet) return;
+
+            // Update timesheet status
+            timesheet.status = 'approved';
+            timesheet.reviewedBy = 'Current User'; // In real app, get from auth
+            timesheet.reviewedDate = new Date().toISOString().split('T')[0];
+            
+            localStorage.setItem('timesheets', JSON.stringify(timesheets));
+
+            // Auto-generate invoice
+            generateInvoiceFromTimesheet(timesheet);
+
+            // Show success message
+            showNotification('Timesheet approved and invoice generated successfully!', 'success');
+
+            // Reload table
+            loadTimesheets();
+        }
+
+        // Reject timesheet (show modal for reason)
+        let currentRejectId = null;
+        function rejectTimesheet(timesheetId) {
+            currentRejectId = timesheetId;
+            openModal('rejectModal');
+        }
+
+        // Confirm rejection with reason
+        function confirmReject() {
+            const reason = document.getElementById('rejectReason').value.trim();
+            
+            if (!reason) {
+                alert('Please provide a reason for rejection');
+                return;
+            }
+
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            const timesheet = timesheets.find(ts => ts.id === currentRejectId);
+            
+            if (timesheet) {
+                timesheet.status = 'rejected';
+                timesheet.reviewedBy = 'Current User';
+                timesheet.reviewedDate = new Date().toISOString().split('T')[0];
+                timesheet.rejectReason = reason;
+                
+                localStorage.setItem('timesheets', JSON.stringify(timesheets));
+                
+                showNotification('Timesheet rejected successfully', 'success');
+                loadTimesheets();
+            }
+
+            // Close modal and reset
+            closeModal('rejectModal');
+            document.getElementById('rejectReason').value = '';
+            currentRejectId = null;
+        }
+
+        // Bulk approve selected timesheets
+        function bulkApproveTimesheets() {
+            const checkboxes = document.querySelectorAll('.timesheet-checkbox:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('Please select at least one timesheet to approve');
+                return;
+            }
+
+            const timesheetIds = Array.from(checkboxes).map(cb => cb.value);
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            
+            let approvedCount = 0;
+            timesheetIds.forEach(id => {
+                const timesheet = timesheets.find(ts => ts.id === id);
+                if (timesheet && timesheet.status === 'pending') {
+                    timesheet.status = 'approved';
+                    timesheet.reviewedBy = 'Current User';
+                    timesheet.reviewedDate = new Date().toISOString().split('T')[0];
+                    
+                    // Auto-generate invoice for each
+                    generateInvoiceFromTimesheet(timesheet);
+                    approvedCount++;
+                }
+            });
+
+            localStorage.setItem('timesheets', JSON.stringify(timesheets));
+            
+            showNotification(`${approvedCount} timesheet(s) approved and invoices generated!`, 'success');
+            loadTimesheets();
+        }
+
+        // Toggle select all checkboxes
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.timesheet-checkbox:not(:disabled)');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+
+        // Generate invoice from approved timesheet
+        function generateInvoiceFromTimesheet(timesheet) {
+            const invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+            
+            const amount = timesheet.hours * timesheet.hourlyRate;
+            const tax = amount * 0.1; // 10% tax
+            const total = amount + tax;
+
+            // Check if invoice already exists for this timesheet
+            const existingInvoice = invoices.find(inv => 
+                inv.timesheetIds && inv.timesheetIds.includes(timesheet.id)
+            );
+
+            if (existingInvoice) {
+                console.log('Invoice already exists for this timesheet');
+                return;
+            }
+
+            // Create new invoice
+            const newInvoice = {
+                id: `inv_${Date.now()}`,
+                invoiceNumber: `INV-${String(invoices.length + 1).padStart(4, '0')}`,
+                projectName: timesheet.projectName,
+                projectId: timesheet.projectId,
+                clientName: 'Client Name', // In real app, get from project data
+                amount: amount,
+                tax: tax,
+                total: total,
+                status: 'pending',
+                issueDate: new Date().toISOString().split('T')[0],
+                dueDate: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], // 30 days from now
+                timesheetIds: [timesheet.id],
+                employeeName: timesheet.employeeName,
+                hours: timesheet.hours,
+                hourlyRate: timesheet.hourlyRate,
+                description: `Time logged on ${formatDate(timesheet.date)} - ${timesheet.description}`,
+                createdDate: new Date().toISOString().split('T')[0]
+            };
+
+            invoices.push(newInvoice);
+            localStorage.setItem('invoices', JSON.stringify(invoices));
+        }
+
+        // Filter timesheets by status
+        function filterTimesheets() {
+            loadTimesheets();
+        }
+
+        // View timesheet details
+        function viewTimesheetDetails(timesheetId) {
+            const timesheets = JSON.parse(localStorage.getItem('timesheets') || '[]');
+            const timesheet = timesheets.find(ts => ts.id === timesheetId);
+            
+            if (timesheet) {
+                const details = `
+                    Employee: ${timesheet.employeeName}
+                    Project: ${timesheet.projectName}
+                    Date: ${formatDate(timesheet.date)}
+                    Hours: ${timesheet.hours}h
+                    Rate: $${timesheet.hourlyRate}/hr
+                    Amount: $${(timesheet.hours * timesheet.hourlyRate).toFixed(2)}
+                    Status: ${capitalize(timesheet.status)}
+                    Description: ${timesheet.description}
+                    ${timesheet.reviewedBy ? `\nReviewed by: ${timesheet.reviewedBy}` : ''}
+                    ${timesheet.reviewedDate ? `\nReviewed on: ${formatDate(timesheet.reviewedDate)}` : ''}
+                    ${timesheet.rejectReason ? `\nRejection Reason: ${timesheet.rejectReason}` : ''}
+                `;
+                alert(details);
+            }
+        }
+
+        // Utility functions
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function isThisWeek(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+            const weekEnd = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+            return date >= weekStart && date <= weekEnd;
+        }
+
+        function showNotification(message, type) {
+            // Simple notification (in real app, use toast library)
+            alert(message);
+        }
+
+        // Initialize on page load
+        initializeTimesheets();
+        loadTimesheets();
+    </script>
+</body>
+</html>

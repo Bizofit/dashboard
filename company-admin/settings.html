@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Bizoforce Platform</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+                <div class="sidebar-logo-icon">B</div>
+                <div class="sidebar-logo-text">Bizoforce</div>
+            </div>
+        </div>
+        <nav class="sidebar-menu"></nav>
+    </aside>
+    <header class="top-bar">
+        <div class="search-bar">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" placeholder="Search settings...">
+        </div>
+        <div class="user-section">
+            <div class="wallet">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>$12,450</span>
+            </div>
+            <div class="notifications">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span class="badge">8</span>
+            </div>
+            <div class="user-avatar">
+                <img src="https://i.pravatar.cc/150?img=1" alt="User">
+            </div>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="page-header">
+            <div>
+                <h1>Settings</h1>
+                <p>Manage your account and preferences</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('profile')">Profile</button>
+                    <button class="tab-btn" onclick="switchTab('notifications')">Notifications</button>
+                    <button class="tab-btn" onclick="switchTab('security')">Security</button>
+                    <button class="tab-btn" onclick="switchTab('billing')">Billing</button>
+                </div>
+                <div class="tab-content active" id="profile">
+                    <h3 style="margin-bottom: 20px;">Profile Information</h3>
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" class="form-input" value="Admin">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" class="form-input" value="User">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-input" value="admin@bizoforce.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" class="form-input" value="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" class="form-textarea" rows="4">Platform administrator managing recruitment operations.</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+                <div class="tab-content" id="notifications">
+                    <h3 style="margin-bottom: 20px;">Notification Preferences</h3>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 600;">Email Notifications</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">Receive email updates about your account</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 600;">New Applications</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">Get notified when candidates apply to jobs</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" style="width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 600;">Weekly Reports</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">Receive weekly activity summaries</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 600;">Invoice Reminders</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">Get reminders for upcoming payments</div>
+                            </div>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 24px;">Save Preferences</button>
+                </div>
+                <div class="tab-content" id="security">
+                    <h3 style="margin-bottom: 20px;">Security Settings</h3>
+                    <form>
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="form-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </form>
+                    <hr style="border: none; border-top: 1px solid var(--border-light); margin: 32px 0;">
+                    <h3 style="margin-bottom: 16px;">Two-Factor Authentication</h3>
+                    <p style="color: var(--text-gray); margin-bottom: 16px;">Add an extra layer of security to your account</p>
+                    <button class="btn btn-secondary">Enable 2FA</button>
+                </div>
+                <div class="tab-content" id="billing">
+                    <h3 style="margin-bottom: 20px;">Billing Information</h3>
+                    <div style="background: var(--bg-light); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="color: var(--text-gray);">Current Plan</span>
+                            <strong style="color: var(--primary-blue);">Enterprise</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="color: var(--text-gray);">Billing Cycle</span>
+                            <strong>Annual</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-gray);">Next Payment</span>
+                            <strong>Dec 1, 2025 - $3,588</strong>
+                        </div>
+                    </div>
+                    <h3 style="margin-bottom: 16px;">Payment Method</h3>
+                    <div style="background: white; border: 1px solid var(--border-light); padding: 16px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 48px; height: 32px; background: var(--bg-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary-blue);">VISA</div>
+                            <div>
+                                <div style="font-weight: 600;">•••• 4242</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">Expires 12/26</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-sm">Update</button>
+                    </div>
+                    <button class="btn btn-secondary">View Billing History</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../assets/js/dashboard.js"></script>
+    <script>localStorage.setItem('userType', 'company'); generateNavigation('settings');</script>
+</body>
+</html>

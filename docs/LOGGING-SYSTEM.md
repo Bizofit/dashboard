@@ -31,9 +31,9 @@ const logger = require('./config/logger');
 logger.info('User logged in', { userId: 123, email: 'user@example.com' });
 
 // Log errors
-logger.error('Database connection failed', { 
-  error: error.message, 
-  stack: error.stack 
+logger.error('Database connection failed', {
+  error: error.message,
+  stack: error.stack
 });
 
 // Log warnings
@@ -66,16 +66,16 @@ Track specific user actions:
 const { actionLogger } = require('./middleware/logging-middleware');
 
 // Track job creation
-router.post('/jobs', 
-  authenticate, 
-  actionLogger('create-job'), 
+router.post('/jobs',
+  authenticate,
+  actionLogger('create-job'),
   createJobHandler
 );
 
 // Track invoice generation
-router.post('/invoices', 
-  authenticate, 
-  actionLogger('generate-invoice'), 
+router.post('/invoices',
+  authenticate,
+  actionLogger('generate-invoice'),
   generateInvoiceHandler
 );
 ```
@@ -329,7 +329,7 @@ Edit `backend/config/logger.js`:
 ### Frontend Configuration
 Edit `assets/js/logger.js`:
 ```javascript
-this.apiEndpoint = 'http://localhost:3000/api/logs'; // Backend endpoint
+this.apiEndpoint = 'http://localhost:3006/api/logs'; // Backend endpoint
 this.batchSize = 10;      // Logs per batch
 this.flushInterval = 5000; // Flush every 5 seconds
 ```

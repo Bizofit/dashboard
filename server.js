@@ -4,12 +4,14 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const session = require('express-session');
+const passport = require('./config/passport');
 const { testConnections } = require('./config/database');
 const logger = require('./config/logger');
 const { requestLogger, errorLogger } = require('./middleware/logging-middleware');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3006;
 
 // ============================================
 // LOGGING SETUP
@@ -26,7 +28,14 @@ app.use(requestLogger);
 // ============================================
 
 // Helmet - Security headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy:{
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "http://localhost:3006"], // Allow connections to port 3006
+    },
+  }
+}));
 
 // CORS - Allow frontend to access API
 const corsOptions = {
@@ -36,7 +45,8 @@ const corsOptions = {
     'http://localhost:5173', // Vite dev server
     'http://localhost:5500',
     'http://127.0.0.1:5173',
-    'http://127.0.0.1:5500'
+    'http://127.0.0.1:5500',
+    'http://localhost:3006' // Allow API access from port 3006
   ],
   credentials: true,
   optionsSuccessStatus: 200
@@ -56,6 +66,23 @@ app.use('/api/', limiter);
 // ============================================
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ============================================
+// SESSION & PASSPORT SETUP
+// ============================================
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ============================================
 // SERVE STATIC FILES (Frontend)
@@ -184,10 +211,10 @@ app.use((err, req, res, next) => {
     url: req.url,
     method: req.method
   });
-  
+
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  
+
   res.status(statusCode).json({
     error: message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
@@ -200,17 +227,17 @@ app.use((err, req, res, next) => {
 async function startServer() {
   try {
     logger.info('🚀 Starting Bizoforce Unified Dashboard API...');
-    
+
     // Test database connections
     const dbStatus = await testConnections();
-    
+
     const connectedCount = Object.values(dbStatus).filter(Boolean).length;
     const totalCount = Object.keys(dbStatus).length;
-    
+
     if (connectedCount === 0) {
       logger.warn('No database connections available - Please configure .env file');
     }
-    
+
     // Start Express server
     app.listen(PORT, () => {
       logger.info(`✅ Server running on http://localhost:${PORT}`);
@@ -219,7 +246,7 @@ async function startServer() {
       logger.info(`📚 API Documentation: http://localhost:${PORT}`);
       logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
     });
-    
+
   } catch (err) {
     logger.error('Failed to start server', { error: err.message, stack: err.stack });
     process.exit(1);

@@ -12,12 +12,8 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     setLoading(true);
-    // Simulate Google OAuth
-    setTimeout(() => {
-      setEmail('demo@example.com');
-      setShowUserTypeModal(true);
-      setLoading(false);
-    }, 1500);
+    // Redirect to backend Google OAuth endpoint
+    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3006'}/api/auth/google`;
   };
 
   const handleBypassLogin = async () => {
@@ -42,7 +38,7 @@ export default function Login() {
     try {
       // Login with sudh013@gmail.com credentials
       const result = await login('sudh013@gmail.com', 'test123');
-      
+
       if (result.success) {
         if (selectedUserType === 'business') {
           navigate('/dashboard');

@@ -18,7 +18,7 @@
 
 ### Base URL
 ```
-http://localhost:3000/api/auth
+http://localhost:3006/api/auth
 ```
 
 ---
@@ -242,7 +242,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### Register
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:3006/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -255,7 +255,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 ### Login
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:3006/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -265,7 +265,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 ### Get Profile (replace TOKEN with actual token)
 ```bash
-curl -X GET http://localhost:3000/api/auth/me \
+curl -X GET http://localhost:3006/api/auth/me \
   -H "Authorization: Bearer TOKEN"
 ```
 
@@ -283,7 +283,7 @@ $body = @{
   userType = "individual"
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "http://localhost:3000/api/auth/register" `
+Invoke-RestMethod -Uri "http://localhost:3006/api/auth/register" `
   -Method Post `
   -ContentType "application/json" `
   -Body $body
@@ -296,7 +296,7 @@ $body = @{
   password = "password123"
 } | ConvertTo-Json
 
-$response = Invoke-RestMethod -Uri "http://localhost:3000/api/auth/login" `
+$response = Invoke-RestMethod -Uri "http://localhost:3006/api/auth/login" `
   -Method Post `
   -ContentType "application/json" `
   -Body $body
@@ -311,7 +311,7 @@ $headers = @{
   Authorization = "Bearer $token"
 }
 
-Invoke-RestMethod -Uri "http://localhost:3000/api/auth/me" `
+Invoke-RestMethod -Uri "http://localhost:3006/api/auth/me" `
   -Method Get `
   -Headers $headers
 ```

@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_BASE = 'http://localhost:3000/api/auth';
+const API_BASE = 'http://localhost:3006/api/auth';
 
 // Colors for console output
 const colors = {

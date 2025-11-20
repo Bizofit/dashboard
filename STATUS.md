@@ -47,7 +47,7 @@ All 6 endpoints working:
 node test-auth-api.js
 
 # Test specific endpoints
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:3006/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123","firstName":"Test","lastName":"User","userType":"individual"}'
 ```
@@ -152,13 +152,13 @@ D:\backend\
 
 ### 🎯 Current Status
 
-**Infrastructure**: 🟢 100% Complete  
-**Authentication**: 🟢 100% Complete (6/6 endpoints)  
-**WooCommerce**: 🔴 0% (Waiting for API keys)  
-**Jobs**: 🔴 0%  
-**Projects**: 🔴 0%  
-**Timesheets**: 🔴 0%  
-**Dashboard**: 🔴 0%  
+**Infrastructure**: 🟢 100% Complete
+**Authentication**: 🟢 100% Complete (6/6 endpoints)
+**WooCommerce**: 🔴 0% (Waiting for API keys)
+**Jobs**: 🔴 0%
+**Projects**: 🔴 0%
+**Timesheets**: 🔴 0%
+**Dashboard**: 🔴 0%
 **Frontend**: 🔴 0%
 
 **Overall Progress**: 30% Complete

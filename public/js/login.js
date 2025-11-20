@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:3006/api';
 let selectedUserType = 'company';
 
 // User Type Selection
@@ -16,7 +16,7 @@ function showAlert(message, type = 'error') {
     const alert = document.getElementById('alertMessage');
     alert.textContent = message;
     alert.className = `alert ${type} show`;
-    
+
     setTimeout(() => {
         alert.classList.remove('show');
     }, 5000);
@@ -25,7 +25,7 @@ function showAlert(message, type = 'error') {
 // Handle Login Form Submit
 async function handleLogin(event) {
     event.preventDefault();
-    
+
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const rememberMe = document.getElementById('rememberMe').checked;
@@ -106,10 +106,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // ⚠️ TESTING BYPASS - REMOVE ON PRODUCTION
     const urlParams = new URLSearchParams(window.location.search);
     const testUser = urlParams.get('test');
-    
+
     if (testUser === 'sudh013@gmail.com') {
         console.log('🔓 TEST MODE: Bypassing login for sudh013@gmail.com');
-        
+
         // Set test user credentials
         localStorage.setItem('authToken', 'TEST_TOKEN_' + Date.now());
         localStorage.setItem('userType', 'company');
@@ -119,7 +119,7 @@ window.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('currentRole', 'company_admin');
         localStorage.setItem('currentCompanyId', '26');
         localStorage.setItem('availableRoles', 'company_admin,vendor,freelancer,team_member');
-        
+
         // Show modern modal instead of alert
         const modal = document.getElementById('testModeModal');
         if (modal) {
@@ -140,7 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Auto-fill email if remembered
     const rememberMe = localStorage.getItem('rememberMe');
     const savedEmail = localStorage.getItem('userEmail');
-    
+
     if (rememberMe === 'true' && savedEmail) {
         document.getElementById('email').value = savedEmail;
         document.getElementById('rememberMe').checked = true;

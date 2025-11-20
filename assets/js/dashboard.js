@@ -21,10 +21,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+  // Log app initialization
+  if (window.logger) {
+    logger.info('Dashboard initialized');
+  }
+  
   // Load saved role from localStorage
   const savedRole = localStorage.getItem('userRole');
   if (savedRole) {
     currentRole = savedRole;
+    if (window.logger) {
+      logger.info('User role loaded', { role: savedRole });
+    }
   }
   
   generateNavigation();

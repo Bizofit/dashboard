@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { unifiedDB } = require('../config/database');
+const logger = require('../config/logger');
+const { authLogger } = require('../middleware/logging-middleware');
 
 /**
  * Authentication Service
@@ -46,7 +48,7 @@ async function register(userData) {
     const userId = result.insertId;
 
     // Return user data (without password hash)
-    return {
+    const userData = {
       id: userId,
       email,
       firstName,
@@ -56,8 +58,14 @@ async function register(userData) {
       googleId
     };
 
+    authLogger('register', userId, email, true, 'New user registration');
+    logger.info('User registered successfully', { userId, email, userType });
+
+    return userData;
+
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error', { email, error: error.message });
+    authLogger('register', null, email, false, error.message);
     throw error;
   }
 }
@@ -98,6 +106,7 @@ async function login(email, password) {
 
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
+      authLogger('login', user.id, email, false, 'Invalid password');
       throw new Error('Invalid email or password');
     }
 
@@ -120,6 +129,9 @@ async function login(email, password) {
       }
     });
 
+    authLogger('login', user.id, email, true, 'Successful login');
+    logger.info('User logged in successfully', { userId: user.id, email, userType: user.user_type });
+
     return {
       user: {
         id: user.id,
@@ -132,7 +144,10 @@ async function login(email, password) {
     };
 
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error', { email, error: error.message });
+    if (error.message !== 'Invalid email or password' && error.message !== 'Account is disabled') {
+      authLogger('login', null, email, false, error.message);
+    }
     throw error;
   }
 }

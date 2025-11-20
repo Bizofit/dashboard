@@ -3,10 +3,23 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
 const { testConnections } = require('./config/database');
+const logger = require('./config/logger');
+const { requestLogger, errorLogger } = require('./middleware/logging-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ============================================
+// LOGGING SETUP
+// ============================================
+
+// HTTP request logging with Morgan
+app.use(morgan('combined', { stream: logger.stream }));
+
+// Custom request/response logger
+app.use(requestLogger);
 
 // ============================================
 // SECURITY MIDDLEWARE
@@ -81,6 +94,7 @@ app.get('/health', (req, res) => {
 
 // Import route modules
 const authRoutes = require('./routes/auth-routes');
+const logsRoutes = require('./routes/logs-routes');
 
 // API info route (moved from root to /api/info)
 app.get('/api/info', (req, res) => {
@@ -104,6 +118,9 @@ app.get('/api/info', (req, res) => {
 
 // Mount authentication routes
 app.use('/api/auth', authRoutes);
+
+// Mount logs routes
+app.use('/api', logsRoutes);
 
 // Products/Marketplace routes (placeholder)
 app.get('/api/products', (req, res) => {
@@ -155,8 +172,18 @@ app.use((req, res, next) => {
 // ============================================
 // ERROR HANDLER
 // ============================================
+
+// Error logging middleware
+app.use(errorLogger);
+
+// Error response handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method
+  });
   
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
@@ -172,7 +199,7 @@ app.use((err, req, res, next) => {
 // ============================================
 async function startServer() {
   try {
-    console.log('\n🚀 Starting Bizoforce Unified Dashboard API...\n');
+    logger.info('🚀 Starting Bizoforce Unified Dashboard API...');
     
     // Test database connections
     const dbStatus = await testConnections();
@@ -181,33 +208,32 @@ async function startServer() {
     const totalCount = Object.keys(dbStatus).length;
     
     if (connectedCount === 0) {
-      console.log('⚠️  Warning: No database connections available');
-      console.log('   Please configure your .env file with database credentials\n');
+      logger.warn('No database connections available - Please configure .env file');
     }
     
     // Start Express server
     app.listen(PORT, () => {
-      console.log(`✅ Server running on http://localhost:${PORT}`);
-      console.log(`   Environment: ${process.env.NODE_ENV}`);
-      console.log(`   Database Status: ${connectedCount}/${totalCount} connected`);
-      console.log(`\n📚 API Documentation: http://localhost:${PORT}`);
-      console.log(`🏥 Health Check: http://localhost:${PORT}/health\n`);
+      logger.info(`✅ Server running on http://localhost:${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
+      logger.info(`Database Status: ${connectedCount}/${totalCount} connected`);
+      logger.info(`📚 API Documentation: http://localhost:${PORT}`);
+      logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
     });
     
   } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
+    logger.error('Failed to start server', { error: err.message, stack: err.stack });
     process.exit(1);
   }
 }
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('\n⚠️  SIGTERM signal received: closing HTTP server');
+  logger.info('⚠️  SIGTERM signal received: closing HTTP server');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('\n⚠️  SIGINT signal received: closing HTTP server');
+  logger.info('⚠️  SIGINT signal received: closing HTTP server');
   process.exit(0);
 });
 

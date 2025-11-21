@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const session = require('express-session');
 const passport = require('./config/passport');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const { testConnections } = require('./config/database');
 const logger = require('./config/logger');
 const { requestLogger, errorLogger } = require('./middleware/logging-middleware');
@@ -32,7 +34,10 @@ app.use(helmet({
   contentSecurityPolicy:{
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "http://localhost:3006"], // Allow connections to port 3006
+      connectSrc: ["'self'", "http://localhost:3006"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Allow Swagger UI inline scripts
+      styleSrc: ["'self'", "'unsafe-inline'"], // Allow Swagger UI inline styles
+      imgSrc: ["'self'", "data:", "https:"], // Allow Swagger UI images
     },
   }
 }));
@@ -46,7 +51,7 @@ const corsOptions = {
     'http://localhost:5500',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5500',
-    'http://localhost:3006' // Allow API access from port 3006
+    'http://localhost:3006' // Allow API access from production dashboard
   ],
   credentials: true,
   optionsSuccessStatus: 200
@@ -122,6 +127,57 @@ app.get('/health', (req, res) => {
 // Import route modules
 const authRoutes = require('./routes/auth-routes');
 const logsRoutes = require('./routes/logs-routes');
+const workRoutes = require('./routes/work-routes');
+const workRoutesPart2 = require('./routes/work-routes-part2');
+
+// ============================================
+// SWAGGER API DOCUMENTATION
+// ============================================
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check endpoint
+ *     description: Check if the API server is running and responsive
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 uptime:
+ *                   type: number
+ *                   description: Server uptime in seconds
+ *                 environment:
+ *                   type: string
+ *                   example: development
+ *                 version:
+ *                   type: string
+ *                   example: 1.0.0
+ */
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Bizoforce API Documentation',
+  customfavIcon: '/favicon.ico'
+}));
+
+// Swagger JSON spec endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // API info route (moved from root to /api/info)
 app.get('/api/info', (req, res) => {
@@ -132,14 +188,14 @@ app.get('/api/info', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth (register, login, google, me, logout, refresh)',
+      work: '/api/work (users, projects, tasks, timelogs, invoices, clients, teams, reports)',
       products: '/api/products',
       jobs: '/api/jobs',
       candidates: '/api/candidates',
-      projects: '/api/projects',
-      timesheets: '/api/timesheets',
       dashboard: '/api/dashboard'
     },
-    documentation: 'Coming soon...'
+    documentation: '/api-docs (Swagger UI)',
+    openapi_spec: '/api-docs.json'
   });
 });
 
@@ -148,6 +204,10 @@ app.use('/api/auth', authRoutes);
 
 // Mount logs routes
 app.use('/api', logsRoutes);
+
+// Mount Work.Bizoforce routes (Projects, Tasks, Timesheets, Invoices, etc.)
+app.use('/api/work', workRoutes);
+app.use('/api/work', workRoutesPart2);
 
 // Products/Marketplace routes (placeholder)
 app.get('/api/products', (req, res) => {
@@ -162,16 +222,6 @@ app.get('/api/jobs', (req, res) => {
 // Candidates routes (placeholder)
 app.get('/api/candidates', (req, res) => {
   res.json({ message: 'Candidates - Coming soon' });
-});
-
-// Projects routes (placeholder)
-app.get('/api/projects', (req, res) => {
-  res.json({ message: 'Projects from Work.Bizoforce - Coming soon' });
-});
-
-// Timesheets routes (placeholder)
-app.get('/api/timesheets', (req, res) => {
-  res.json({ message: 'Timesheets - Coming soon' });
 });
 
 // Dashboard routes (placeholder)

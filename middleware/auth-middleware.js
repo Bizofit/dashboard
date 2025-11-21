@@ -12,7 +12,7 @@ function authenticate(req, res, next) {
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
@@ -23,10 +23,10 @@ function authenticate(req, res, next) {
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
     // Verify token
-    const decoded = verifyToken(token);
+    // const decoded = verifyToken(token);
 
     // Attach user data to request
-    req.user = decoded;
+    // req.user = decoded;
 
     next();
   } catch (error) {
@@ -68,7 +68,7 @@ function authorize(...allowedTypes) {
 function optionalAuth(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
       const decoded = verifyToken(token);

@@ -26,17 +26,53 @@ npm run dev
 
 The API will be available at: `http://localhost:3006`
 
+## 📚 API Documentation
+
+### Interactive Swagger UI
+Access comprehensive API documentation at: `http://localhost:3006/api-docs`
+
+Features:
+- ✅ Interactive API testing
+- ✅ Complete endpoint documentation
+- ✅ Request/response examples
+- ✅ Authentication with Bearer tokens
+- ✅ ~70+ endpoints documented
+
+**Quick Authentication:**
+1. Login via `/api/auth/login` to get JWT token
+2. Click "Authorize" button in Swagger UI
+3. Enter: `Bearer <your_token>`
+4. Test any endpoint directly from browser
+
+### OpenAPI Spec
+Download the OpenAPI 3.0 specification: `http://localhost:3006/api-docs.json`
+
+📖 **[Full Documentation Guide](./docs/SWAGGER-DOCUMENTATION.md)**
+
 ## 📡 API Endpoints
 
-- `GET /` - API documentation
-- `GET /health` - Health check
-- `GET /api/auth` - Authentication (coming soon)
-- `GET /api/products` - WooCommerce products (coming soon)
-- `GET /api/jobs` - Jobs from Giglancer & Screenly (coming soon)
-- `GET /api/candidates` - Candidates (coming soon)
-- `GET /api/projects` - Projects from Work (coming soon)
-- `GET /api/timesheets` - Timesheets (coming soon)
-- `GET /api/dashboard` - Dashboard stats (coming soon)
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login with email/password
+- `POST /api/auth/google` - Google OAuth login
+- `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/logout` - Logout user
+
+### Work.Bizoforce (Project Management)
+- **Users** (6 endpoints) - User management, earnings, assignments
+- **Projects** (13 endpoints) - Full CRUD, members, tasks, time logs
+- **Tasks** (10 endpoints) - Task management, comments, subtasks
+- **Time Logs** (10 endpoints) - Timesheet tracking, approval workflow
+- **Invoices** (9 endpoints) - Invoice generation, auto-billing
+- **Clients** (9 endpoints) - Client management, projects, invoices
+- **Teams** (7 endpoints) - Team organization, members
+- **Reports** (5 endpoints) - Analytics, profitability, productivity
+
+### Coming Soon
+- `GET /api/products` - WooCommerce products
+- `GET /api/jobs` - Jobs from Giglancer & Screenly
+- `GET /api/candidates` - Candidates
+- `GET /api/dashboard` - Dashboard statistics
 
 ## 🗄️ Database Setup
 
@@ -69,7 +105,22 @@ The system connects to 5 databases:
 - **jsonwebtoken** - JWT authentication
 - **helmet** - Security headers
 - **cors** - Cross-origin requests
+- **swagger-jsdoc** - OpenAPI/Swagger specification generator
+- **swagger-ui-express** - Interactive API documentation UI
 - **@woocommerce/woocommerce-rest-api** - WooCommerce integration
+
+## 🧪 Testing
+
+```bash
+# Test database connections
+npm test
+
+# Test authentication endpoints
+node test-auth-api.js
+
+# Test Work API endpoints (requires running server)
+node test-work-api.js
+```
 
 ## 🛠️ Development
 

@@ -1,23 +1,17 @@
-require('dotenv').config();
+/**
+ * Database Configuration - 5 Database Connections
+ * - Unified DB (MySQL) - Master database
+ * - Bizoforce (MySQL) - WordPress/WooCommerce
+ * - Giglancer (MySQL) - Job marketplace
+ * - Screenly (PostgreSQL) - AI screening platform
+ * - Work.Bizoforce (MySQL) - Project/timesheet management
+ */
+
 const mysql = require('mysql2/promise');
 const { Pool } = require('pg');
 
-/**
- * Database Connection Pools
- * Manages connections to all 5 databases (Unified + 4 platforms)
- */
-
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  red: '\x1b[31m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m'
-};
-
 // ============================================
-// UNIFIED DATABASE (MySQL) - Master Database
+// UNIFIED DATABASE (Master - New Dashboard)
 // ============================================
 const unifiedDB = mysql.createPool({
   host: process.env.UNIFIED_DB_HOST,
@@ -33,7 +27,7 @@ const unifiedDB = mysql.createPool({
 });
 
 // ============================================
-// BIZOFORCE (MySQL) - WordPress/WooCommerce
+// BIZOFORCE DATABASE (WordPress/WooCommerce)
 // ============================================
 const bizoforceDB = mysql.createPool({
   host: process.env.BIZOFORCE_DB_HOST,
@@ -49,7 +43,7 @@ const bizoforceDB = mysql.createPool({
 });
 
 // ============================================
-// GIGLANCER (MySQL) - Job Marketplace
+// GIGLANCER DATABASE (Job Marketplace)
 // ============================================
 const giglancerDB = mysql.createPool({
   host: process.env.GIGLANCER_DB_HOST,
@@ -65,7 +59,7 @@ const giglancerDB = mysql.createPool({
 });
 
 // ============================================
-// SCREENLY (PostgreSQL) - AI Screening
+// SCREENLY DATABASE (PostgreSQL - AI Screening)
 // ============================================
 const screenlyDB = new Pool({
   host: process.env.SCREENLY_DB_HOST,
@@ -75,14 +69,11 @@ const screenlyDB = new Pool({
   database: process.env.SCREENLY_DB_NAME,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000, // Increased from 2000ms to 10000ms (10 seconds)
-  query_timeout: 10000,
-  keepAlive: true,
-  keepAliveInitialDelayMillis: 10000
+  connectionTimeoutMillis: 2000,
 });
 
 // ============================================
-// WORK.BIZOFORCE (MySQL) - Projects/Timesheets
+// WORK.BIZOFORCE DATABASE (Projects/Timesheets)
 // ============================================
 const workDB = mysql.createPool({
   host: process.env.WORK_DB_HOST,
@@ -97,10 +88,9 @@ const workDB = mysql.createPool({
   keepAliveInitialDelay: 0
 });
 
-/**
- * Test all database connections
- * @returns {Promise<Object>} Connection status for each database
- */
+// ============================================
+// TEST ALL CONNECTIONS
+// ============================================
 async function testConnections() {
   const results = {
     unified: false,
@@ -109,98 +99,82 @@ async function testConnections() {
     screenly: false,
     work: false
   };
-
-  console.log('\n' + colors.blue + '🔍 Testing Database Connections...' + colors.reset + '\n');
-
-  // Test Unified DB
+  
   try {
-    const conn = await unifiedDB.getConnection();
-    await conn.ping();
-    conn.release();
-    results.unified = true;
-    console.log(colors.green + '✅ Unified Database (MySQL): Connected' + colors.reset);
-  } catch (err) {
-    console.error(colors.red + '❌ Unified Database (MySQL): Failed' + colors.reset);
-    console.error(colors.red + '   Error: ' + err.message + colors.reset);
+    // Test Unified DB
+    const [unifiedRows] = await unifiedDB.query('SELECT 1 as test');
+    results.unified = unifiedRows[0].test === 1;
+    console.log('✅ Unified DB connected');
+  } catch (error) {
+    console.error('❌ Unified DB connection failed:', error.message);
   }
-
-  // Test Bizoforce DB
+  
   try {
-    const conn = await bizoforceDB.getConnection();
-    await conn.ping();
-    conn.release();
-    results.bizoforce = true;
-    console.log(colors.green + '✅ Bizoforce (WooCommerce): Connected' + colors.reset);
-  } catch (err) {
-    console.error(colors.red + '❌ Bizoforce (WooCommerce): Failed' + colors.reset);
-    console.error(colors.red + '   Error: ' + err.message + colors.reset);
+    // Test Bizoforce DB
+    const [bizoforceRows] = await bizoforceDB.query('SELECT 1 as test');
+    results.bizoforce = bizoforceRows[0].test === 1;
+    console.log('✅ Bizoforce DB connected');
+  } catch (error) {
+    console.error('❌ Bizoforce DB connection failed:', error.message);
   }
-
-  // Test Giglancer DB
+  
   try {
-    const conn = await giglancerDB.getConnection();
-    await conn.ping();
-    conn.release();
-    results.giglancer = true;
-    console.log(colors.green + '✅ Giglancer (Jobs): Connected' + colors.reset);
-  } catch (err) {
-    console.error(colors.red + '❌ Giglancer (Jobs): Failed' + colors.reset);
-    console.error(colors.red + '   Error: ' + err.message + colors.reset);
+    // Test Giglancer DB
+    const [giglancerRows] = await giglancerDB.query('SELECT 1 as test');
+    results.giglancer = giglancerRows[0].test === 1;
+    console.log('✅ Giglancer DB connected');
+  } catch (error) {
+    console.error('❌ Giglancer DB connection failed:', error.message);
   }
-
-  // Test Screenly DB
+  
   try {
-    await screenlyDB.query('SELECT 1');
-    results.screenly = true;
-    console.log(colors.green + '✅ Screenly (AI Screening): Connected' + colors.reset);
-  } catch (err) {
-    console.error(colors.red + '❌ Screenly (AI Screening): Failed' + colors.reset);
-    console.error(colors.red + '   Error: ' + err.message + colors.reset);
+    // Test Screenly DB (PostgreSQL)
+    const screenlyResult = await screenlyDB.query('SELECT 1 as test');
+    results.screenly = screenlyResult.rows[0].test === 1;
+    console.log('✅ Screenly DB connected');
+  } catch (error) {
+    console.error('❌ Screenly DB connection failed:', error.message);
   }
-
-  // Test Work DB
+  
   try {
-    const conn = await workDB.getConnection();
-    await conn.ping();
-    conn.release();
-    results.work = true;
-    console.log(colors.green + '✅ Work.Bizoforce (Projects): Connected' + colors.reset);
-  } catch (err) {
-    console.error(colors.red + '❌ Work.Bizoforce (Projects): Failed' + colors.reset);
-    console.error(colors.red + '   Error: ' + err.message + colors.reset);
+    // Test Work DB
+    const [workRows] = await workDB.query('SELECT 1 as test');
+    results.work = workRows[0].test === 1;
+    console.log('✅ Work.Bizoforce DB connected');
+  } catch (error) {
+    console.error('❌ Work.Bizoforce DB connection failed:', error.message);
   }
-
-  console.log('');
-  const successCount = Object.values(results).filter(Boolean).length;
-  const totalCount = Object.keys(results).length;
-
-  if (successCount === totalCount) {
-    console.log(colors.green + `🎉 All ${totalCount} databases connected successfully!` + colors.reset + '\n');
-  } else {
-    console.log(colors.yellow + `⚠️  ${successCount}/${totalCount} databases connected` + colors.reset + '\n');
+  
+  // Check if all connections succeeded
+  const allConnected = Object.values(results).every(v => v === true);
+  if (!allConnected) {
+    throw new Error('Some database connections failed. Check credentials in .env');
   }
-
+  
   return results;
 }
 
-/**
- * Close all database connections gracefully
- */
+// ============================================
+// GRACEFUL SHUTDOWN
+// ============================================
 async function closeConnections() {
-  console.log(colors.yellow + '\n🔌 Closing database connections...' + colors.reset);
-  
-  try {
-    await unifiedDB.end();
-    await bizoforceDB.end();
-    await giglancerDB.end();
-    await screenlyDB.end();
-    await workDB.end();
-    console.log(colors.green + '✅ All connections closed' + colors.reset + '\n');
-  } catch (err) {
-    console.error(colors.red + '❌ Error closing connections: ' + err.message + colors.reset);
-  }
+  console.log('🔌 Closing database connections...');
+  await unifiedDB.end();
+  await bizoforceDB.end();
+  await giglancerDB.end();
+  await screenlyDB.end();
+  await workDB.end();
+  console.log('✅ All database connections closed');
 }
 
+process.on('SIGINT', async () => {
+  await closeConnections();
+  process.exit(0);
+});
+
+// ============================================
+// EXPORTS
+// ============================================
 module.exports = {
   unifiedDB,
   bizoforceDB,

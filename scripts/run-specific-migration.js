@@ -1,53 +1,66 @@
-require('dotenv').config();
-const mysql = require('mysql2/promise');
+/**
+ * Run Specific Migration Script
+ * Usage: node scripts/run-specific-migration.js <migration-file.sql>
+ */
+
 const fs = require('fs').promises;
 const path = require('path');
+const { unifiedDB } = require('../config/database');
 
-async function runSpecificMigration(migrationFile) {
-  // Use path relative to project root, not scripts folder
-  const filePath = path.join(__dirname, '..', migrationFile);
-  
-  console.log(`\n🔄 Running migration: ${migrationFile}\n`);
-
+async function runSpecificMigration(filename) {
   try {
-    // Read migration file
+    console.log(`🔄 Running migration: ${filename}\n`);
+    
+    const filePath = path.join(__dirname, '../migrations', filename);
+    
+    // Check if file exists
+    try {
+      await fs.access(filePath);
+    } catch {
+      console.error(`❌ Migration file not found: ${filename}`);
+      process.exit(1);
+    }
+    
     const sql = await fs.readFile(filePath, 'utf8');
     
-    // Create database connection
-    const connection = await mysql.createConnection({
-      host: process.env.UNIFIED_DB_HOST,
-      user: process.env.UNIFIED_DB_USER,
-      password: process.env.UNIFIED_DB_PASS,
-      database: process.env.UNIFIED_DB_NAME,
-      multipleStatements: true
-    });
-
-    // Execute migration
-    console.log('📝 Executing SQL statements...\n');
-    await connection.query(sql);
+    // Split by semicolon and filter out empty statements
+    const statements = sql
+      .split(';')
+      .map(stmt => stmt.trim())
+      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
     
-    console.log('✅ Migration completed successfully!\n');
+    console.log(`📝 Found ${statements.length} SQL statements\n`);
     
-    // Verify new tables
-    const [tables] = await connection.query(`
-      SHOW TABLES LIKE '%role%'
-    `);
+    for (let i = 0; i < statements.length; i++) {
+      console.log(`▶️  Executing statement ${i + 1}/${statements.length}...`);
+      try {
+        await unifiedDB.query(statements[i]);
+        console.log(`✅ Statement ${i + 1} completed\n`);
+      } catch (error) {
+        if (error.message.includes('already exists')) {
+          console.log(`⚠️  Table/column already exists, skipping...\n`);
+        } else {
+          throw error;
+        }
+      }
+    }
     
-    console.log('📊 Role-related tables:');
-    tables.forEach(row => {
-      const tableName = Object.values(row)[0];
-      console.log(`  ✅ ${tableName}`);
-    });
-
-    await connection.end();
+    console.log(`🎉 Migration completed: ${filename}\n`);
     
   } catch (error) {
     console.error('❌ Migration failed:', error.message);
-    console.error(error);
-    process.exit(1);
+    throw error;
+  } finally {
+    process.exit(0);
   }
 }
 
-// Run the migration
-const migrationFile = process.argv[2] || 'migrations/03-add-multi-role-support.sql';
-runSpecificMigration(migrationFile);
+// Get filename from command line args
+const filename = process.argv[2];
+
+if (!filename) {
+  console.error('❌ Usage: node run-specific-migration.js <migration-file.sql>');
+  process.exit(1);
+}
+
+runSpecificMigration(filename);

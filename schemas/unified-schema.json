@@ -1,0 +1,1769 @@
+{
+  "databaseName": "unified",
+  "type": "mysql",
+  "tables": [
+    {
+      "tableName": "company_users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "company_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "user_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "role",
+          "type": "enum('company_admin','hr','team_lead','team_member','finance','vendor')",
+          "nullable": false,
+          "default": "team_member",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "job_title",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "department",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "hourly_rate",
+          "type": "decimal(10,2)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "employment_type",
+          "type": "enum('full-time','part-time','contract','freelance')",
+          "nullable": true,
+          "default": "full-time",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "1",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "invited_by",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "invitation_accepted",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "joined_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "left_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_company",
+          "columnName": "company_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_role",
+          "columnName": "role",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user",
+          "columnName": "user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "invited_by",
+          "columnName": "invited_by",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_company_user",
+          "columnName": "company_id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_company_user",
+          "columnName": "user_id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "company_users_ibfk_1",
+          "columnName": "company_id",
+          "referencedTable": "unified_companies",
+          "referencedColumn": "id"
+        },
+        {
+          "constraintName": "company_users_ibfk_2",
+          "columnName": "user_id",
+          "referencedTable": "unified_users",
+          "referencedColumn": "id"
+        },
+        {
+          "constraintName": "company_users_ibfk_3",
+          "columnName": "invited_by",
+          "referencedTable": "unified_users",
+          "referencedColumn": "id"
+        }
+      ]
+    },
+    {
+      "tableName": "email_duplicates",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "email",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "platform_count",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "platforms",
+          "type": "json",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "unified_user_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "resolution_status",
+          "type": "enum('pending','auto_merged','manual_review','resolved')",
+          "nullable": true,
+          "default": "pending",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "resolution_notes",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "detected_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "resolved_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_email",
+          "columnName": "email",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_status",
+          "columnName": "resolution_status",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "migration_statistics",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "migration_batch",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "platform",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "total_users",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "users_migrated",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "users_merged",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "users_skipped",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "users_failed",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "duplicates_found",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "start_time",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "end_time",
+          "type": "timestamp",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "duration_seconds",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "status",
+          "type": "enum('running','completed','failed','paused')",
+          "nullable": true,
+          "default": "running",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "error_log",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_batch",
+          "columnName": "migration_batch",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_platform",
+          "columnName": "platform",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_status",
+          "columnName": "status",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "platform_sync_log",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "platform",
+          "type": "enum('bizoforce','giglancer','screenly','work')",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "sync_type",
+          "type": "enum('user','company','job','project','product','order')",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "sync_action",
+          "type": "enum('create','update','delete')",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "unified_record_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "platform_record_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "status",
+          "type": "enum('pending','success','failed')",
+          "nullable": true,
+          "default": "pending",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "synced_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_platform",
+          "columnName": "platform",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_platform_record",
+          "columnName": "platform_record_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_status",
+          "columnName": "status",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_sync_type",
+          "columnName": "sync_type",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_unified_record",
+          "columnName": "unified_record_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "role_permissions",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "role",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "permission",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_role",
+          "columnName": "role",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_role_permission",
+          "columnName": "role",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_role_permission",
+          "columnName": "permission",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "unified_companies",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "company_name",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "company_slug",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "UNI",
+          "extra": ""
+        },
+        {
+          "name": "company_email",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "company_phone",
+          "type": "varchar(20)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "company_logo",
+          "type": "varchar(500)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "company_website",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "address_line1",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "address_line2",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "city",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "state",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "country",
+          "type": "varchar(100)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "postal_code",
+          "type": "varchar(20)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "subscription_plan",
+          "type": "enum('free','basic','professional','enterprise')",
+          "nullable": true,
+          "default": "free",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "subscription_status",
+          "type": "enum('active','inactive','trial','suspended')",
+          "nullable": true,
+          "default": "trial",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "subscription_start_date",
+          "type": "date",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "subscription_end_date",
+          "type": "date",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "bizoforce_company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "work_company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "1",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "is_verified",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "company_slug",
+          "columnName": "company_slug",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_company_email",
+          "columnName": "company_email",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_company_slug",
+          "columnName": "company_slug",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_subscription_status",
+          "columnName": "subscription_status",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "unified_users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "email",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "UNI",
+          "extra": ""
+        },
+        {
+          "name": "password_hash",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "google_id",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "UNI",
+          "extra": ""
+        },
+        {
+          "name": "google_profile_picture",
+          "type": "varchar(500)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "auth_provider",
+          "type": "enum('local','google','hybrid')",
+          "nullable": true,
+          "default": "local",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "first_name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "last_name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "phone",
+          "type": "varchar(20)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "profile_photo",
+          "type": "varchar(500)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "user_type",
+          "type": "enum('company','individual')",
+          "nullable": false,
+          "default": "individual",
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "current_role",
+          "type": "varchar(50)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "current_company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "bizoforce_user_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "giglancer_user_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "screenly_user_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "work_user_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "1",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "email_verified",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "onboarding_complete",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "migrated_from",
+          "type": "enum('bizoforce','giglancer','screenly','work','new')",
+          "nullable": true,
+          "default": "new",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "migration_date",
+          "type": "datetime",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "last_login_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "needsRoleSelection",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "pendingCompanyCreation",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "migrationSource",
+          "type": "varchar(50)",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "migrationDate",
+          "type": "timestamp",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "lastLogin",
+          "type": "timestamp",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "profileScore",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "isActive",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "1",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "isEmailConfirmed",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "totalProjects",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "totalJobApplications",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "totalBids",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "totalTimesheets",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "email",
+          "columnName": "email",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "google_id",
+          "columnName": "google_id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_bizoforce_user",
+          "columnName": "bizoforce_user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_email",
+          "columnName": "email",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_giglancer_user",
+          "columnName": "giglancer_user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_google_id",
+          "columnName": "google_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_migration_source",
+          "columnName": "migrationSource",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_screenly_user",
+          "columnName": "screenly_user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user_type",
+          "columnName": "user_type",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_work_user",
+          "columnName": "work_user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "user_migration_log",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "unified_user_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "platform",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "platform_user_id",
+          "type": "bigint",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "platform_email",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "action",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "role_detected",
+          "type": "varchar(50)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "activity_data",
+          "type": "json",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "conflicts",
+          "type": "json",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "migrated_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "MUL",
+          "extra": "DEFAULT_GENERATED"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_migration_date",
+          "columnName": "migrated_at",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_platform_lookup",
+          "columnName": "platform",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_platform_lookup",
+          "columnName": "platform_user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "tableName": "user_role_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "user_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "role",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "action",
+          "type": "varchar(20)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar(45)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "user_agent",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "timestamp",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_role_history",
+          "columnName": "role",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_role_history",
+          "columnName": "timestamp",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user_history",
+          "columnName": "user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user_history",
+          "columnName": "timestamp",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "user_role_history_ibfk_1",
+          "columnName": "user_id",
+          "referencedTable": "unified_users",
+          "referencedColumn": "id"
+        }
+      ]
+    },
+    {
+      "tableName": "user_roles",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "user_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "role",
+          "type": "varchar(50)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "is_primary",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint(1)",
+          "nullable": true,
+          "default": "1",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "source_platform",
+          "type": "varchar(50)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "last_used_at",
+          "type": "timestamp",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_active_roles",
+          "columnName": "user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_active_roles",
+          "columnName": "is_active",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_company_roles",
+          "columnName": "company_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_company_roles",
+          "columnName": "role",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user_roles",
+          "columnName": "user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user_roles",
+          "columnName": "role",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_user_role_company",
+          "columnName": "user_id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_user_role_company",
+          "columnName": "role",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "unique_user_role_company",
+          "columnName": "company_id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "user_roles_ibfk_1",
+          "columnName": "user_id",
+          "referencedTable": "unified_users",
+          "referencedColumn": "id"
+        }
+      ]
+    },
+    {
+      "tableName": "user_sessions",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "PRI",
+          "extra": "auto_increment"
+        },
+        {
+          "name": "user_id",
+          "type": "int",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "token_hash",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "ip_address",
+          "type": "varchar(45)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "user_agent",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "device_type",
+          "type": "enum('desktop','mobile','tablet','other')",
+          "nullable": true,
+          "default": "other",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED"
+        },
+        {
+          "name": "expires_at",
+          "type": "datetime",
+          "nullable": false,
+          "default": null,
+          "key": "MUL",
+          "extra": ""
+        },
+        {
+          "name": "last_activity_at",
+          "type": "datetime",
+          "nullable": true,
+          "default": "CURRENT_TIMESTAMP",
+          "key": "",
+          "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "idx_expires_at",
+          "columnName": "expires_at",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_token_hash",
+          "columnName": "token_hash",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "idx_user",
+          "columnName": "user_id",
+          "nonUnique": 1,
+          "indexType": "BTREE"
+        },
+        {
+          "indexName": "PRIMARY",
+          "columnName": "id",
+          "nonUnique": 0,
+          "indexType": "BTREE"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "user_sessions_ibfk_1",
+          "columnName": "user_id",
+          "referencedTable": "unified_users",
+          "referencedColumn": "id"
+        }
+      ]
+    },
+    {
+      "tableName": "user_with_roles",
+      "columns": [
+        {
+          "name": "id",
+          "type": "int",
+          "nullable": false,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "email",
+          "type": "varchar(255)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "first_name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "last_name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "user_type",
+          "type": "enum('company','individual')",
+          "nullable": false,
+          "default": "individual",
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "current_role",
+          "type": "varchar(50)",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "current_company_id",
+          "type": "int",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "available_roles",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "key": "",
+          "extra": ""
+        },
+        {
+          "name": "role_count",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "key": "",
+          "extra": ""
+        }
+      ],
+      "indexes": [],
+      "foreignKeys": []
+    }
+  ],
+  "totalTables": 12,
+  "generatedAt": "2025-11-22T12:50:32.870Z"
+}

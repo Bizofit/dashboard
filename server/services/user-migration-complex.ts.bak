@@ -1,0 +1,551 @@
+import { bizoforceDB, giglancerDB, workDB, unifiedDB, bizoforcePool, giglancerPool, workPool } from "../db.js";
+import { unifiedUsers, userRoles } from "../../shared/schema.js";
+import { eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
+
+interface UserProfile {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}
+
+interface MigrationResult {
+  user: any;
+  roles: string[];
+  companies: any[];
+  requiresGiglancerConsent: boolean;
+  isNewUser: boolean;
+}
+
+/**
+ * Check if user exists in Bizoforce WordPress database (wp_users)
+ */
+async function checkBizoforceUser(email: string) {
+  try {
+    const query = `
+      SELECT 
+        ID as id,
+        user_email as email,
+        user_login as username,
+        display_name as displayName,
+        user_registered as registered
+      FROM wp_users 
+      WHERE user_email = ?
+      LIMIT 1
+    `;
+    const [rows]: any = await bizoforcePool.execute(query, [email]);
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Error checking Bizoforce user:", error);
+    return null;
+  }
+}
+
+/**
+ * Check if user has created companies in Bizoforce (wpbdp_listings)
+ * Business Directory Plugin stores company listings
+ */
+async function checkBizoforceCompanies(userId: number) {
+  try {
+    const query = `
+      SELECT 
+        l.id as listingId,
+        l.title as companyName,
+        l.created_on as createdDate,
+        l.modified_on as modifiedDate,
+        l.post_id as postId,
+        p.post_status as status
+      FROM wpbdp_listings l
+      LEFT JOIN wp_posts p ON l.post_id = p.ID
+      WHERE l.user_id = ?
+      AND p.post_status = 'publish'
+      ORDER BY l.created_on DESC
+    `;
+    const [rows]: any = await bizoforceDB.execute(query, [userId]);
+    return rows || [];
+  } catch (error) {
+    console.error("Error checking Bizoforce companies:", error);
+    return [];
+  }
+}
+
+/**
+ * Check if user exists in Worksuite database
+ */
+async function checkWorksuiteUser(email: string) {
+  try {
+    const query = `
+      SELECT 
+        id,
+        name,
+        email,
+        mobile,
+        gender,
+        email_verified_at,
+        created_at
+      FROM users 
+      WHERE email = ?
+      LIMIT 1
+    `;
+    const [rows]: any = await workDB.execute(query, [email]);
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Error checking Worksuite user:", error);
+    return null;
+  }
+}
+
+/**
+ * Create user in Worksuite database
+ */
+async function createWorksuiteUser(
+  profile: UserProfile,
+  bizoforceUserId: number
+) {
+  try {
+    const password = await bcrypt.hash(Math.random().toString(36), 10);
+    const query = `
+      INSERT INTO users (
+        name,
+        email,
+        password,
+        mobile,
+        email_verified_at,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, NOW(), NOW(), NOW())
+    `;
+    const fullName =
+      `${profile.firstName || ""} ${profile.lastName || ""}`.trim() ||
+      profile.email.split("@")[0];
+    const [result]: any = await workDB.execute(query, [
+      fullName,
+      profile.email,
+      password,
+      profile.phone || null,
+    ]);
+
+    console.log(`✅ Created Worksuite user for ${profile.email}`);
+    return result.insertId;
+  } catch (error) {
+    console.error("Error creating Worksuite user:", error);
+    throw error;
+  }
+}
+
+/**
+ * Create company in Worksuite database
+ */
+async function createWorksuiteCompany(userId: number, companyName: string) {
+  try {
+    const query = `
+      INSERT INTO companies (
+        company_name,
+        owner_id,
+        package_type,
+        status,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, 'annual', 'active', NOW(), NOW())
+    `;
+    const [result]: any = await workPool.execute(query, [companyName, userId]);
+
+    console.log(`✅ Created Worksuite company: ${companyName}`);
+    return result.insertId;
+  } catch (error) {
+    console.error("Error creating Worksuite company:", error);
+    throw error;
+  }
+}
+
+/**
+ * Check if user exists in Giglancer database
+ */
+async function checkGiglancerUser(email: string) {
+  try {
+    const query = `
+      SELECT 
+        id,
+        name,
+        email,
+        username,
+        account_type,
+        created_at,
+        email_verified_at
+      FROM users 
+      WHERE email = ?
+      LIMIT 1
+    `;
+    const [rows]: any = await giglancerPool.execute(query, [email]);
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Error checking Giglancer user:", error);
+    return null;
+  }
+}
+
+/**
+ * Check if user has posted jobs in Giglancer
+ */
+async function checkGiglancerPostedJobs(userId: number) {
+  try {
+    const query = `
+      SELECT COUNT(*) as count
+      FROM jobs
+      WHERE user_id = ?
+    `;
+    const [rows]: any = await giglancerDB.execute(query, [userId]);
+    return rows[0]?.count || 0;
+  } catch (error) {
+    console.error("Error checking Giglancer posted jobs:", error);
+    return 0;
+  }
+}
+
+/**
+ * Check if user has applied to jobs in Giglancer
+ */
+async function checkGiglancerJobApplications(userId: number) {
+  try {
+    const query = `
+      SELECT COUNT(*) as count
+      FROM job_applications
+      WHERE user_id = ?
+    `;
+    const [rows]: any = await giglancerDB.execute(query, [userId]);
+    return rows[0]?.count || 0;
+  } catch (error) {
+    console.error("Error checking Giglancer job applications:", error);
+    return 0;
+  }
+}
+
+/**
+ * Create user in Giglancer database
+ */
+async function createGiglancerUser(profile: UserProfile, accountType: string) {
+  try {
+    const password = await bcrypt.hash(Math.random().toString(36), 10);
+    const username =
+      profile.email.split("@")[0] + Math.floor(Math.random() * 1000);
+
+    const query = `
+      INSERT INTO users (
+        name,
+        email,
+        username,
+        password,
+        account_type,
+        email_verified_at,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), NOW())
+    `;
+
+    const fullName =
+      `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || username;
+    const [result]: any = await giglancerDB.execute(query, [
+      fullName,
+      profile.email,
+      username,
+      password,
+      accountType,
+    ]);
+
+    console.log(
+      `✅ Created Giglancer user (${accountType}) for ${profile.email}`
+    );
+    return result.insertId;
+  } catch (error) {
+    console.error("Error creating Giglancer user:", error);
+    throw error;
+  }
+}
+
+/**
+ * Main migration function - checks all databases and migrates user
+ */
+export async function migrateUserFromLegacyPlatforms(
+  email: string,
+  googleProfile?: any
+): Promise<MigrationResult> {
+  const result: MigrationResult = {
+    user: null,
+    roles: [],
+    companies: [],
+    requiresGiglancerConsent: false,
+    isNewUser: false,
+  };
+
+  // Check if user already exists in unified DB
+  const existingUsers = await unifiedDB
+    .select()
+    .from(unifiedUsers)
+    .where(eq(unifiedUsers.email, email))
+    .limit(1);
+
+  if (existingUsers.length > 0) {
+    result.user = existingUsers[0];
+    result.isNewUser = false;
+
+    // Get existing roles
+    const roles = await unifiedDB
+      .select()
+      .from(userRoles)
+      .where(eq(userRoles.userId, result.user.id));
+
+    result.roles = roles.map((r) => r.role);
+    return result;
+  }
+
+  // User doesn't exist in unified DB - check legacy platforms
+  console.log(`🔍 Checking legacy platforms for: ${email}`);
+
+  // 1. CHECK BIZOFORCE
+  const bizoforceUser = await checkBizoforceUser(email);
+  let bizoforceUserId: number | null = null;
+  let bizoforceCompanies: any[] = [];
+
+  if (bizoforceUser) {
+    console.log(`✅ Found user in Bizoforce: ${bizoforceUser.username}`);
+    bizoforceUserId = bizoforceUser.id;
+
+    // Check for companies
+    bizoforceCompanies = await checkBizoforceCompanies(bizoforceUser.id);
+    if (bizoforceCompanies.length > 0) {
+      console.log(
+        `✅ Found ${bizoforceCompanies.length} companies in Bizoforce`
+      );
+      result.companies = bizoforceCompanies;
+    }
+  }
+
+  // 2. CHECK WORKSUITE
+  let worksuiteUserId: number | null = null;
+  const worksuiteUser = await checkWorksuiteUser(email);
+
+  if (!worksuiteUser && bizoforceUserId && bizoforceCompanies.length > 0) {
+    // Create user in Worksuite if they have companies in Bizoforce
+    console.log(`📝 Creating user in Worksuite...`);
+    const profile: UserProfile = {
+      email,
+      firstName:
+        googleProfile?.given_name || bizoforceUser?.displayName?.split(" ")[0],
+      lastName:
+        googleProfile?.family_name || bizoforceUser?.displayName?.split(" ")[1],
+      phone: null,
+    };
+
+    worksuiteUserId = await createWorksuiteUser(profile, bizoforceUserId);
+
+    // Create company in Worksuite for first Bizoforce company
+    if (bizoforceCompanies[0]) {
+      await createWorksuiteCompany(
+        worksuiteUserId,
+        bizoforceCompanies[0].companyName
+      );
+    }
+  } else if (worksuiteUser) {
+    console.log(`✅ Found user in Worksuite`);
+    worksuiteUserId = worksuiteUser.id;
+  }
+
+  // 3. CHECK GIGLANCER
+  let giglancerUserId: number | null = null;
+  let giglancerRole: string | null = null;
+  const giglancerUser = await checkGiglancerUser(email);
+
+  if (giglancerUser) {
+    console.log(`✅ Found user in Giglancer: ${giglancerUser.account_type}`);
+    giglancerUserId = giglancerUser.id;
+
+    // Check job posting and applications
+    const postedJobs = await checkGiglancerPostedJobs(giglancerUser.id);
+    const applications = await checkGiglancerJobApplications(giglancerUser.id);
+
+    console.log(
+      `📊 Giglancer activity: ${postedJobs} jobs posted, ${applications} applications`
+    );
+
+    // Determine role based on activity
+    if (postedJobs > 0 && applications > 0) {
+      giglancerRole = "recruiter"; // Both employer and job seeker
+      result.roles.push("hr", "job_seeker");
+    } else if (postedJobs > 0) {
+      giglancerRole = "employer";
+      result.roles.push("hr");
+    } else if (applications > 0) {
+      giglancerRole = "freelancer";
+      result.roles.push("job_seeker");
+    }
+  } else if (bizoforceUserId) {
+    // User exists in Bizoforce but not in Giglancer
+    // Mark that they need consent to create Giglancer account
+    result.requiresGiglancerConsent = true;
+    console.log(`⚠️  User not in Giglancer - will require consent`);
+  }
+
+  // 4. CREATE USER IN UNIFIED DATABASE
+  console.log(`📝 Creating user in unified database...`);
+
+  const userProfile: UserProfile = {
+    email,
+    firstName:
+      googleProfile?.given_name ||
+      bizoforceUser?.displayName?.split(" ")[0] ||
+      email.split("@")[0],
+    lastName:
+      googleProfile?.family_name ||
+      bizoforceUser?.displayName?.split(" ")[1] ||
+      "",
+    phone: null,
+  };
+
+  await unifiedDB.insert(unifiedUsers).values({
+    email: userProfile.email,
+    firstName: userProfile.firstName,
+    lastName: userProfile.lastName,
+    phone: userProfile.phone,
+    googleId: googleProfile?.id || null,
+    googleProfilePicture: googleProfile?.picture || null,
+    authProvider: googleProfile ? "google" : "local",
+    bizoforceUserId: bizoforceUserId,
+    giglancerUserId: giglancerUserId,
+    workUserId: worksuiteUserId,
+    screenlyUserId: null, // Will be added later if needed
+    lastLoginAt: new Date(),
+  });
+
+  // Get the created user
+  const newUsers = await unifiedDB
+    .select()
+    .from(unifiedUsers)
+    .where(eq(unifiedUsers.email, email))
+    .limit(1);
+
+  result.user = newUsers[0];
+  result.isNewUser = true;
+
+  // 5. ASSIGN ROLES IN UNIFIED DATABASE
+  if (bizoforceCompanies.length > 0) {
+    // Has companies = Company Admin
+    await unifiedDB.insert(userRoles).values({
+      userId: result.user.id,
+      role: "company_admin",
+      platform: "bizoforce",
+      isPrimary: true,
+    });
+    result.roles.push("company_admin");
+
+    // Also vendor if they have listings
+    await unifiedDB.insert(userRoles).values({
+      userId: result.user.id,
+      role: "vendor",
+      platform: "bizoforce",
+      isPrimary: false,
+    });
+    result.roles.push("vendor");
+  }
+
+  if (worksuiteUserId) {
+    // Has Worksuite account = Team Lead
+    await unifiedDB.insert(userRoles).values({
+      userId: result.user.id,
+      role: "team_lead",
+      platform: "work",
+      isPrimary: false,
+    });
+    if (!result.roles.includes("team_lead")) {
+      result.roles.push("team_lead");
+    }
+  }
+
+  // Add Giglancer roles if already present in DB
+  if (
+    giglancerUserId &&
+    !result.roles.includes("hr") &&
+    !result.roles.includes("job_seeker")
+  ) {
+    await unifiedDB.insert(userRoles).values({
+      userId: result.user.id,
+      role: "job_seeker",
+      platform: "giglancer",
+      isPrimary: result.roles.length === 0,
+    });
+    result.roles.push("job_seeker");
+  }
+
+  // If no roles assigned yet, default to job_seeker
+  if (result.roles.length === 0) {
+    await unifiedDB.insert(userRoles).values({
+      userId: result.user.id,
+      role: "job_seeker",
+      platform: null,
+      isPrimary: true,
+    });
+    result.roles.push("job_seeker");
+  }
+
+  console.log(`✅ User migration complete for ${email}`);
+  console.log(`📋 Assigned roles: ${result.roles.join(", ")}`);
+
+  return result;
+}
+
+/**
+ * Create Giglancer account after user consent
+ */
+export async function createGiglancerAccountWithConsent(
+  userId: number,
+  email: string,
+  accountType: "employer" | "freelancer"
+) {
+  try {
+    // Get user profile from unified DB
+    const users = await unifiedDB
+      .select()
+      .from(unifiedUsers)
+      .where(eq(unifiedUsers.id, userId))
+      .limit(1);
+
+    if (users.length === 0) {
+      throw new Error("User not found");
+    }
+
+    const user = users[0];
+    const profile: UserProfile = {
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+    };
+
+    // Create Giglancer account
+    const giglancerUserId = await createGiglancerUser(profile, accountType);
+
+    // Update unified user with Giglancer ID
+    await unifiedDB
+      .update(unifiedUsers)
+      .set({ giglancerUserId })
+      .where(eq(unifiedUsers.id, userId));
+
+    // Add Giglancer role
+    const role = accountType === "employer" ? "hr" : "job_seeker";
+    await unifiedDB.insert(userRoles).values({
+      userId,
+      role,
+      platform: "giglancer",
+      isPrimary: false,
+    });
+
+    console.log(
+      `✅ Created Giglancer account for user ${userId} as ${accountType}`
+    );
+
+    return { success: true, giglancerUserId };
+  } catch (error) {
+    console.error("Error creating Giglancer account:", error);
+    throw error;
+  }
+}

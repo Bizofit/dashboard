@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth Debug</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        background: #1e293b;
+        color: #fff;
+      }
+      button {
+        background: #3b82f6;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px;
+      }
+      pre {
+        background: #0f172a;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      .success {
+        color: #10b981;
+      }
+      .error {
+        color: #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔍 Authentication Debug Tool</h1>
+    <button id="checkBtn">Check Auth Status</button>
+    <button id="testBtn">Simulate Login</button>
+    <button id="clearBtn">Clear Storage</button>
+    <pre id="output"></pre>
+
+    <script>
+      function log(msg, type = "") {
+        const output = document.getElementById("output");
+        const className =
+          type === "success" ? "success" : type === "error" ? "error" : "";
+        output.innerHTML += `<span class="${className}">${msg}</span>\n`;
+      }
+
+      function checkAuth() {
+        document.getElementById("output").innerHTML = "";
+        log("═══════════════════════════════════════", "success");
+        log("  SESSION STORAGE CHECK", "success");
+        log("═══════════════════════════════════════\n", "success");
+
+        const token = sessionStorage.getItem("authToken");
+        if (token) {
+          log("✅ authToken: FOUND (" + token.length + " chars)", "success");
+        } else {
+          log("❌ authToken: NOT FOUND", "error");
+        }
+
+        const user = sessionStorage.getItem("user");
+        if (user) {
+          log("✅ user: FOUND", "success");
+          try {
+            const userData = JSON.parse(user);
+            log("   Email: " + userData.email);
+          } catch (e) {}
+        } else {
+          log("❌ user: NOT FOUND", "error");
+        }
+
+        log("\nAll keys (" + sessionStorage.length + "):");
+        for (let i = 0; i < sessionStorage.length; i++) {
+          log("  - " + sessionStorage.key(i));
+        }
+      }
+
+      function testLogin() {
+        log("\n🔧 Simulating login...\n", "success");
+        sessionStorage.setItem("authToken", "test_token_" + Date.now());
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({ email: "test@test.com", id: 1 })
+        );
+        log("✅ Test data stored!", "success");
+        checkAuth();
+      }
+
+      function clearAll() {
+        sessionStorage.clear();
+        log("\n🗑️  Storage cleared!\n", "success");
+        checkAuth();
+      }
+
+      window.addEventListener("DOMContentLoaded", function () {
+        checkAuth();
+
+        document
+          .getElementById("checkBtn")
+          .addEventListener("click", checkAuth);
+        document.getElementById("testBtn").addEventListener("click", testLogin);
+        document.getElementById("clearBtn").addEventListener("click", clearAll);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+-- Create companies table
+CREATE TABLE IF NOT EXISTS companies (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  logo VARCHAR(500),
+  website VARCHAR(255),
+  industry VARCHAR(100),
+  size VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_name (name)
+);

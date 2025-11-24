@@ -4,16 +4,15 @@
  * Supports both traditional and Google OAuth authentication
  */
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { unifiedDB } = require('../config/database');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { unifiedDB } = require("../config/database");
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 const SALT_ROUNDS = 10;
 
 class AuthService {
-  
   /**
    * Register new user with email/password
    */
@@ -21,22 +20,22 @@ class AuthService {
     try {
       // Validate input
       if (!email || !password) {
-        throw new Error('Email and password are required');
+        throw new Error("Email and password are required");
       }
-      
+
       // Check if user already exists
       const [existingUsers] = await unifiedDB.query(
-        'SELECT id, email FROM unified_users WHERE email = ?',
+        "SELECT id, email FROM unified_users WHERE email = ?",
         [email]
       );
-      
+
       if (existingUsers.length > 0) {
-        throw new Error('User with this email already exists');
+        throw new Error("User with this email already exists");
       }
-      
+
       // Hash password
       const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-      
+
       // Insert new user
       const [result] = await unifiedDB.query(
         `INSERT INTO unified_users 
@@ -44,9 +43,9 @@ class AuthService {
         VALUES (?, ?, ?, ?, ?, 'local', TRUE)`,
         [email, passwordHash, firstName, lastName, phone]
       );
-      
+
       const userId = result.insertId;
-      
+
       // Create default role (job_seeker for individual users)
       await unifiedDB.query(
         `INSERT INTO user_roles 
@@ -54,23 +53,26 @@ class AuthService {
         VALUES (?, 'job_seeker', 'unified', TRUE, TRUE)`,
         [userId]
       );
-      
+
       // Generate JWT
-      const token = this.generateToken({ userId, email, authProvider: 'local' });
-      
+      const token = this.generateToken({
+        userId,
+        email,
+        authProvider: "local",
+      });
+
       // Get user with roles
       const user = await this.getUserById(userId);
-      
+
       return {
         token,
-        user
+        user,
       };
-      
     } catch (error) {
       throw error;
     }
   }
-  
+
   /**
    * Login with email/password
    */
@@ -78,9 +80,9 @@ class AuthService {
     try {
       // Validate input
       if (!email || !password) {
-        throw new Error('Email and password are required');
+        throw new Error("Email and password are required");
       }
-      
+
       // Find user
       const [users] = await unifiedDB.query(
         `SELECT id, email, password_hash, auth_provider, is_active 
@@ -88,63 +90,67 @@ class AuthService {
         WHERE email = ?`,
         [email]
       );
-      
+
       if (users.length === 0) {
-        throw new Error('Invalid email or password');
+        throw new Error("Invalid email or password");
       }
-      
+
       const user = users[0];
-      
+
       // Check if account is active
       if (!user.is_active) {
-        throw new Error('Account is deactivated');
+        throw new Error("Account is deactivated");
       }
-      
+
       // Check if user has password (not OAuth-only)
       if (!user.password_hash) {
-        throw new Error('This account uses Google login. Please sign in with Google.');
+        throw new Error(
+          "This account uses Google login. Please sign in with Google."
+        );
       }
-      
+
       // Verify password
-      const isValidPassword = await bcrypt.compare(password, user.password_hash);
-      
+      const isValidPassword = await bcrypt.compare(
+        password,
+        user.password_hash
+      );
+
       if (!isValidPassword) {
-        throw new Error('Invalid email or password');
+        throw new Error("Invalid email or password");
       }
-      
+
       // Update last login
       await unifiedDB.query(
-        'UPDATE unified_users SET last_login_at = NOW() WHERE id = ?',
+        "UPDATE unified_users SET last_login_at = NOW() WHERE id = ?",
         [user.id]
       );
-      
+
       // Generate JWT
-      const token = this.generateToken({ 
-        userId: user.id, 
+      const token = this.generateToken({
+        userId: user.id,
         email: user.email,
-        authProvider: user.auth_provider
+        authProvider: user.auth_provider,
       });
-      
+
       // Get full user data with roles
       const userData = await this.getUserById(user.id);
-      
+
       return {
         token,
-        user: userData
+        user: userData,
       };
-      
     } catch (error) {
       throw error;
     }
   }
-  
+
   /**
    * Generate JWT token
    */
   generateToken(payload) {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
   }
-  
+
   /**
    * Verify JWT token
    */
@@ -152,10 +158,10 @@ class AuthService {
     try {
       return jwt.verify(token, JWT_SECRET);
     } catch (error) {
-      throw new Error('Invalid or expired token');
+      throw new Error("Invalid or expired token");
     }
   }
-  
+
   /**
    * Get user by ID with roles
    */
@@ -170,40 +176,50 @@ class AuthService {
       WHERE id = ?`,
       [userId]
     );
-    
+
     if (users.length === 0) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
-    
+
     const user = users[0];
-    
+
     // Get user roles
     const [roles] = await unifiedDB.query(
       `SELECT 
-        id, role_type, platform, company_id, is_primary, is_active, permissions
+        id, role, platform, company_id, is_primary, is_active, source_platform
       FROM user_roles 
       WHERE user_id = ? AND is_active = TRUE
       ORDER BY is_primary DESC, created_at ASC`,
       [userId]
     );
-    
+
     // Find primary role
-    const primaryRole = roles.find(r => r.is_primary) || roles[0] || null;
-    
-    return {
+    const primaryRole = roles.find((r) => r.is_primary) || roles[0] || null;
+
+    const userData = {
       ...user,
-      roles: roles.map(r => ({
+      roles: roles.map((r) => ({
         id: r.id,
-        type: r.role_type,
+        type: r.role,
         platform: r.platform,
         companyId: r.company_id,
         isPrimary: r.is_primary,
-        permissions: r.permissions ? JSON.parse(r.permissions) : null
+        sourcePlatform: r.source_platform,
       })),
-      primaryRole: primaryRole ? primaryRole.role_type : null
+      primaryRole: primaryRole ? primaryRole.role : null,
     };
+
+    console.log(`🔍 getUserById for ${user.email}:`);
+    console.log(`   Found ${roles.length} roles`);
+    console.log(`   Primary role: ${userData.primaryRole}`);
+    console.log(
+      `   Role details:`,
+      roles.map((r) => ({ id: r.id, role: r.role, isPrimary: r.is_primary }))
+    );
+
+    return userData;
   }
-  
+
   /**
    * Refresh token
    */
@@ -211,24 +227,23 @@ class AuthService {
     try {
       const decoded = this.verifyToken(oldToken);
       const user = await this.getUserById(decoded.userId);
-      
+
       if (!user.is_active) {
-        throw new Error('Account is deactivated');
+        throw new Error("Account is deactivated");
       }
-      
+
       const newToken = this.generateToken({
         userId: user.id,
         email: user.email,
-        authProvider: user.auth_provider
+        authProvider: user.auth_provider,
       });
-      
+
       return { token: newToken, user };
-      
     } catch (error) {
       throw error;
     }
   }
-  
+
   /**
    * Change password
    */
@@ -236,38 +251,37 @@ class AuthService {
     try {
       // Get user
       const [users] = await unifiedDB.query(
-        'SELECT password_hash FROM unified_users WHERE id = ?',
+        "SELECT password_hash FROM unified_users WHERE id = ?",
         [userId]
       );
-      
+
       if (users.length === 0) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
-      
+
       const user = users[0];
-      
+
       if (!user.password_hash) {
-        throw new Error('Cannot change password for OAuth-only accounts');
+        throw new Error("Cannot change password for OAuth-only accounts");
       }
-      
+
       // Verify current password
       const isValid = await bcrypt.compare(currentPassword, user.password_hash);
-      
+
       if (!isValid) {
-        throw new Error('Current password is incorrect');
+        throw new Error("Current password is incorrect");
       }
-      
+
       // Hash new password
       const newPasswordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-      
+
       // Update password
       await unifiedDB.query(
-        'UPDATE unified_users SET password_hash = ?, updated_at = NOW() WHERE id = ?',
+        "UPDATE unified_users SET password_hash = ?, updated_at = NOW() WHERE id = ?",
         [newPasswordHash, userId]
       );
-      
-      return { message: 'Password changed successfully' };
-      
+
+      return { message: "Password changed successfully" };
     } catch (error) {
       throw error;
     }

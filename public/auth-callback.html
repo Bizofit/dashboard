@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication - Bizoforce</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .loading-container {
+        text-align: center;
+        color: white;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid white;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .error {
+        background: #ef4444;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-container" id="loadingContainer">
+      <div class="spinner"></div>
+      <h2>Completing authentication...</h2>
+      <p>Please wait while we log you in.</p>
+    </div>
+
+    <script>
+      // Extract token and user from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      const userParam = urlParams.get("user");
+      const error = urlParams.get("error");
+
+      // DEBUG: Log everything
+      console.log("=== AUTH CALLBACK DEBUG ===");
+      console.log("Full URL:", window.location.href);
+      console.log("Token:", token);
+      console.log("User param:", userParam);
+      console.log("Error:", error);
+      console.log("All URL params:", Array.from(urlParams.entries()));
+
+      if (error) {
+        // Authentication failed
+        document.getElementById("loadingContainer").innerHTML = `
+                <div class="error">
+                    <h2>❌ Authentication Failed</h2>
+                    <p>${getErrorMessage(error)}</p>
+                    <p>Redirecting to login...</p>
+                </div>
+            `;
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 3000);
+      } else if (token) {
+        // Store the JWT token in sessionStorage
+        sessionStorage.setItem("authToken", token);
+
+        console.log("✅ Google OAuth successful, token stored");
+        console.log(
+          "SessionStorage authToken:",
+          sessionStorage.getItem("authToken")
+        );
+
+        // Optional: Parse and log user info
+        if (userParam) {
+          try {
+            const user = JSON.parse(decodeURIComponent(userParam));
+            sessionStorage.setItem("user", JSON.stringify(user));
+            console.log("User info stored:", user);
+          } catch (e) {
+            console.error("Failed to parse user data:", e);
+          }
+        }
+
+        // Redirect to dashboard
+        console.log("Redirecting to /dashboard in 500ms...");
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 500);
+      } else {
+        // No token or error - something went wrong
+        document.getElementById("loadingContainer").innerHTML = `
+                <div class="error">
+                    <h2>❌ Authentication Error</h2>
+                    <p>No authentication token received.</p>
+                    <p>Redirecting to login...</p>
+                </div>
+            `;
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 3000);
+      }
+
+      function getErrorMessage(errorCode) {
+        const messages = {
+          google_auth_failed:
+            "Failed to authenticate with Google. Please try again.",
+          callback_failed: "Authentication callback failed. Please try again.",
+          token_generation_failed: "Failed to generate authentication token.",
+        };
+        return (
+          messages[errorCode] ||
+          "An unknown error occurred during authentication."
+        );
+      }
+    </script>
+  </body>
+</html>

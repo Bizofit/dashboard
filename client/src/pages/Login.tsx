@@ -1,148 +1,228 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { auth } from "../lib/auth";
 
 export default function LoginPage() {
-  const [_, setLocation] = useLocation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true);
-  const [error, setError] = useState('');
+  const [location, setLocation] = useLocation();
+  const [showEmployeeLogin, setShowEmployeeLogin] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showAccountSwitchMessage, setShowAccountSwitchMessage] =
+    useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Check if user just logged out and needs to switch accounts
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("switch_account") === "true") {
+      setShowAccountSwitchMessage(true);
+    }
+
+    // Ensure no residual token exists on login page
+    if (auth.isAuthenticated()) {
+      console.log("⚠️ Clearing residual token on login page");
+      auth.clearToken();
+      sessionStorage.clear();
+    }
+  }, []);
+
+  const handleGoogleLogin = () => {
+    // Add prompt=select_account to force Google account chooser
+    window.location.href = "/api/auth/google?prompt=select_account";
+  };
+
+  const handleEmployeeLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const response = await axios.post(endpoint, { email, password });
+      const timestamp = Date.now();
+      const response = await fetch(`/api/auth/login?_t=${timestamp}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (response.data.success) {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
-        setLocation('/dashboard');
+      const data = await response.json();
+
+      if (data.success) {
+        auth.setToken(data.data.token);
+        setLocation("/dashboard");
+      } else {
+        setError(data.message || "Login failed");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      setError("An error occurred during login");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = '/api/auth/google';
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-      <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Bizoforce Dashboard
-        </h1>
-
-        <div className="mb-6">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
-                isLogin
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
-                !isLogin
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              Register
-            </button>
+    <div className="min-h-screen flex">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-orange-500 p-12 flex-col justify-between text-white">
+        <div>
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-2xl font-bold">
+              B
+            </div>
+            <span className="text-2xl font-bold">Bizoforce</span>
+          </div>
+          <div className="space-y-8">
+            <h1 className="text-5xl font-bold leading-tight">
+              Welcome to Bizoforce Ecosystem
+            </h1>
+            <p className="text-xl text-white/90 max-w-lg">
+              Generate leads, grow your business, hire talent, manage projects,
+              and collaborate seamlessly - all in one powerful platform.
+            </p>
           </div>
         </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
-          </button>
-        </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          {/* Account Switch Message */}
+          {showAccountSwitchMessage && (
+            <div className="mb-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-lg">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-blue-600 mt-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-semibold text-blue-900">
+                    Switching Google Accounts?
+                  </p>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Click "Continue with Google" below and you'll be prompted to
+                    choose which Google account to use.
+                  </p>
+                  <button
+                    onClick={() => setShowAccountSwitchMessage(false)}
+                    className="text-xs text-blue-600 hover:text-blue-800 font-medium mt-2"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          )}
+
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome Back
+              </h2>
+              <p className="text-gray-600">Sign in with Google to continue</p>
+            </div>
+
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+            >
+              Continue with Google
+            </button>
+
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500">
+                  For company employees
+                </span>
+              </div>
+            </div>
+
+            {!showEmployeeLogin ? (
+              <button
+                onClick={() => setShowEmployeeLogin(true)}
+                className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-4 px-6 rounded-xl transition-colors duration-200"
+              >
+                Company Employee Login
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <button
+                  onClick={() => setShowEmployeeLogin(false)}
+                  className="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  ← Back
+                </button>
+
+                <form onSubmit={handleEmployeeLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Work Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="you@company.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg disabled:opacity-50"
+                  >
+                    {loading ? "Signing in..." : "Sign in"}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            <div className="mt-8 space-y-2 text-sm text-gray-600">
+              <p>
+                <strong>Company Admins & Individual Users:</strong> Use Google
+                sign-in above
+              </p>
+              <p>
+                <strong>Company Employees:</strong> Use the work email login if
+                invited by your admin
+              </p>
             </div>
           </div>
-
-          <button
-            onClick={handleGoogleLogin}
-            className="mt-4 w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            Continue with Google
-          </button>
         </div>
       </div>
     </div>

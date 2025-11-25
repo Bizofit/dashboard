@@ -201,7 +201,7 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // ============================================================================
-// GET PROFILE
+// GET PROFILE - Enhanced with Comprehensive Platform Data
 // ============================================================================
 router.get("/profile", authenticate, async (req: any, res: Response) => {
   try {
@@ -211,6 +211,12 @@ router.get("/profile", authenticate, async (req: any, res: Response) => {
     console.log(
       `🔍 Profile API - JWT userId: ${userId}, JWT email: ${req.user.email}`
     );
+    
+    // Get comprehensive platform data using sync service
+    const platformIdSyncService = await import('../../services/platform-id-sync-service.js');
+    const platformData = await platformIdSyncService.default.getUserPlatformData(userId);
+
+    console.log(`✅ Enhanced Profile - Platform Data:`, JSON.stringify(platformData, null, 2));
 
     const users = await unifiedDB
       .select()
@@ -278,10 +284,17 @@ router.get("/profile", authenticate, async (req: any, res: Response) => {
       company: companyInfo,
       createdAt: user.createdAt,
       lastLoginAt: user.lastLoginAt,
+      // Enhanced Platform Data
+      platformData: platformData,
+      // Legacy platform IDs (for backward compatibility)
+      bizoforceUserId: user.bizoforceUserId,
+      giglancerUserId: user.giglancerUserId,
+      screenlyUserId: user.screenlyUserId,
+      workUserId: user.workUserId,
     };
 
     console.log(
-      "🔍 Profile API - Response data:",
+      "🔍 Enhanced Profile API - Complete Response:",
       JSON.stringify(responseData, null, 2)
     );
 

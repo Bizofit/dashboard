@@ -1326,6 +1326,247 @@ export class CompanyAggregationService {
         platform: "unified",
       }));
 
+      // CRITICAL: If this company originated from Bizoforce, fetch actual listing data
+      const sourcePlatform = companyData?.platform || company.metadata?.sourcePlatform || company.platform;
+      console.log(`🔍 Company source platform: ${sourcePlatform}`);
+      
+      if (sourcePlatform === 'bizoforce') {
+        console.log(`🎯 Fetching Bizoforce data via API for unified company`);
+        const userIds = await this.getUserPlatformIds(userId);
+        
+        if (userIds.bizoforceUserId) {
+          // First, get the listing ID from the database
+          let listingId: number | null = null;
+          
+          try {
+            const [listingRows] = await bizoforcePool.execute(
+              `SELECT p.ID
+               FROM wp_posts p
+               INNER JOIN wp_wpbdp_listings l ON p.ID = l.listing_id
+               WHERE p.post_type = 'wpbdp_listing' 
+                 AND p.post_author = ?
+                 AND p.post_status = 'publish'
+               ORDER BY p.post_date DESC
+               LIMIT 1`,
+              [userIds.bizoforceUserId]
+            );
+            
+            if (listingRows && (listingRows as any[]).length > 0) {
+              listingId = (listingRows as any[])[0].ID;
+              console.log(`📋 Found listing ID: ${listingId} for user ${userIds.bizoforceUserId}`);
+            }
+          } catch (dbError) {
+            console.error(`❌ Error fetching listing ID from database:`, dbError);
+          }
+          
+          // Now try to fetch from API if we have a listing ID
+          if (listingId) {
+            try {
+              // Fetch company data from Bizoforce API using listing ID
+              const apiUrl = `${process.env.BIZOFORCE_API_URL}/companies/${listingId}`;
+              const apiToken = process.env.BIZOFORCE_API_TOKEN || 'bizoforce_2024_secure_token_12345';
+              
+              console.log(`📡 Calling Bizoforce API: ${apiUrl}`);
+              
+              const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${apiToken}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              if (response.ok) {
+                const apiResponse = await response.json();
+                console.log(`✅ Received data from Bizoforce API for listing ${listingId}`);
+                console.log(`📋 API Response:`, apiResponse);
+                
+                // Unwrap the API response if it has success/data structure
+                const apiData = apiResponse.success && apiResponse.data ? apiResponse.data : apiResponse;
+                console.log(`📋 Unwrapped API data keys:`, Object.keys(apiData));
+                
+                // Fetch products, jobs, and financials from local database
+                const products = await this.getBizoforceProducts(userIds.bizoforceUserId);
+                const jobs = await this.getBizoforceJobs(userIds.bizoforceUserId);
+                const financials = await this.getBizoforceFinancials(userIds.bizoforceUserId);
+                
+                // Map API data to our company structure
+                return {
+                  ...company,
+                  name: apiData.name || apiData.company_name || company.name,
+                  description: apiData.description || apiData.business_description || company.description,
+                  logo: apiData.logo || apiData.image || companyData?.logo,
+                  website: apiData.website || apiData.url,
+                  location: apiData.headquarters || apiData.address || apiData.location,
+                  phone: apiData.phone || apiData.contact_phone,
+                  industry: apiData.industry || apiData.category,
+                  foundedYear: apiData.year_incorporated || apiData.founded_year,
+                  size: apiData.company_size || apiData.employees,
+                  employees,
+                  products,
+                  jobs,
+                  financials,
+                  lastUpdated: new Date(),
+                  metadata: {
+                  ...company.metadata,
+                  companyData,
+                  listingId: apiData.listing_id || apiData.id,
+                  listingUrl: apiData.listing_url || `/business-directory/${apiData.slug}/`,
+                  bizoforceUserId: userIds.bizoforceUserId,
+                  customFields: {
+                    _listing_ceo: apiData.ceo || apiData.leadership?.ceo,
+                    _listing_executives: apiData.executives || apiData.leadership?.executives,
+                    _listing_headquarters: apiData.headquarters || apiData.address,
+                    _listing_countries: apiData.countries || apiData.operating_countries,
+                    _listing_year_incorporated: apiData.year_incorporated || apiData.founded_year,
+                    _listing_employees: apiData.company_size || apiData.employee_count,
+                    _listing_revenue: apiData.revenue,
+                    _listing_description: apiData.description || apiData.business_description,
+                    _listing_services: apiData.services,
+                    _listing_products: apiData.products,
+                    ...apiData, // Include all API fields
+                  },
+                },
+                analytics: {
+                  ...company.analytics,
+                  candidateMetrics: {
+                    totalReviews: apiData.review_count || apiData.total_reviews || 0,
+                    averageRating: apiData.rating || apiData.average_rating || 0,
+                    totalCandidates: 0,
+                    totalApplications: 0,
+                    totalInterviews: 0,
+                    totalHired: 0,
+                  },
+                },
+              };
+            } else {
+              console.error(`❌ Bizoforce API returned error: ${response.status} ${response.statusText}`);
+              // Fall back to database query
+            }
+          } catch (apiError) {
+            console.error(`❌ Error calling Bizoforce API:`, apiError);
+            // Fall back to database query
+          }
+          } // Close if (listingId)
+          
+          // Fallback: Fetch Business Directory listing from wp_posts (post_type = 'wpbdp_listing')
+          console.log(`📋 Falling back to direct database query for Bizoforce listing`);
+          const [listingRows] = await bizoforcePool.execute(
+            `SELECT p.*, l.*, 
+                    u.display_name, u.user_email
+             FROM wp_posts p
+             INNER JOIN wp_wpbdp_listings l ON p.ID = l.listing_id
+             LEFT JOIN wp_users u ON p.post_author = u.ID
+             WHERE p.post_type = 'wpbdp_listing' 
+               AND p.post_author = ?
+               AND p.post_status = 'publish'
+             ORDER BY p.post_date DESC
+             LIMIT 1`,
+            [userIds.bizoforceUserId]
+          );
+
+          if (listingRows && (listingRows as any[]).length > 0) {
+            const listingData = (listingRows as any[])[0];
+            console.log(`✅ Found Bizoforce business listing: ${listingData.post_title}`);
+            
+            // Fetch listing metadata (custom fields)
+            const [metaRows] = await bizoforcePool.execute(
+              `SELECT meta_key, meta_value 
+               FROM wp_postmeta 
+               WHERE post_id = ?`,
+              [listingData.ID]
+            );
+            
+            // Parse metadata into object
+            const metadata: any = {};
+            for (const row of metaRows as any[]) {
+              metadata[row.meta_key] = row.meta_value;
+            }
+            
+            console.log('📋 WordPress Field 68 (CEO):', metadata['_wpbdp[fields][68]']);
+            console.log('📋 WordPress Field 72 (HQ):', metadata['_wpbdp[fields][72]']);
+            console.log('📋 WordPress Field 21 (Countries):', metadata['_wpbdp[fields][21]']);
+            console.log('📋 WordPress Field 73 (Year):', metadata['_wpbdp[fields][73]']);
+            console.log('📋 WordPress Field 34 (Reviews):', metadata['_wpbdp[fields][34]']);
+            
+            // Extract rating from serialized PHP object
+            let reviewCount = 0;
+            let averageRating = 0;
+            const ratingField = metadata['_wpbdp[fields][34]'];
+            if (ratingField && ratingField.includes('count')) {
+              const countMatch = ratingField.match(/i:(\d+)/);
+              const avgMatch = ratingField.match(/d:([\d.]+)/);
+              if (countMatch) reviewCount = parseInt(countMatch[1]);
+              if (avgMatch) averageRating = parseFloat(avgMatch[1]);
+            }
+            console.log('⭐ Extracted review count:', reviewCount);
+            console.log('⭐ Extracted review average:', averageRating);
+            
+            // Fetch products
+            const products = await this.getBizoforceProducts(userIds.bizoforceUserId);
+            
+            // Fetch financial data
+            const financials = await this.getBizoforceFinancials(userIds.bizoforceUserId);
+            
+            // Fetch jobs if any
+            const jobs = await this.getBizoforceJobs(userIds.bizoforceUserId);
+            
+            const result = {
+              ...company,
+              name: listingData.post_title || company.name,
+              description: listingData.post_content || listingData.post_excerpt || companyData?.description,
+              logo: metadata['_thumbnail_id'] ? `https://staging.bizoforce.com/wp-content/uploads/${metadata['_thumbnail_id']}` : companyData?.logo,
+              website: metadata['_wpbdp[fields][5]'] || companyData?.website,
+              location: metadata['_wpbdp[fields][72]'] || metadata['_wpbdp[fields][11]'] || companyData?.location,
+              phone: metadata['_wpbdp[fields][6]'] || companyData?.phone,
+              industry: metadata['_wpbdp[fields][22]'] || companyData?.industry,
+              foundedYear: metadata['_wpbdp[fields][73]'],
+              size: metadata['_wpbdp[fields][75]'],
+              employees,
+              products,
+              jobs,
+              financials,
+              lastUpdated: new Date(),
+              metadata: {
+                ...company.metadata,
+                companyData,
+                listingId: listingData.ID,
+                listingStatus: listingData.listing_status,
+                listingUrl: `/business-directory/${listingData.post_name}/`,
+                bizoforceUserId: userIds.bizoforceUserId,
+                customFields: {
+                  ...metadata,
+                  // Add semantic field aliases from WordPress field IDs
+                  _listing_ceo: metadata['_wpbdp[fields][68]'],
+                  _listing_ceo_title: metadata['_wpbdp[fields][69]'],
+                  _listing_headquarters: metadata['_wpbdp[fields][72]'],
+                  _listing_year_incorporated: metadata['_wpbdp[fields][73]'],
+                  _listing_countries: metadata['_wpbdp[fields][21]'],
+                  _listing_countries_served: metadata['_wpbdp[fields][76]'],
+                  _listing_employees: metadata['_wpbdp[fields][75]'],
+                  _listing_phone: metadata['_wpbdp[fields][6]'],
+                  _listing_website: metadata['_wpbdp[fields][5]'],
+                  _listing_description: metadata['_wpbdp[fields][2]'],
+                  _listing_review_count: reviewCount,
+                  _listing_review_average: averageRating,
+                },
+              },
+            };
+            
+            console.log('✅ Mapped semantic fields:', {
+              ceo: metadata['_wpbdp[fields][68]'],
+              headquarters: metadata['_wpbdp[fields][72]'],
+              countries: metadata['_wpbdp[fields][21]'],
+              year: metadata['_wpbdp[fields][73]'],
+              reviewCount,
+              averageRating
+            });
+            
+            return result;
+          }
+        }
+      }
+
       return {
         ...company,
         description: companyData?.description || company.description,
@@ -1424,6 +1665,38 @@ export class CompanyAggregationService {
         averageOrderValue: 0,
       },
     };
+  }
+
+  private async getBizoforceJobs(userId?: number): Promise<JobData[]> {
+    if (!userId) return [];
+
+    try {
+      // Check for job posts in wp_posts (custom post type 'job' or similar)
+      const [rows] = await bizoforcePool.execute(
+        `SELECT p.*, pm.meta_value as job_type
+         FROM wp_posts p
+         LEFT JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '_job_type'
+         WHERE p.post_author = ? 
+           AND p.post_type IN ('job_listing', 'job', 'wpjb_job')
+           AND p.post_status IN ('publish', 'pending')
+         ORDER BY p.post_date DESC
+         LIMIT 20`,
+        [userId]
+      );
+
+      return (rows as any[]).map((job) => ({
+        id: `bizoforce_job_${job.ID}`,
+        title: job.post_title,
+        description: job.post_content || undefined,
+        type: (job.job_type as any) || "full-time",
+        status: (job.post_status === 'publish' ? 'open' : 'draft') as "open" | "closed" | "draft",
+        platform: "bizoforce",
+        postedAt: new Date(job.post_date),
+      }));
+    } catch (error) {
+      console.error("Error fetching Bizoforce jobs:", error);
+      return [];
+    }
   }
 
   private async getGiglancerJobs(userId?: number): Promise<JobData[]> {

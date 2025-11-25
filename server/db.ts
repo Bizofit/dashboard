@@ -21,6 +21,10 @@ export const unifiedPool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  acquireTimeout: 60000,
+  idleTimeout: 300000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 300000
 });
 
 export const unifiedDB = drizzle(unifiedPool, { schema, mode: 'default' });
@@ -37,6 +41,10 @@ export const bizoforcePool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  acquireTimeout: 60000,
+  idleTimeout: 300000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 300000
 });
 
 export const bizoforceDB = drizzle(bizoforcePool, { mode: 'default' });
@@ -53,6 +61,10 @@ export const giglancerPool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  acquireTimeout: 60000,
+  idleTimeout: 300000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 300000
 });
 
 export const giglancerDB = drizzle(giglancerPool, { mode: 'default' });
@@ -83,6 +95,10 @@ export const workPool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  acquireTimeout: 60000,
+  idleTimeout: 300000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 300000
 });
 
 export const workDB = drizzle(workPool, { mode: 'default' });
@@ -160,3 +176,41 @@ process.on('SIGINT', async () => {
   await closeConnections();
   process.exit(0);
 });
+
+/**
+ * Retry wrapper for database operations with exponential backoff
+ */
+export async function retryDatabaseOperation<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry on certain types of errors
+      if (lastError.message.includes('ER_ACCESS_DENIED') || 
+          lastError.message.includes('ER_BAD_DB_ERROR') ||
+          lastError.message.includes('ER_NO_SUCH_TABLE') ||
+          lastError.message.includes('ER_TABLEACCESS_DENIED')) {
+        throw lastError;
+      }
+
+      if (attempt === maxRetries) {
+        console.error(`❌ Database operation failed after ${maxRetries} attempts:`, lastError.message);
+        throw lastError;
+      }
+
+      const delay = baseDelay * Math.pow(2, attempt - 1);
+      console.warn(`⚠️ Database operation failed (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError || new Error('Unknown database error');
+}

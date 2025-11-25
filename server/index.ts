@@ -84,22 +84,26 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Rate limiting with proper trust proxy configuration
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.",
-  standardHeaders: true,
-  legacyHeaders: false,
-  // Skip rate limiting if IP can't be determined
-  skip: (req) => !req.ip,
-  // Use forwarded IP from proxy if available
-  keyGenerator: (req) => {
-    return req.ip || req.socket.remoteAddress || "unknown";
-  },
-});
-
-app.use("/api/", limiter);
+// Rate limiting - Disabled in development, limited in production
+if (isProduction) {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // Limit each IP to 1000 requests per windowMs
+    message: { success: false, message: "Too many requests from this IP, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Skip rate limiting if IP can't be determined
+    skip: (req) => !req.ip,
+    // Use forwarded IP from proxy if available
+    keyGenerator: (req) => {
+      return req.ip || req.socket.remoteAddress || "unknown";
+    },
+  });
+  app.use("/api", limiter);
+  log("⚠️  Rate limiting enabled (1000 req/15min)", "express");
+} else {
+  log("✅ Rate limiting disabled in development", "express");
+}
 
 // ============================================================================
 // SESSION CONFIGURATION (using PostgreSQL from Screenly DB)

@@ -7,6 +7,7 @@ import migrationRoutes from "./migration.js";
 import smartMigrationRoutes from "./smart-migration.js";
 import profileRoutes from "./profile.js";
 import companiesRoutes from "./companies.js";
+import productsRoutes from "./products.js";
 
 export function registerRoutes(app: Express) {
   // Authentication routes
@@ -24,6 +25,9 @@ export function registerRoutes(app: Express) {
 
   // Company routes
   app.use("/api/companies", companiesRoutes);
+
+  // Products routes
+  app.use("/api/products", productsRoutes);
 
   // Migration routes
   app.use("/api/migration", migrationRoutes);

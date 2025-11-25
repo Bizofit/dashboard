@@ -33,15 +33,17 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Rate limiting - 100 requests per 15 minutes
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use('/api/', limiter);
+// Rate limiting - Disabled in development, 1000 requests per 15 minutes in production
+if (process.env.NODE_ENV === 'production') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000,
+    message: { success: false, message: 'Too many requests from this IP, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.use('/api/', limiter);
+}
 
 // ============================================
 // BODY PARSERS & LOGGING
@@ -73,10 +75,11 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/auth-routes'));
 app.use('/api/google-auth', require('./routes/google-auth-routes'));
+app.use('/api/dashboard', require('./routes/dashboard-routes'));
+app.use('/api/products', require('./routes/products-routes'));
 // app.use('/api/users', require('./routes/user-routes'));
 // app.use('/api/companies', require('./routes/company-routes'));
 // app.use('/api/jobs', require('./routes/job-routes'));
-// app.use('/api/products', require('./routes/product-routes'));
 // app.use('/api/projects', require('./routes/project-routes'));
 // app.use('/api/timesheets', require('./routes/timesheet-routes'));
 

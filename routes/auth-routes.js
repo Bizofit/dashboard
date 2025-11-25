@@ -1,6 +1,7 @@
 /**
  * Authentication Routes
- * Handles traditional email/password authentication
+ * Handles traditional email/password authentication with platform sync
+ * Last updated: 2025-11-25 - Enhanced with comprehensive platform data
  */
 
 const express = require("express");
@@ -67,6 +68,7 @@ router.post("/login", validateBody(["email", "password"]), async (req, res) => {
 /**
  * GET /api/auth/profile
  * Get current user profile (requires authentication)
+ * Returns comprehensive platform IDs: company_id, listing_id, product counts
  */
 router.get("/profile", authenticate, async (req, res) => {
   try {
@@ -80,21 +82,26 @@ router.get("/profile", authenticate, async (req, res) => {
     console.log(`📋 Profile API called for user ${req.user.email}:`);
     console.log(`   Primary Role: ${req.user.primaryRole}`);
     console.log(`   Roles Count: ${req.user.roles?.length || 0}`);
-    console.log(
-      `   Roles: ${JSON.stringify(
-        req.user.roles?.map((r) => ({
-          id: r.id,
-          type: r.type,
-          isPrimary: r.isPrimary,
-        }))
-      )}`
-    );
+    console.log(`   Bizoforce User ID: ${req.user.bizoforce_user_id}`);
+    console.log(`   Giglancer User ID: ${req.user.giglancer_user_id}`);
+    console.log(`   Work User ID: ${req.user.work_user_id}`);
+    console.log(`   Screenly User ID: ${req.user.screenly_user_id}`);
+
+    // Get comprehensive platform data using sync service
+    const platformIdSync = require('../services/platform-id-sync-service');
+    const platformData = await platformIdSync.getUserPlatformData(req.user.id);
+
+    console.log(`✅ Final platformData:`, JSON.stringify(platformData, null, 2));
 
     res.json({
       success: true,
-      data: req.user,
+      data: {
+        ...req.user,
+        platformData,
+      },
     });
   } catch (error) {
+    console.error('Profile API error:', error);
     res.status(500).json({
       success: false,
       message: error.message,

@@ -7,6 +7,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { unifiedDB } = require("../config/database");
+const platformIdSync = require('./platform-id-sync-service');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
@@ -163,61 +164,95 @@ class AuthService {
   }
 
   /**
-   * Get user by ID with roles
+   * Get user by ID with roles and platform data
+   * Automatically syncs platform IDs if missing
    */
   async getUserById(userId) {
-    const [users] = await unifiedDB.query(
-      `SELECT 
-        id, email, first_name, last_name, phone,
-        google_id, google_profile_picture, auth_provider,
-        bizoforce_user_id, giglancer_user_id, screenly_user_id, work_user_id,
-        is_active, is_email_verified, last_login_at, created_at
-      FROM unified_users 
-      WHERE id = ?`,
-      [userId]
-    );
+    try {
+      // Get basic user data
+      const [users] = await unifiedDB.query(
+        `SELECT 
+          id, email, first_name, last_name, phone,
+          google_id, google_profile_picture, auth_provider,
+          bizoforce_user_id, giglancer_user_id, screenly_user_id, work_user_id,
+          is_active, is_email_verified, last_login_at, created_at
+        FROM unified_users 
+        WHERE id = ?`,
+        [userId]
+      );
 
-    if (users.length === 0) {
-      throw new Error("User not found");
+      if (users.length === 0) {
+        throw new Error("User not found");
+      }
+
+      const user = users[0];
+
+      // Sync platform IDs if any are missing
+      const needsSync = !user.bizoforce_user_id || !user.giglancer_user_id || 
+                       !user.screenly_user_id || !user.work_user_id;
+      
+      if (needsSync) {
+        console.log(`🔄 Auto-syncing platform IDs for user ${user.email}`);
+        try {
+          await platformIdSync.syncUserPlatformIds(user.email);
+          
+          // Re-fetch updated user data
+          const [updatedUsers] = await unifiedDB.query(
+            `SELECT 
+              id, email, first_name, last_name, phone,
+              google_id, google_profile_picture, auth_provider,
+              bizoforce_user_id, giglancer_user_id, screenly_user_id, work_user_id,
+              is_active, is_email_verified, last_login_at, created_at
+            FROM unified_users 
+            WHERE id = ?`,
+            [userId]
+          );
+          
+          if (updatedUsers.length > 0) {
+            Object.assign(user, updatedUsers[0]);
+          }
+        } catch (syncError) {
+          console.error(`⚠️  Platform ID sync failed for user ${user.email}:`, syncError.message);
+          // Continue with existing data
+        }
+      }
+
+      // Get user roles
+      const [roles] = await unifiedDB.query(
+        `SELECT 
+          id, role, platform, company_id, is_primary, is_active, source_platform
+        FROM user_roles 
+        WHERE user_id = ? AND is_active = TRUE
+        ORDER BY is_primary DESC, created_at ASC`,
+        [userId]
+      );
+
+      // Find primary role
+      const primaryRole = roles.find((r) => r.is_primary) || roles[0] || null;
+
+      const userData = {
+        ...user,
+        roles: roles.map((r) => ({
+          id: r.id,
+          type: r.role,
+          platform: r.platform,
+          companyId: r.company_id,
+          isPrimary: r.is_primary,
+          sourcePlatform: r.source_platform,
+        })),
+        primaryRole: primaryRole ? primaryRole.role : null,
+      };
+
+      console.log(`🔍 getUserById for ${user.email}:`);
+      console.log(`   Found ${roles.length} roles`);
+      console.log(`   Primary role: ${userData.primaryRole}`);
+      console.log(`   Platform IDs: Bizoforce=${user.bizoforce_user_id}, Giglancer=${user.giglancer_user_id}, Screenly=${user.screenly_user_id}, Work=${user.work_user_id}`);
+
+      return userData;
+    } catch (error) {
+      console.error(`❌ Error in getUserById for ${userId}:`, error.message);
+      throw error;
     }
-
-    const user = users[0];
-
-    // Get user roles
-    const [roles] = await unifiedDB.query(
-      `SELECT 
-        id, role, platform, company_id, is_primary, is_active, source_platform
-      FROM user_roles 
-      WHERE user_id = ? AND is_active = TRUE
-      ORDER BY is_primary DESC, created_at ASC`,
-      [userId]
-    );
-
-    // Find primary role
-    const primaryRole = roles.find((r) => r.is_primary) || roles[0] || null;
-
-    const userData = {
-      ...user,
-      roles: roles.map((r) => ({
-        id: r.id,
-        type: r.role,
-        platform: r.platform,
-        companyId: r.company_id,
-        isPrimary: r.is_primary,
-        sourcePlatform: r.source_platform,
-      })),
-      primaryRole: primaryRole ? primaryRole.role : null,
-    };
-
-    console.log(`🔍 getUserById for ${user.email}:`);
-    console.log(`   Found ${roles.length} roles`);
-    console.log(`   Primary role: ${userData.primaryRole}`);
-    console.log(
-      `   Role details:`,
-      roles.map((r) => ({ id: r.id, role: r.role, isPrimary: r.is_primary }))
-    );
-
-    return userData;
   }
 
   /**

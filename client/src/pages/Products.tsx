@@ -1,7 +1,7 @@
-import { auth } from "../lib/auth";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import MainLayout from "../components/Layout/MainLayout";
+import { auth } from "../lib/auth";
 import {
   Card,
   CardHeader,
@@ -10,81 +10,126 @@ import {
 } from "../components/UI/Card";
 import Button from "../components/UI/Button";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  Badge,
-} from "../components/UI/Table";
-import Modal from "../components/UI/Modal";
-import Input, { Textarea, Select } from "../components/UI/Input";
-import { Plus, Edit, Trash2, ShoppingBag, Eye } from "lucide-react";
+  Package,
+  DollarSign,
+  ShoppingCart,
+  ExternalLink,
+  Plus,
+  Edit3,
+} from "lucide-react";
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   description: string;
+  status: string;
+  permalink: string;
   price: number;
-  category: string;
-  status: "active" | "inactive" | "draft";
-  platform: string;
-  createdAt: string;
+  regular_price: number;
+  sale_price: number | null;
+  stock_status: string;
+  sku: string;
+  total_sales: number;
+  image: {
+    url: string;
+    alt: string;
+  } | null;
 }
 
-export default function ProductsPage() {
-  const [_, setLocation] = useLocation();
-  const [products, setProducts] = useState<Product[]>([]);
+interface ProductsData {
+  products: Product[];
+  stats: {
+    total_products: number;
+    published_products: number;
+    draft_products: number;
+    total_sales: number;
+  };
+}
+
+export default function Products() {
+  const [, setLocation] = useLocation();
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [productsData, setProductsData] = useState<ProductsData | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLocation("/login");
-      return;
-    }
+    fetchProducts();
+  }, []);
 
-    // Fetch products
-    const timestamp = Date.now();
-    fetch(`/api/companies/products?_t=${timestamp}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setProducts(data.data || []);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      })
-      .finally(() => {
-        setLoading(false);
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const token = auth.getToken();
+      if (!token) {
+        setLocation("/login");
+        return;
+      }
+
+      const response = await fetch("/api/products", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-  }, [setLocation]);
 
-  const handleAddProduct = () => {
-    setEditingProduct(null);
-    setIsModalOpen(true);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to fetch products");
+      }
+
+      setProductsData(data.data);
+    } catch (err: any) {
+      console.error("Error fetching products:", err);
+      setError(err.message || "Failed to load products");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product);
-    setIsModalOpen(true);
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(price);
   };
 
   if (loading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3 text-red-700">
+                <Package className="w-5 h-5" />
+                <div>
+                  <p className="font-medium">Error loading products</p>
+                  <p className="text-sm">{error}</p>
+                </div>
+              </div>
+              <Button
+                onClick={fetchProducts}
+                className="mt-4 bg-red-600 hover:bg-red-700"
+              >
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </MainLayout>
     );
@@ -92,223 +137,210 @@ export default function ProductsPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Products & Services
-            </h1>
-            <p className="text-gray-600 mt-1">Manage your product catalog</p>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                My Products
+              </h1>
+              <p className="text-gray-600">
+                WooCommerce products from Bizoforce marketplace
+              </p>
+            </div>
+            <Button
+              onClick={() =>
+                window.open("https://bizoforce.com/wp-admin/post-new.php?post_type=product", "_blank")
+              }
+              className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Product
+            </Button>
           </div>
-          <Button
-            icon={<Plus className="w-4 h-4" />}
-            onClick={handleAddProduct}
-          >
-            Add Product
-          </Button>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total Products</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
-                    {products.length}
-                  </p>
+        {/* Summary Stats */}
+        {productsData && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Total Products */}
+            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm mb-1">Total Products</p>
+                    <p className="text-3xl font-bold">
+                      {productsData.products.length}
+                    </p>
+                  </div>
+                  <Package className="w-12 h-12 text-blue-200" />
                 </div>
-                <ShoppingBag className="w-10 h-10 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Active</p>
-                  <p className="text-2xl font-bold text-green-600 mt-1">
-                    {products.filter((p) => p.status === "active").length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Draft</p>
-                  <p className="text-2xl font-bold text-yellow-600 mt-1">
-                    {products.filter((p) => p.status === "draft").length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Inactive</p>
-                  <p className="text-2xl font-bold text-gray-600 mt-1">
-                    {products.filter((p) => p.status === "inactive").length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
 
-        {/* Products Table */}
-        <Card>
-          <CardContent className="p-0">
-            {products.length === 0 ? (
-              <div className="text-center py-12">
-                <ShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No products yet
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Get started by adding your first product
-                </p>
-                <Button onClick={handleAddProduct}>Add Product</Button>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Platform</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {product.name}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {product.description?.substring(0, 50)}...
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {product.category || "Uncategorized"}
-                      </TableCell>
-                      <TableCell className="font-semibold">
-                        ${product.price.toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            product.status === "active"
-                              ? "success"
-                              : product.status === "draft"
-                              ? "warning"
-                              : "default"
-                          }
-                        >
-                          {product.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                          {product.platform}
+            {/* Total Sales */}
+            <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100 text-sm mb-1">Total Sales</p>
+                    <p className="text-3xl font-bold">
+                      {productsData.stats.total_sales}
+                    </p>
+                  </div>
+                  <ShoppingCart className="w-12 h-12 text-green-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Revenue */}
+            <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm mb-1">Total Revenue</p>
+                    <p className="text-3xl font-bold">
+                      {formatPrice(0)}
+                    </p>
+                  </div>
+                  <DollarSign className="w-12 h-12 text-purple-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* In Stock */}
+            <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-100 text-sm mb-1">In Stock</p>
+                    <p className="text-3xl font-bold">
+                      {productsData.stats.published_products}
+                    </p>
+                  </div>
+                  <Package className="w-12 h-12 text-orange-200" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Products Grid */}
+        {productsData && productsData.products.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {productsData.products.map((product) => (
+              <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                {/* Product Image */}
+                <div className="relative h-48 bg-gray-100">
+                  {product.image ? (
+                    <img
+                      src={product.image.url}
+                      alt={product.image.alt || product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <Package className="w-16 h-16 text-gray-300" />
+                    </div>
+                  )}
+                  {product.stock_status === "instock" ? (
+                    <span className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      In Stock
+                    </span>
+                  ) : (
+                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      Out of Stock
+                    </span>
+                  )}
+                </div>
+
+                {/* Product Info */}
+                <CardContent className="pt-4">
+                  <h3 className="font-semibold text-lg mb-2 line-clamp-2 text-gray-900">
+                    {product.name}
+                  </h3>
+
+                  {product.sku && (
+                    <p className="text-sm text-gray-500 mb-3">SKU: {product.sku}</p>
+                  )}
+
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {product.sale_price && product.sale_price < product.regular_price ? (
+                      <>
+                        <span className="text-2xl font-bold text-orange-600">
+                          {formatPrice(product.sale_price)}
                         </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Eye className="w-4 h-4" />}
-                          >
-                            View
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Edit className="w-4 h-4" />}
-                            onClick={() => handleEditProduct(product)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Trash2 className="w-4 h-4 text-red-500" />}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                        <span className="text-sm text-gray-400 line-through">
+                          {formatPrice(product.regular_price)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-bold text-gray-900">
+                        {formatPrice(product.price)}
+                      </span>
+                    )}
+                  </div>
 
-      {/* Add/Edit Product Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingProduct ? "Edit Product" : "Add New Product"}
-        size="lg"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="primary">
-              {editingProduct ? "Update Product" : "Add Product"}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input
-            label="Product Name"
-            placeholder="Enter product name"
-            required
-          />
-          <Textarea
-            label="Description"
-            placeholder="Describe your product"
-            rows={3}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Price" type="number" placeholder="0.00" required />
-            <Select
-              label="Category"
-              options={[
-                { value: "", label: "Select category" },
-                { value: "electronics", label: "Electronics" },
-                { value: "clothing", label: "Clothing" },
-                { value: "food", label: "Food & Beverage" },
-                { value: "services", label: "Services" },
-              ]}
-            />
+                  {/* Sales Info */}
+                  {product.total_sales > 0 && (
+                    <p className="text-sm text-gray-600 mb-4">
+                      <ShoppingCart className="w-4 h-4 inline mr-1" />
+                      {product.total_sales} sales
+                    </p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => window.open(product.permalink, "_blank")}
+                      variant="outline"
+                      className="flex-1 text-sm"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      View
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        window.open(
+                          `https://bizoforce.com/wp-admin/post.php?post=${product.id}&action=edit`,
+                          "_blank"
+                        )
+                      }
+                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-sm"
+                    >
+                      <Edit3 className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          <Select
-            label="Status"
-            options={[
-              { value: "draft", label: "Draft" },
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
-            ]}
-          />
-        </div>
-      </Modal>
+        ) : (
+          <Card>
+            <CardContent className="pt-6 text-center py-12">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No products yet
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Start selling by creating your first product
+              </p>
+              <Button
+                onClick={() =>
+                  window.open("https://bizoforce.com/wp-admin/post-new.php?post_type=product", "_blank")
+                }
+                className="bg-orange-500 hover:bg-orange-600"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create First Product
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </MainLayout>
   );
 }

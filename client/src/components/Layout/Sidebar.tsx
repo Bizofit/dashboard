@@ -53,7 +53,7 @@ export default function Sidebar({
       label: "Companies",
       path: "/companies",
       icon: <Building2 className="w-5 h-5" />,
-      roles: ["company_admin"],
+      roles: ["company_admin", "vendor"],
     },
     {
       label: "Products",
@@ -65,37 +65,37 @@ export default function Sidebar({
       label: "Jobs",
       path: "/jobs",
       icon: <Briefcase className="w-5 h-5" />,
-      roles: ["company_admin", "hr"],
+      roles: ["company_admin", "hr", "vendor"],
     },
     {
       label: "Projects",
       path: "/projects",
       icon: <Target className="w-5 h-5" />,
-      roles: ["company_admin", "team_lead", "finance"],
+      roles: ["company_admin", "team_lead", "finance", "vendor"],
     },
     {
       label: "Team",
       path: "/team",
       icon: <Users className="w-5 h-5" />,
-      roles: ["company_admin", "hr", "team_lead"],
+      roles: ["company_admin", "hr", "team_lead", "vendor"],
     },
     {
       label: "Timesheets",
       path: "/timesheets",
       icon: <Clock className="w-5 h-5" />,
-      roles: ["company_admin", "team_lead", "finance"],
+      roles: ["company_admin", "team_lead", "finance", "vendor"],
     },
     {
       label: "Invoices",
       path: "/invoices",
       icon: <FileText className="w-5 h-5" />,
-      roles: ["company_admin", "finance"],
+      roles: ["company_admin", "finance", "vendor"],
     },
     {
-      label: "Analytics",
-      path: "/analytics",
-      icon: <BarChart3 className="w-5 h-5" />,
-      roles: ["company_admin", "finance"],
+      label: "Settings",
+      path: "/settings",
+      icon: <Settings className="w-5 h-5" />,
+      roles: ["company_admin", "hr", "team_lead", "finance", "vendor"],
     },
   ];
 
@@ -155,18 +155,17 @@ export default function Sidebar({
     const isActive = location === item.path;
 
     return (
-      <Link href={item.path}>
-        <a
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-            isActive
-              ? "bg-orange-500 text-white shadow-lg"
-              : "text-gray-700 hover:bg-gray-100"
-          } ${collapsed ? "justify-center" : ""}`}
-          onClick={() => setMobileOpen(false)}
-        >
-          {item.icon}
-          {!collapsed && <span className="font-medium">{item.label}</span>}
-        </a>
+      <Link
+        href={item.path}
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+          isActive
+            ? "bg-orange-500 text-white shadow-lg"
+            : "text-gray-700 hover:bg-gray-100"
+        } ${collapsed ? "justify-center" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      >
+        {item.icon}
+        {!collapsed && <span className="font-medium">{item.label}</span>}
       </Link>
     );
   };
@@ -217,15 +216,14 @@ export default function Sidebar({
 
       {/* Bottom Actions */}
       <div className="border-t border-gray-200 p-3 space-y-1">
-        <Link href="/settings">
-          <a
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all ${
-              collapsed ? "justify-center" : ""
-            }`}
-          >
-            <Settings className="w-5 h-5" />
-            {!collapsed && <span className="font-medium">Settings</span>}
-          </a>
+        <Link
+          href="/settings"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all ${
+            collapsed ? "justify-center" : ""
+          }`}
+        >
+          <Settings className="w-5 h-5" />
+          {!collapsed && <span className="font-medium">Settings</span>}
         </Link>
 
         <button

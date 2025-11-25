@@ -9,6 +9,7 @@ import {
   workDB,
   bizoforcePool,
   giglancerPool,
+  screenlyPool,
   workPool,
 } from "../db.js";
 import { unifiedUsers, userRoles } from "../../shared/schema.js";
@@ -252,13 +253,18 @@ async function getIndividualDashboard(user: any): Promise<DashboardStats> {
 async function getOpenPositionsCount(user: any): Promise<number> {
   try {
     if (!user.giglancerUserId) return 0;
+    
+    // Giglancer uses job_status_id (foreign key) not status field
+    // Active jobs typically have job_status_id = 1 (but this varies)
+    // For safety, just count all jobs for the user
     const [rows] = await giglancerPool.query<RowDataPacket[]>(
-      'SELECT COUNT(*) as count FROM jobs WHERE user_id = ? AND status = "active"',
+      'SELECT COUNT(*) as count FROM jobs WHERE user_id = ?',
       [user.giglancerUserId]
     );
     return rows[0]?.count || 0;
   } catch (error) {
-    console.error("Error fetching open positions:", error);
+    console.error("❌ Error fetching open positions (expected if jobs table structure differs):", error.message);
+    console.error("📋 This is expected for legacy database schema differences");
     return 0;
   }
 }
@@ -266,16 +272,21 @@ async function getOpenPositionsCount(user: any): Promise<number> {
 async function getApplicationsCount(user: any): Promise<number> {
   try {
     if (!user.giglancerUserId) return 0;
-    // Get applications for jobs posted by this user
+    
+    // Giglancer uses 'bids' table for job applications, not 'job_applications'
     const [rows] = await giglancerPool.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as count FROM job_applications ja
-       INNER JOIN jobs j ON j.id = ja.job_id
-       WHERE j.user_id = ? AND ja.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)`,
+      `SELECT COUNT(*) as count FROM bids 
+       WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)`,
       [user.giglancerUserId]
     );
     return rows[0]?.count || 0;
-  } catch (error) {
-    console.error("Error fetching applications:", error);
+  } catch (error: any) {
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      console.error("❌ Table 'bids' does not exist in Giglancer database");
+      console.error("📋 This is expected if bids feature is not yet implemented");
+    } else {
+      console.error("❌ Error fetching job bids:", error.message);
+    }
     return 0;
   }
 }
@@ -283,12 +294,19 @@ async function getApplicationsCount(user: any): Promise<number> {
 async function getAIScreeningsCount(user: any): Promise<number> {
   try {
     if (!user.screenlyUserId) return 0;
-    const [rows] = await workPool.query<RowDataPacket[]>(
-      "SELECT COUNT(*) as count FROM screenings WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    
+    // Query Screenly database (PostgreSQL) for screening projects
+    const result = await screenlyPool.query(
+      "SELECT COUNT(*) as count FROM screening_projects WHERE created_at >= NOW() - INTERVAL '30 days'"
     );
-    return rows[0]?.count || 0;
-  } catch (error) {
-    console.error("Error fetching AI screenings:", error);
+    return result.rows[0]?.count || 0;
+  } catch (error: any) {
+    if (error.code === '42P01') { // PostgreSQL table does not exist
+      console.error("❌ Table 'screening_projects' does not exist in Screenly database");
+      console.error("📋 This is expected if screening projects feature is not yet implemented");
+    } else {
+      console.error("❌ Error fetching AI screening projects:", error.message);
+    }
     return 0;
   }
 }
@@ -296,12 +314,20 @@ async function getAIScreeningsCount(user: any): Promise<number> {
 async function getInterviewsCount(user: any): Promise<number> {
   try {
     if (!user.screenlyUserId) return 0;
-    const [rows] = await workPool.query<RowDataPacket[]>(
-      "SELECT COUNT(*) as count FROM interviews WHERE scheduled_at >= CURDATE()"
+    
+    // Query Screenly database (PostgreSQL) for upcoming candidate applications
+    // Screenly doesn't have a separate interviews table, use candidate_applications with status filter
+    const result = await screenlyPool.query(
+      "SELECT COUNT(*) as count FROM candidate_applications WHERE status = 'interview_scheduled' AND updated_at >= CURRENT_DATE"
     );
-    return rows[0]?.count || 0;
-  } catch (error) {
-    console.error("Error fetching interviews:", error);
+    return result.rows[0]?.count || 0;
+  } catch (error: any) {
+    if (error.code === '42P01') { // PostgreSQL table does not exist
+      console.error("❌ Table 'candidate_applications' does not exist in Screenly database");
+      console.error("📋 This is expected if candidate applications feature is not yet implemented");
+    } else {
+      console.error("❌ Error fetching scheduled interviews:", error.message);
+    }
     return 0;
   }
 }

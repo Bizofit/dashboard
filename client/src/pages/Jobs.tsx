@@ -34,45 +34,45 @@ interface Job {
   title: string;
   description: string;
   location: string;
-  salary: string;
+  salary?: string;
+  budget_range?: string;
   type: "full-time" | "part-time" | "contract" | "freelance";
+  employment_type?: string;
+  work_mode?: string;
+  years_of_exp?: number;
+  hiring_org?: string;
   status: "open" | "closed" | "draft";
-  applications: number;
+  applications?: number;
+  is_featured?: boolean;
+  is_urgent?: boolean;
   platform: string;
   postedAt: string;
+  updatedAt?: string;
 }
 
 export default function JobsPage() {
   const [_, setLocation] = useLocation();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [giglancerProjects, setGiglancerProjects] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!auth.isAuthenticated()) {
       setLocation("/login");
       return;
     }
 
-    // Fetch jobs
-    const timestamp = Date.now();
-    fetch(`/api/companies/jobs?_t=${timestamp}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-      },
-    })
+    // Fetch Giglancer projects
+    auth.fetchAPI("/api/giglancer/projects")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setJobs(data.data || []);
+          setGiglancerProjects(data.data || []);
         }
       })
       .catch((error) => {
-        console.error("Error fetching jobs:", error);
+        console.error("Error fetching Giglancer projects:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -83,6 +83,9 @@ export default function JobsPage() {
     setEditingJob(null);
     setIsModalOpen(true);
   };
+
+  // Use only Giglancer projects
+  const allJobs = giglancerProjects;
 
   if (loading) {
     return (
@@ -118,7 +121,10 @@ export default function JobsPage() {
                 <div>
                   <p className="text-sm text-gray-600">Total Jobs</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
-                    {jobs.length}
+                    {allJobs.length}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Giglancer Projects
                   </p>
                 </div>
                 <Briefcase className="w-10 h-10 text-blue-500" />
@@ -131,7 +137,7 @@ export default function JobsPage() {
                 <div>
                   <p className="text-sm text-gray-600">Open Positions</p>
                   <p className="text-2xl font-bold text-green-600 mt-1">
-                    {jobs.filter((j) => j.status === "open").length}
+                    {allJobs.filter((j) => j.status === "open").length}
                   </p>
                 </div>
               </div>
@@ -143,7 +149,7 @@ export default function JobsPage() {
                 <div>
                   <p className="text-sm text-gray-600">Total Applications</p>
                   <p className="text-2xl font-bold text-blue-600 mt-1">
-                    {jobs.reduce((sum, j) => sum + (j.applications || 0), 0)}
+                    {allJobs.reduce((sum, j) => sum + (j.applications || 0), 0)}
                   </p>
                 </div>
                 <UsersIcon className="w-10 h-10 text-blue-500" />
@@ -156,12 +162,12 @@ export default function JobsPage() {
                 <div>
                   <p className="text-sm text-gray-600">Avg. Applications</p>
                   <p className="text-2xl font-bold text-purple-600 mt-1">
-                    {jobs.length > 0
+                    {allJobs.length > 0
                       ? Math.round(
-                          jobs.reduce(
+                          allJobs.reduce(
                             (sum, j) => sum + (j.applications || 0),
                             0
-                          ) / jobs.length
+                          ) / allJobs.length
                         )
                       : 0}
                   </p>
@@ -174,7 +180,7 @@ export default function JobsPage() {
         {/* Jobs Table */}
         <Card>
           <CardContent className="p-0">
-            {jobs.length === 0 ? (
+            {allJobs.length === 0 ? (
               <div className="text-center py-12">
                 <Briefcase className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -192,14 +198,15 @@ export default function JobsPage() {
                     <TableHead>Job Title</TableHead>
                     <TableHead>Location</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Salary</TableHead>
+                    <TableHead>Budget/Salary</TableHead>
+                    <TableHead>Platform</TableHead>
                     <TableHead>Applications</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobs.map((job) => (
+                  {allJobs.map((job) => (
                     <TableRow key={job.id}>
                       <TableCell>
                         <div>
@@ -214,17 +221,22 @@ export default function JobsPage() {
                       <TableCell>{job.location}</TableCell>
                       <TableCell>
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded capitalize">
-                          {job.type.replace("-", " ")}
+                          {(job.employment_type || job.type || "").replace("-", " ")}
                         </span>
                       </TableCell>
                       <TableCell className="font-semibold">
-                        {job.salary}
+                        {job.salary || job.budget_range || "Not specified"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={job.platform === "giglancer" ? "info" : "default"}>
+                          {job.platform}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <UsersIcon className="w-4 h-4 text-gray-400" />
                           <span className="font-semibold">
-                            {job.applications}
+                            {job.applications || 0}
                           </span>
                         </div>
                       </TableCell>
@@ -250,18 +262,22 @@ export default function JobsPage() {
                           >
                             View
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Edit className="w-4 h-4" />}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Trash2 className="w-4 h-4 text-red-500" />}
-                          />
+                          {job.platform !== "giglancer" && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                icon={<Edit className="w-4 h-4" />}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                icon={<Trash2 className="w-4 h-4 text-red-500" />}
+                              />
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

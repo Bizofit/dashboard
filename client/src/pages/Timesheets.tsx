@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { auth } from "../lib/auth";
 import MainLayout from "../components/Layout/MainLayout";
 import { Card, CardContent } from "../components/UI/Card";
 import Button from "../components/UI/Button";
@@ -34,20 +35,12 @@ export default function TimesheetsPage() {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!auth.isAuthenticated()) {
       setLocation("/login");
       return;
     }
 
-    const timestamp = Date.now();
-    fetch(`/api/timesheets?_t=${timestamp}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-      },
-    })
+    auth.fetchAPI("/api/timesheets")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setTimesheets(data.data || []);

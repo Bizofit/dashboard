@@ -8,6 +8,8 @@ import smartMigrationRoutes from "./smart-migration.js";
 import profileRoutes from "./profile.js";
 import companiesRoutes from "./companies.js";
 import productsRoutes from "./products.js";
+import giglancerProjectsRoutes from "./giglancer-projects.js";
+import timesheetsRoutes from "./timesheets.js";
 
 export function registerRoutes(app: Express) {
   // Authentication routes
@@ -28,6 +30,12 @@ export function registerRoutes(app: Express) {
 
   // Products routes
   app.use("/api/products", productsRoutes);
+
+  // Giglancer routes
+  app.use("/api/giglancer", giglancerProjectsRoutes);
+
+  // Timesheets routes
+  app.use("/api/timesheets", timesheetsRoutes);
 
   // Migration routes
   app.use("/api/migration", migrationRoutes);

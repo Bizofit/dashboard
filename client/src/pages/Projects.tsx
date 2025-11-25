@@ -41,20 +41,12 @@ export default function ProjectsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!auth.isAuthenticated()) {
       setLocation("/login");
       return;
     }
 
-    const timestamp = Date.now();
-    fetch(`/api/companies/projects?_t=${timestamp}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-      },
-    })
+    auth.fetchAPI("/api/companies/projects")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setProjects(data.data || []);

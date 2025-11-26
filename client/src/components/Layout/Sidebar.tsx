@@ -69,6 +69,12 @@ export default function Sidebar({
       roles: ["company_admin", "hr", "vendor"],
     },
     {
+      label: "Candidates",
+      path: "/candidates",
+      icon: <Users className="w-5 h-5" />,
+      roles: ["company_admin", "hr", "vendor"],
+    },
+    {
       label: "Projects",
       path: "/projects",
       icon: <Target className="w-5 h-5" />,

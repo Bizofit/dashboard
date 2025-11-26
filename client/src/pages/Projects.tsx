@@ -39,6 +39,7 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCompanyId, setCurrentCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
@@ -46,13 +47,39 @@ export default function ProjectsPage() {
       return;
     }
 
-    auth.fetchAPI("/api/companies/projects")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setProjects(data.data || []);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    // First fetch user's companies to get the current/primary company
+    const fetchCompaniesAndProjects = async () => {
+      try {
+        // Get user companies
+        const companiesResponse = await auth.fetchAPI("/api/auth/user-companies");
+        const companiesData = await companiesResponse.json();
+        
+        if (companiesData.success && companiesData.data?.length > 0) {
+          // Find primary company or use first company
+          const primaryCompany = companiesData.data.find((c: any) => c.is_primary);
+          const selectedCompany = primaryCompany || companiesData.data[0];
+          
+          console.log("📋 Selected company for projects:", selectedCompany);
+          setCurrentCompanyId(selectedCompany.id);
+          
+          // Fetch projects for the selected company
+          const projectsResponse = await auth.fetchAPI(
+            `/api/companies/${selectedCompany.source}_${selectedCompany.id}/projects`
+          );
+          const projectsData = await projectsResponse.json();
+          
+          if (projectsData.success) {
+            setProjects(projectsData.data || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching companies or projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompaniesAndProjects();
   }, [setLocation]);
 
   if (loading) {

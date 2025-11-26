@@ -350,4 +350,42 @@ router.get(
   }
 );
 
+/**
+ * GET /api/companies/:companyId/candidates
+ * Get candidates (bids) for company projects from Giglancer
+ */
+router.get(
+  "/:companyId/candidates",
+  authenticate,
+  async (req: Request & { user?: any }, res: Response) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.user!.userId;
+
+      console.log(`👥 Getting candidates for company ${companyId}`);
+
+      const candidates = await companyAggregationService.getCompanyCandidates(
+        companyId,
+        userId
+      );
+
+      res.json({
+        success: true,
+        data: candidates.candidates,
+        stats: candidates.stats,
+        message: `Found ${candidates.candidates.length} candidates`,
+      });
+    } catch (error) {
+      console.error("❌ Error getting company candidates:", error);
+      res.status(500).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to get company candidates",
+      });
+    }
+  }
+);
+
 export default router;

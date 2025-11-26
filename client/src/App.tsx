@@ -11,6 +11,7 @@ import CompanyDetails from "./pages/CompanyDetails";
 import ProductsPage from "./pages/Products";
 import JobsPage from "./pages/Jobs";
 import ProjectsPage from "./pages/Projects";
+import CandidatesPage from "./pages/Candidates";
 import TimesheetsPage from "./pages/Timesheets";
 import InvoicesPage from "./pages/Invoices";
 import TeamPage from "./pages/Team";
@@ -29,6 +30,7 @@ function App() {
         <Route path="/products" component={ProductsPage} />
         <Route path="/jobs" component={JobsPage} />
         <Route path="/projects" component={ProjectsPage} />
+        <Route path="/candidates" component={CandidatesPage} />
         <Route path="/timesheets" component={TimesheetsPage} />
         <Route path="/invoices" component={InvoicesPage} />
         <Route path="/team" component={TeamPage} />

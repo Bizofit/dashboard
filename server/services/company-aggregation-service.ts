@@ -642,8 +642,8 @@ export class CompanyAggregationService {
       // Check user role and company associations
       const [userRows] = await giglancerPool.execute(
         `SELECT 
-          id, email, account_type, company_name, 
-          role, is_verified, created_at
+          id, email, 	current_company, 
+          role_id, is_verified, created_at
         FROM users 
         WHERE id = ? OR email = ?`,
         [userIds.giglancerUserId, userIds.email]
@@ -651,7 +651,7 @@ export class CompanyAggregationService {
 
       for (const row of userRows as any[]) {
         // If user is employer, they might have a company
-        if (row.account_type === "employer" || row.company_name) {
+        if (row.	current_company) {
           companies.push({
             id: `giglancer_company_${row.id}`,
             name: row.company_name || `${row.email}'s Company`,
@@ -1898,6 +1898,134 @@ export class CompanyAggregationService {
     } catch (error) {
       console.error("Error fetching Work financials:", error);
       return {};
+    }
+  }
+
+  /**
+   * Get candidates (bids) for company's Giglancer projects
+   */
+  async getCompanyCandidates(companyId: string, userId: number) {
+    try {
+      console.log(
+        `🔍 Fetching candidates for company ${companyId}, user ${userId}`
+      );
+
+      // Get company details to verify access
+      const company = await this.getCompanyDetails(companyId, userId);
+      if (!company) {
+        throw new Error("Company not found or access denied");
+      }
+
+      // Get Giglancer user ID if available
+      const [unifiedUserRows] = await unifiedPool.execute(
+        "SELECT giglancer_user_id FROM unified_users WHERE id = ?",
+        [userId]
+      );
+      const unifiedUser = (unifiedUserRows as any[])[0];
+      const giglancerUserId = unifiedUser?.giglancer_user_id;
+
+      if (!giglancerUserId) {
+        console.log(`⚠️  No Giglancer account for user ${userId}`);
+        return {
+          candidates: [],
+          stats: {
+            totalCandidates: 0,
+            activeApplications: 0,
+            shortlisted: 0,
+            hiredThisMonth: 0,
+          },
+        };
+      }
+
+      // Get all bids for projects owned by this user
+      const [bidRows] = await giglancerPool.execute(
+        `SELECT 
+          b.id as bid_id,
+          b.user_id,
+          b.project_id,
+          b.amount,
+          b.description as bid_description,
+          b.years_of_exp,
+          b.duration,
+          b.bid_status_id,
+          b.created_at as applied_at,
+          u.email,
+          u.first_name,
+          u.last_name,
+          u.city_id,
+          u.state_id,
+          u.country_id,
+          bs.name as bid_status_name,
+          p.title as project_title,
+          (SELECT COUNT(*) FROM bids WHERE user_id = b.user_id) as total_applications
+        FROM bids b
+        JOIN users u ON b.user_id = u.id
+        JOIN projects p ON b.project_id = p.id
+        LEFT JOIN bid_statuses bs ON b.bid_status_id = bs.id
+        WHERE p.user_id = ?
+        ORDER BY b.created_at DESC
+        LIMIT 100`,
+        [giglancerUserId]
+      );
+
+      const bids = bidRows as any[];
+
+      // Get skills for each candidate (simplified for now)
+      const candidates = bids.map((bid) => {
+        const name = `${bid.first_name || ""} ${bid.last_name || ""}`.trim() || bid.email.split("@")[0];
+        const location = bid.country_id ? `Country ID: ${bid.country_id}` : "Location not set";
+        
+        // Map bid status to our status categories
+        let status = "Active";
+        const statusName = bid.bid_status_name?.toLowerCase() || "";
+        if (statusName.includes("shortlist") || statusName.includes("selected")) {
+          status = "Shortlisted";
+        } else if (statusName.includes("hire") || statusName.includes("accept") || statusName.includes("complete")) {
+          status = "Hired";
+        }
+
+        return {
+          id: bid.user_id,
+          name,
+          email: bid.email,
+          skills: ["Web Development", "JavaScript", "React"], // TODO: Get actual skills from profile
+          experience: bid.years_of_exp || 0,
+          location,
+          applications: bid.total_applications || 1,
+          status,
+          bidId: bid.bid_id,
+          projectTitle: bid.project_title,
+          appliedAt: new Date(bid.applied_at),
+        };
+      });
+
+      // Calculate statistics
+      const stats = {
+        totalCandidates: new Set(bids.map((b) => b.user_id)).size,
+        activeApplications: bids.filter(
+          (b) => !["hired", "rejected", "withdrawn"].includes(b.bid_status_name?.toLowerCase() || "")
+        ).length,
+        shortlisted: bids.filter((b) =>
+          ["shortlisted", "selected"].includes(b.bid_status_name?.toLowerCase() || "")
+        ).length,
+        hiredThisMonth: bids.filter((b) => {
+          const statusName = b.bid_status_name?.toLowerCase() || "";
+          const isHired = ["hired", "accepted", "completed"].includes(statusName);
+          const thisMonth = new Date();
+          thisMonth.setMonth(thisMonth.getMonth() - 1);
+          return isHired && new Date(b.applied_at) >= thisMonth;
+        }).length,
+      };
+
+      console.log(
+        `✅ Found ${candidates.length} candidates with stats:`,
+        stats
+      );
+
+      return { candidates, stats };
+    } catch (error) {
+      console.error("❌ Error fetching company candidates:", error);
+      throw error;
     }
   }
 }

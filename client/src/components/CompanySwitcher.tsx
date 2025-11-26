@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { auth } from "../lib/auth";
 
 interface Company {
   id: number;
@@ -42,8 +43,8 @@ export default function CompanySwitcher({
   }, [companies]);
 
   const fetchUserCompanies = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    try {      
+      const token = auth.getToken();
       console.log("🏢 Fetching user companies...");
       console.log("🏢 Token exists:", !!token);
 
@@ -95,8 +96,8 @@ export default function CompanySwitcher({
     }
 
     setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
+    try {      
+      const token = auth.getToken();
       const response = await fetch("/api/auth/switch-company", {
         method: "POST",
         headers: {

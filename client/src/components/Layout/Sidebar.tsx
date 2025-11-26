@@ -19,6 +19,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import CompanySwitcher from "../CompanySwitcher";
 
 interface SidebarProps {
   userRole?: string;
@@ -204,6 +205,18 @@ export default function Sidebar({
               </span>
             </div>
           </div>
+
+          {/* Company Switcher */}
+          {!isIndividual && (
+            <div className="mt-3">
+              <CompanySwitcher
+                currentUser={{ name: userName, email: userEmail, role: userRole }}
+                onCompanySwitch={(company) => {
+                  console.log("Company switched to:", company);
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 

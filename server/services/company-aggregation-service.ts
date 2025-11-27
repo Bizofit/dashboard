@@ -321,13 +321,13 @@ export class CompanyAggregationService {
    */
   private async getUserPlatformIds(userId: number): Promise<UserPlatformIds> {
     const [rows] = await unifiedPool.execute(
-      `SELECT 
-        id, email, 
-        bizoforce_user_id, 
-        giglancer_user_id, 
-        screenly_user_id, 
-        work_user_id 
-      FROM unified_users 
+      `SELECT
+        id, email,
+        bizoforce_user_id,
+        giglancer_user_id,
+        screenly_user_id,
+        work_user_id
+      FROM unified_users
       WHERE id = ?`,
       [userId]
     );
@@ -353,7 +353,7 @@ export class CompanyAggregationService {
   private async getUnifiedCompanies(userId: number): Promise<CompanyData[]> {
     try {
       const [rows] = await unifiedPool.execute(
-        `SELECT DISTINCT 
+        `SELECT DISTINCT
           c.id, c.name, c.description,
           ur.role as user_role,
           ur.source_platform as platform,
@@ -408,7 +408,7 @@ export class CompanyAggregationService {
       );
 
       const [bdpListings] = await bizoforcePool.execute(
-        `SELECT 
+        `SELECT
           l.listing_id,
           l.listing_status,
           l.is_sticky,
@@ -438,11 +438,11 @@ export class CompanyAggregationService {
 
           // Get listing metadata for company details
           const [metadata] = await bizoforcePool.execute(
-            `SELECT meta_key, meta_value 
-             FROM wp_postmeta 
-             WHERE post_id = ? 
+            `SELECT meta_key, meta_value
+             FROM wp_postmeta
+             WHERE post_id = ?
              AND meta_key IN (
-               '_company_name', '_company_website', '_company_email', 
+               '_company_name', '_company_website', '_company_email',
                '_company_phone', '_company_tagline', '_company_description'
              )`,
             [listing.listing_id]
@@ -490,14 +490,14 @@ export class CompanyAggregationService {
       );
 
       const [customListings] = await bizoforcePool.execute(
-        `SELECT 
-          ID, 
-          post_title, 
-          post_status, 
+        `SELECT
+          ID,
+          post_title,
+          post_status,
           post_date,
           post_modified
-        FROM wp_posts 
-        WHERE post_author = ? 
+        FROM wp_posts
+        WHERE post_author = ?
         AND post_type = 'listing'
         AND post_status = 'publish'
         ORDER BY post_date DESC
@@ -543,7 +543,7 @@ export class CompanyAggregationService {
       );
 
       const [vendorRows] = await bizoforcePool.execute(
-        `SELECT 
+        `SELECT
           u.ID, u.user_email,
           shop.meta_value as shop_name,
           caps.meta_value as capabilities,
@@ -641,10 +641,10 @@ export class CompanyAggregationService {
 
       // Check user role and company associations
       const [userRows] = await giglancerPool.execute(
-        `SELECT 
-          id, email, 	current_company, 
-          role_id, is_verified, created_at
-        FROM users 
+        `SELECT
+          id, email, 	current_company,
+          role_id, is_email_confirmed, created_at
+        FROM users
         WHERE id = ? OR email = ?`,
         [userIds.giglancerUserId, userIds.email]
       );
@@ -691,7 +691,7 @@ export class CompanyAggregationService {
 
       // Get user with company information
       const result = await screenlyPool.query(
-        `SELECT 
+        `SELECT
           u.id, u.email, u.role, u.company_name, u.company_id
         FROM users u
         WHERE u.id = $1 OR u.email = $2`,
@@ -1208,7 +1208,7 @@ export class CompanyAggregationService {
 
       // Get user's company data and screening activity
       const result = await screenlyPool.query(
-        `SELECT u.*, 
+        `SELECT u.*,
                 COUNT(DISTINCT c.id) as total_candidates,
                 COUNT(DISTINCT ia.id) as total_interviews
          FROM users u
@@ -1329,28 +1329,28 @@ export class CompanyAggregationService {
       // CRITICAL: If this company originated from Bizoforce, fetch actual listing data
       const sourcePlatform = companyData?.platform || company.metadata?.sourcePlatform || company.platform;
       console.log(`🔍 Company source platform: ${sourcePlatform}`);
-      
+
       if (sourcePlatform === 'bizoforce') {
         console.log(`🎯 Fetching Bizoforce data via API for unified company`);
         const userIds = await this.getUserPlatformIds(userId);
-        
+
         if (userIds.bizoforceUserId) {
           // First, get the listing ID from the database
           let listingId: number | null = null;
-          
+
           try {
             const [listingRows] = await bizoforcePool.execute(
               `SELECT p.ID
                FROM wp_posts p
                INNER JOIN wp_wpbdp_listings l ON p.ID = l.listing_id
-               WHERE p.post_type = 'wpbdp_listing' 
+               WHERE p.post_type = 'wpbdp_listing'
                  AND p.post_author = ?
                  AND p.post_status = 'publish'
                ORDER BY p.post_date DESC
                LIMIT 1`,
               [userIds.bizoforceUserId]
             );
-            
+
             if (listingRows && (listingRows as any[]).length > 0) {
               listingId = (listingRows as any[])[0].ID;
               console.log(`📋 Found listing ID: ${listingId} for user ${userIds.bizoforceUserId}`);
@@ -1358,16 +1358,16 @@ export class CompanyAggregationService {
           } catch (dbError) {
             console.error(`❌ Error fetching listing ID from database:`, dbError);
           }
-          
+
           // Now try to fetch from API if we have a listing ID
           if (listingId) {
             try {
               // Fetch company data from Bizoforce API using listing ID
               const apiUrl = `${process.env.BIZOFORCE_API_URL}/companies/${listingId}`;
               const apiToken = process.env.BIZOFORCE_API_TOKEN || 'bizoforce_2024_secure_token_12345';
-              
+
               console.log(`📡 Calling Bizoforce API: ${apiUrl}`);
-              
+
               const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -1380,16 +1380,16 @@ export class CompanyAggregationService {
                 const apiResponse = await response.json();
                 console.log(`✅ Received data from Bizoforce API for listing ${listingId}`);
                 console.log(`📋 API Response:`, apiResponse);
-                
+
                 // Unwrap the API response if it has success/data structure
                 const apiData = apiResponse.success && apiResponse.data ? apiResponse.data : apiResponse;
                 console.log(`📋 Unwrapped API data keys:`, Object.keys(apiData));
-                
+
                 // Fetch products, jobs, and financials from local database
                 const products = await this.getBizoforceProducts(userIds.bizoforceUserId);
                 const jobs = await this.getBizoforceJobs(userIds.bizoforceUserId);
                 const financials = await this.getBizoforceFinancials(userIds.bizoforceUserId);
-                
+
                 // Map API data to our company structure
                 return {
                   ...company,
@@ -1448,16 +1448,16 @@ export class CompanyAggregationService {
             // Fall back to database query
           }
           } // Close if (listingId)
-          
+
           // Fallback: Fetch Business Directory listing from wp_posts (post_type = 'wpbdp_listing')
           console.log(`📋 Falling back to direct database query for Bizoforce listing`);
           const [listingRows] = await bizoforcePool.execute(
-            `SELECT p.*, l.*, 
+            `SELECT p.*, l.*,
                     u.display_name, u.user_email
              FROM wp_posts p
              INNER JOIN wp_wpbdp_listings l ON p.ID = l.listing_id
              LEFT JOIN wp_users u ON p.post_author = u.ID
-             WHERE p.post_type = 'wpbdp_listing' 
+             WHERE p.post_type = 'wpbdp_listing'
                AND p.post_author = ?
                AND p.post_status = 'publish'
              ORDER BY p.post_date DESC
@@ -1468,27 +1468,27 @@ export class CompanyAggregationService {
           if (listingRows && (listingRows as any[]).length > 0) {
             const listingData = (listingRows as any[])[0];
             console.log(`✅ Found Bizoforce business listing: ${listingData.post_title}`);
-            
+
             // Fetch listing metadata (custom fields)
             const [metaRows] = await bizoforcePool.execute(
-              `SELECT meta_key, meta_value 
-               FROM wp_postmeta 
+              `SELECT meta_key, meta_value
+               FROM wp_postmeta
                WHERE post_id = ?`,
               [listingData.ID]
             );
-            
+
             // Parse metadata into object
             const metadata: any = {};
             for (const row of metaRows as any[]) {
               metadata[row.meta_key] = row.meta_value;
             }
-            
+
             console.log('📋 WordPress Field 68 (CEO):', metadata['_wpbdp[fields][68]']);
             console.log('📋 WordPress Field 72 (HQ):', metadata['_wpbdp[fields][72]']);
             console.log('📋 WordPress Field 21 (Countries):', metadata['_wpbdp[fields][21]']);
             console.log('📋 WordPress Field 73 (Year):', metadata['_wpbdp[fields][73]']);
             console.log('📋 WordPress Field 34 (Reviews):', metadata['_wpbdp[fields][34]']);
-            
+
             // Extract rating from serialized PHP object
             let reviewCount = 0;
             let averageRating = 0;
@@ -1501,16 +1501,16 @@ export class CompanyAggregationService {
             }
             console.log('⭐ Extracted review count:', reviewCount);
             console.log('⭐ Extracted review average:', averageRating);
-            
+
             // Fetch products
             const products = await this.getBizoforceProducts(userIds.bizoforceUserId);
-            
+
             // Fetch financial data
             const financials = await this.getBizoforceFinancials(userIds.bizoforceUserId);
-            
+
             // Fetch jobs if any
             const jobs = await this.getBizoforceJobs(userIds.bizoforceUserId);
-            
+
             const result = {
               ...company,
               name: listingData.post_title || company.name,
@@ -1552,7 +1552,7 @@ export class CompanyAggregationService {
                 },
               },
             };
-            
+
             console.log('✅ Mapped semantic fields:', {
               ceo: metadata['_wpbdp[fields][68]'],
               headquarters: metadata['_wpbdp[fields][72]'],
@@ -1561,7 +1561,7 @@ export class CompanyAggregationService {
               reviewCount,
               averageRating
             });
-            
+
             return result;
           }
         }
@@ -1629,7 +1629,7 @@ export class CompanyAggregationService {
     try {
       // Get order statistics
       const [orderRows] = await bizoforcePool.execute(
-        `SELECT 
+        `SELECT
            COUNT(*) as total_orders,
            SUM(CASE WHEN p.post_status = 'wc-completed' THEN 1 ELSE 0 END) as completed_orders,
            SUM(CASE WHEN p.post_status = 'wc-pending' THEN 1 ELSE 0 END) as pending_orders
@@ -1676,7 +1676,7 @@ export class CompanyAggregationService {
         `SELECT p.*, pm.meta_value as job_type
          FROM wp_posts p
          LEFT JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '_job_type'
-         WHERE p.post_author = ? 
+         WHERE p.post_author = ?
            AND p.post_type IN ('job_listing', 'job', 'wpjb_job')
            AND p.post_status IN ('publish', 'pending')
          ORDER BY p.post_date DESC
@@ -1775,7 +1775,7 @@ export class CompanyAggregationService {
   private async getScreenlyAnalytics(userId: number): Promise<AnalyticsData> {
     try {
       const result = await screenlyPool.query(
-        `SELECT 
+        `SELECT
            COUNT(DISTINCT c.id) as total_candidates,
            COUNT(DISTINCT ca.id) as total_applications,
            COUNT(DISTINCT i.id) as total_interviews,
@@ -1870,7 +1870,7 @@ export class CompanyAggregationService {
 
     try {
       const [invoiceRows] = await workPool.execute(
-        `SELECT 
+        `SELECT
            COUNT(*) as total_invoices,
            SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) as paid_invoices,
            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_invoices,
@@ -1939,7 +1939,7 @@ export class CompanyAggregationService {
 
       // Get all bids for projects owned by this user
       const [bidRows] = await giglancerPool.execute(
-        `SELECT 
+        `SELECT
           b.id as bid_id,
           b.user_id,
           b.project_id,
@@ -1974,7 +1974,7 @@ export class CompanyAggregationService {
       const candidates = bids.map((bid) => {
         const name = `${bid.first_name || ""} ${bid.last_name || ""}`.trim() || bid.email.split("@")[0];
         const location = bid.country_id ? `Country ID: ${bid.country_id}` : "Location not set";
-        
+
         // Map bid status to our status categories
         let status = "Active";
         const statusName = bid.bid_status_name?.toLowerCase() || "";

@@ -104,6 +104,10 @@ router.get(
             roles: roles,
             primaryRole: primaryRole,
             authProvider: user.authProvider,
+            bizoforceUserId: user.bizoforceUserId,
+            giglancerUserId: user.giglancerUserId,
+            screenlyUserId: user.screenlyUserId,
+            workUserId: user.workUserId,
           },
           JWT_SECRET,
           { expiresIn: "7d" }

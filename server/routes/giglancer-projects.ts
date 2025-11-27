@@ -25,7 +25,7 @@ router.get("/projects", authenticate, async (req: Request, res: Response) => {
     }
 
     // Get giglancer_user_id from the authenticated user
-    const giglancerUserId = user.giglancer_user_id;
+    const giglancerUserId = user.giglancerUserId;
 
     if (!giglancerUserId) {
       return res.json({
@@ -40,7 +40,7 @@ router.get("/projects", authenticate, async (req: Request, res: Response) => {
     // Query projects from Giglancer database
     // According to schema, projects table has user_id column
     const [projects] = await giglancerPool.execute(
-      `SELECT 
+      `SELECT
         p.id,
         p.name as title,
         p.description,
@@ -135,7 +135,7 @@ router.get("/projects/:id", authenticate, async (req: Request, res: Response) =>
       });
     }
 
-    const giglancerUserId = user.giglancer_user_id;
+    const giglancerUserId = user.giglancerUserId;
 
     if (!giglancerUserId) {
       return res.status(404).json({
@@ -150,7 +150,7 @@ router.get("/projects/:id", authenticate, async (req: Request, res: Response) =>
     console.log(`📋 Fetching Giglancer project ${projectId} for user_id: ${giglancerUserId}`);
 
     const [projects] = await giglancerPool.execute(
-      `SELECT 
+      `SELECT
         p.*,
         ps.name as status_name,
         pr.name as budget_range

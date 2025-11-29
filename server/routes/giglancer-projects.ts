@@ -184,7 +184,7 @@ router.get("/projects/:id", authenticate, async (req: Request & { user?: any }, 
 
     // Fetch applications (bids) for this project
     const [bids] = await giglancerPool.execute(
-      `SELECT 
+      `SELECT
         b.id,
         b.user_id,
         b.amount,
@@ -286,12 +286,17 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
       employment_type,
       work_mode,
       years_of_exp,
+      experience_range,
       hiring_org,
       status,
       is_featured,
       is_urgent,
       bid_duration,
       requirements,
+      technical_skills,
+      skill_ids,
+      job_seo_title,
+      job_seo_description,
     } = req.body;
 
     // Validate required fields
@@ -303,6 +308,14 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
     }
 
     console.log(`📝 Creating Giglancer project for user_id: ${giglancerUserId}`);
+
+    // Format requirements with additional details
+    let formattedRequirements = description;
+    if (requirements || technical_skills) {
+      formattedRequirements += "\n\nRequirements:";
+      if (requirements) formattedRequirements += `\n${requirements}`;
+      if (technical_skills) formattedRequirements += `\n\nTechnical Skills: ${technical_skills}`;
+    }
 
     // Insert project into Giglancer database
     const [result] = await giglancerPool.execute(
@@ -319,13 +332,16 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         is_featured,
         is_urgent,
         bid_duration,
+        seo_title,
+        seo_description,
+        additional_descriptions,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         giglancerUserId,
         title,
-        description,
+        formattedRequirements,
         location || "Remote",
         employment_type || "contract",
         work_mode || "remote",
@@ -335,12 +351,37 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         is_featured || false,
         is_urgent || false,
         bid_duration || 30,
+        job_seo_title || title,
+        job_seo_description || description?.substring(0, 160),
+        salary ? `Salary Range: ${salary}` : null,
       ]
     );
 
     const insertId = (result as any).insertId;
 
     console.log(`✅ Created Giglancer project with ID: ${insertId}`);
+
+    // Link skills to project in skills_projects table
+    if (skill_ids && Array.isArray(skill_ids) && skill_ids.length > 0) {
+      console.log(`🔗 Linking ${skill_ids.length} skills to project ${insertId}`);
+
+      try {
+        const skillInsertPromises = skill_ids.map((skillId: number) =>
+          giglancerPool.execute(
+            `INSERT INTO skills_projects (project_id, skill_id, created_at, updated_at)
+             VALUES (?, ?, NOW(), NOW())
+             ON DUPLICATE KEY UPDATE updated_at = NOW()`,
+            [insertId, skillId]
+          )
+        );
+
+        await Promise.all(skillInsertPromises);
+        console.log(`✅ Successfully linked skills to project`);
+      } catch (skillError) {
+        console.error(`⚠️ Error linking skills to project:`, skillError);
+        // Don't fail the entire request if skills linking fails
+      }
+    }
 
     // Fetch the newly created project
     const [projects] = await giglancerPool.execute(

@@ -18,8 +18,6 @@ import {
   TableCell,
   Badge,
 } from "../components/UI/Table";
-import Modal from "../components/UI/Modal";
-import Input, { Textarea, Select } from "../components/UI/Input";
 import {
   Plus,
   Edit,
@@ -54,24 +52,6 @@ export default function JobsPage() {
   const [_, setLocation] = useLocation();
   const [giglancerProjects, setGiglancerProjects] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingJob, setEditingJob] = useState<Job | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "Remote",
-    salary: "",
-    employment_type: "contract",
-    work_mode: "remote",
-    years_of_exp: 0,
-    hiring_org: "",
-    status: "open",
-    requirements: "",
-    is_featured: false,
-    is_urgent: false,
-    bid_duration: 30,
-  });
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
@@ -102,75 +82,7 @@ export default function JobsPage() {
   };
 
   const handlePostJob = () => {
-    setEditingJob(null);
-    setFormData({
-      title: "",
-      description: "",
-      location: "Remote",
-      salary: "",
-      employment_type: "contract",
-      work_mode: "remote",
-      years_of_exp: 0,
-      hiring_org: "",
-      status: "open",
-      requirements: "",
-      is_featured: false,
-      is_urgent: false,
-      bid_duration: 30,
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleSubmitJob = async () => {
-    if (!formData.title || !formData.description) {
-      alert("Please fill in all required fields");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await auth.fetchAPI("/api/giglancer/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Close modal and refresh jobs list
-        setIsModalOpen(false);
-        fetchJobs();
-        alert("Job posted successfully!");
-      } else {
-        alert(data.message || "Failed to post job");
-      }
-    } catch (error) {
-      console.error("Error posting job:", error);
-      alert("An error occurred while posting the job");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : type === "number"
-          ? parseInt(value) || 0
-          : value,
-    }));
+    setLocation("/post-job");
   };
 
   // Use only Giglancer projects
@@ -378,161 +290,6 @@ export default function JobsPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Post Job Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Post New Job"
-        size="lg"
-        footer={
-          <>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsModalOpen(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={handleSubmitJob}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Posting..." : "Post Job"}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input
-            label="Job Title"
-            name="title"
-            placeholder="e.g. Senior Developer"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-          />
-          <Textarea
-            label="Job Description"
-            name="description"
-            placeholder="Describe the role and responsibilities"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows={4}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Location" 
-              name="location"
-              placeholder="e.g. Remote, New York" 
-              value={formData.location}
-              onChange={handleInputChange}
-            />
-            <Input 
-              label="Salary Range" 
-              name="salary"
-              placeholder="e.g. $80k - $120k" 
-              value={formData.salary}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Employment Type"
-              name="employment_type"
-              value={formData.employment_type}
-              onChange={handleInputChange}
-              options={[
-                { value: "full-time", label: "Full Time" },
-                { value: "part-time", label: "Part Time" },
-                { value: "contract", label: "Contract" },
-                { value: "freelance", label: "Freelance" },
-              ]}
-              required
-            />
-            <Select
-              label="Work Mode"
-              name="work_mode"
-              value={formData.work_mode}
-              onChange={handleInputChange}
-              options={[
-                { value: "remote", label: "Remote" },
-                { value: "onsite", label: "On-site" },
-                { value: "hybrid", label: "Hybrid" },
-              ]}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Years of Experience"
-              name="years_of_exp"
-              type="number"
-              placeholder="e.g. 5"
-              value={formData.years_of_exp}
-              onChange={handleInputChange}
-            />
-            <Input
-              label="Hiring Organization"
-              name="hiring_org"
-              placeholder="Company name"
-              value={formData.hiring_org}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Status"
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              options={[
-                { value: "draft", label: "Draft" },
-                { value: "open", label: "Open" },
-                { value: "closed", label: "Closed" },
-              ]}
-            />
-            <Input
-              label="Bid Duration (days)"
-              name="bid_duration"
-              type="number"
-              placeholder="e.g. 30"
-              value={formData.bid_duration}
-              onChange={handleInputChange}
-            />
-          </div>
-          <Textarea
-            label="Requirements"
-            name="requirements"
-            placeholder="List key qualifications and requirements"
-            value={formData.requirements}
-            onChange={handleInputChange}
-            rows={3}
-          />
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                name="is_featured"
-                checked={formData.is_featured}
-                onChange={handleInputChange}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">Featured Job</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                name="is_urgent"
-                checked={formData.is_urgent}
-                onChange={handleInputChange}
-                className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-              />
-              <span className="text-sm text-gray-700">Urgent Hiring</span>
-            </label>
-          </div>
-        </div>
-      </Modal>
     </MainLayout>
   );
 }

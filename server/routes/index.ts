@@ -9,6 +9,7 @@ import profileRoutes from "./profile.js";
 import companiesRoutes from "./companies.js";
 import productsRoutes from "./products.js";
 import giglancerProjectsRoutes from "./giglancer-projects.js";
+import giglancerSkillsRoutes from "./giglancer-skills.js";
 import timesheetsRoutes from "./timesheets.js";
 
 export function registerRoutes(app: Express) {
@@ -33,6 +34,7 @@ export function registerRoutes(app: Express) {
 
   // Giglancer routes
   app.use("/api/giglancer", giglancerProjectsRoutes);
+  app.use("/api/giglancer", giglancerSkillsRoutes);
 
   // Timesheets routes
   app.use("/api/timesheets", timesheetsRoutes);

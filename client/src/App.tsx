@@ -10,6 +10,7 @@ import CompaniesPage from "./pages/Companies";
 import CompanyDetails from "./pages/CompanyDetails";
 import ProductsPage from "./pages/Products";
 import JobsPage from "./pages/Jobs";
+import JobDetailPage from "./pages/JobDetail";
 import ProjectsPage from "./pages/Projects";
 import CandidatesPage from "./pages/Candidates";
 import TimesheetsPage from "./pages/Timesheets";
@@ -29,6 +30,7 @@ function App() {
         <Route path="/companies" component={CompaniesPage} />
         <Route path="/products" component={ProductsPage} />
         <Route path="/jobs" component={JobsPage} />
+        <Route path="/jobs/:jobId" component={JobDetailPage} />
         <Route path="/projects" component={ProjectsPage} />
         <Route path="/candidates" component={CandidatesPage} />
         <Route path="/timesheets" component={TimesheetsPage} />

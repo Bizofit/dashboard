@@ -50,12 +50,11 @@ router.get("/skills", authenticate, async (req: Request & { user?: any }, res: R
     // Add search filter if provided
     if (search) {
       query += ` AND name LIKE ?`;
-      params.push(`%${search}%`);
+      params.push(`${search}%`);
     }
 
     // Order by popularity (user_count + project_count)
-    query += ` ORDER BY name ASC LIMIT ?`;
-    params.push(limit);
+    query += ` ORDER BY (user_count + project_count) DESC, name ASC LIMIT ${limit}`;
 
     const [skills] = await giglancerPool.execute(query, params);
 
@@ -159,6 +158,81 @@ router.get("/skills/popular", authenticate, async (req: Request & { user?: any }
     res.status(500).json({
       success: false,
       message: error.message || "Failed to fetch popular skills",
+    });
+  }
+});
+
+/**
+ * GET /api/giglancer/project-ranges
+ * Get all active project salary ranges from Giglancer database
+ */
+router.get("/project-ranges", authenticate, async (req: Request & { user?: any }, res: Response) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    }
+
+    console.log(`💰 Fetching active project ranges`);
+
+    const [ranges] = await giglancerPool.execute(
+      `SELECT
+        id,
+        name,
+        min_amount,
+        max_amount,
+        project_count,
+        active_project_count
+      FROM project_ranges
+      WHERE is_active = 1
+      ORDER BY min_amount ASC`
+    );
+
+    console.log(`✅ Found ${(ranges as any[]).length} active project ranges`);
+
+    // Format the ranges data
+    const formattedRanges = (ranges as any[]).map((range) => ({
+      id: range.id,
+      name: range.name,
+      minAmount: range.min_amount || 0,
+      maxAmount: range.max_amount || 0,
+      projectCount: range.project_count || 0,
+      activeProjectCount: range.active_project_count || 0,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedRanges,
+    });
+  } catch (error: any) {
+    console.error("❌ Error fetching project ranges:", error);
+
+    // Handle missing tables gracefully
+    if (error.code === "ER_NO_SUCH_TABLE") {
+      console.error(`❌ Table does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Project ranges table not available",
+        data: [],
+      });
+    }
+
+    if (error.code === "ER_BAD_FIELD_ERROR") {
+      console.error(`❌ Field does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Database schema mismatch",
+        data: [],
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch project ranges",
     });
   }
 });

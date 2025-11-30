@@ -18,6 +18,15 @@ interface Skill {
   userCount: number;
 }
 
+interface ProjectRange {
+  id: number;
+  name: string;
+  minAmount: number;
+  maxAmount: number;
+  projectCount: number;
+  activeProjectCount: number;
+}
+
 interface PostJobFormData {
   job_title: string;
   job_description: string;
@@ -26,7 +35,7 @@ interface PostJobFormData {
   years_of_exp: string;
   experience_range: string;
   required_skills: string;
-  salary_range: string;
+  project_range_id: string;
   hiring_org: string;
   job_location: string;
   additional_documents: File | null;
@@ -43,6 +52,8 @@ export default function PostJobPage() {
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
   const [showSkillDropdown, setShowSkillDropdown] = useState(false);
   const [loadingSkills, setLoadingSkills] = useState(false);
+  const [projectRanges, setProjectRanges] = useState<ProjectRange[]>([]);
+  const [loadingRanges, setLoadingRanges] = useState(false);
   const [formData, setFormData] = useState<PostJobFormData>({
     job_title: "",
     job_description: "",
@@ -51,7 +62,7 @@ export default function PostJobPage() {
     years_of_exp: "",
     experience_range: "",
     required_skills: "",
-    salary_range: "",
+    project_range_id: "",
     hiring_org: "",
     job_location: "",
     additional_documents: null,
@@ -72,6 +83,24 @@ export default function PostJobPage() {
       setLocation("/login");
       return;
     }
+
+    // Fetch project ranges
+    const fetchProjectRanges = async () => {
+      setLoadingRanges(true);
+      try {
+        const response = await auth.fetchAPI("/api/giglancer/project-ranges");
+        const data = await response.json();
+        if (data.success) {
+          setProjectRanges(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching project ranges:", error);
+      } finally {
+        setLoadingRanges(false);
+      }
+    };
+
+    fetchProjectRanges();
   }, [setLocation]);
 
   // Fetch skills based on search query
@@ -171,7 +200,7 @@ export default function PostJobPage() {
         work_mode: formData.work_mode,
         years_of_exp: parseInt(formData.years_of_exp) || 0,
         location: formData.job_location,
-        salary: formData.salary_range,
+        project_range_id: formData.project_range_id ? parseInt(formData.project_range_id) : undefined,
         hiring_org: formData.hiring_org,
         status: saveAs === "publish" ? "open" : "draft",
         requirements: formData.required_skills,
@@ -438,12 +467,18 @@ export default function PostJobPage() {
 
               {/* Salary Range */}
               <div>
-                <Input
-                  label="Salary Range"
-                  name="salary_range"
-                  placeholder="e.g. $80,000 - $120,000"
-                  value={formData.salary_range}
+                <Select
+                  label="Salary Range (Budget)"
+                  name="project_range_id"
+                  value={formData.project_range_id}
                   onChange={handleInputChange}
+                  options={[
+                    { value: "", label: loadingRanges ? "Loading ranges..." : "Select budget range" },
+                    ...projectRanges.map((range) => ({
+                      value: range.id.toString(),
+                      label: range.name,
+                    })),
+                  ]}
                 />
               </div>
 

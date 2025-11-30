@@ -282,7 +282,7 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
       title,
       description,
       location,
-      salary,
+      project_range_id,
       employment_type,
       work_mode,
       years_of_exp,
@@ -307,6 +307,14 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
       });
     }
 
+    // Validate project_range_id if provided
+    if (project_range_id && typeof project_range_id !== 'number') {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid project range ID",
+      });
+    }
+
     console.log(`📝 Creating Giglancer project for user_id: ${giglancerUserId}`);
 
     // Format requirements with additional details
@@ -328,16 +336,17 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         work_mode,
         years_of_exp,
         hiring_org,
-        is_active,
         is_featured,
         is_urgent,
         bid_duration,
         seo_title,
         seo_description,
-        additional_descriptions,
+        project_status_id,
+        project_range_id,
+        is_active,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         giglancerUserId,
         title,
@@ -347,13 +356,14 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         work_mode || "remote",
         years_of_exp || 0,
         hiring_org || "",
-        status === "open" ? 1 : 0,
         is_featured || false,
         is_urgent || false,
         bid_duration || 30,
         job_seo_title || title,
         job_seo_description || description?.substring(0, 160),
-        salary ? `Salary Range: ${salary}` : null,
+        status === "open" ? 4 : 1,
+        project_range_id || 1,
+        status === "open" ? 1 : 0,
       ]
     );
 

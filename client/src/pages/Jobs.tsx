@@ -85,6 +85,30 @@ export default function JobsPage() {
     setLocation("/post-job");
   };
 
+  const handleDeleteJob = async (jobId: string, jobTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${jobTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await auth.fetchAPI(`/api/giglancer/projects/${jobId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Job deleted successfully!");
+        fetchJobs(); // Refresh the list
+      } else {
+        alert(data.message || "Failed to delete job");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("An error occurred while deleting the job");
+    }
+  };
+
   // Use only Giglancer projects
   const allJobs = giglancerProjects;
 
@@ -261,23 +285,26 @@ export default function JobsPage() {
                             size="sm"
                             icon={<Eye className="w-4 h-4" />}
                             onClick={() => setLocation(`/jobs/${job.id}`)}
+                            title="View Job Details"
                           >
                             View
                           </Button>
-                          {job.platform !== "giglancer" && (
+                          {job.platform === "giglancer" && (
                             <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                icon={<Edit className="w-4 h-4" />}
+                              <button
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                onClick={() => setLocation(`/jobs/${job.id}/edit`)}
+                                title="Edit Job"
                               >
-                                Edit
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                icon={<Trash2 className="w-4 h-4 text-red-500" />}
-                              />
+                                <Edit className="w-4 h-4 text-gray-600" />
+                              </button>
+                              <button
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                onClick={() => handleDeleteJob(job.id, job.title)}
+                                title="Delete Job"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
                             </>
                           )}
                         </div>

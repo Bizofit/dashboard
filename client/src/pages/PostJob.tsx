@@ -476,7 +476,7 @@ export default function PostJobPage() {
                     { value: "", label: loadingRanges ? "Loading ranges..." : "Select budget range" },
                     ...projectRanges.map((range) => ({
                       value: range.id.toString(),
-                      label: range.name,
+                      label: `${range.name} ($${range.minAmount.toLocaleString()} - $${range.maxAmount.toLocaleString()})`,
                     })),
                   ]}
                 />

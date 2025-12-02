@@ -61,7 +61,9 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
         p.created_at,
         p.updated_at,
         ps.name as status,
-        pr.name as budget_range
+        pr.name as budget_range,
+        pr.min_amount,
+        pr.max_amount
       FROM projects p
       LEFT JOIN project_statuses ps ON p.project_status_id = ps.id
       LEFT JOIN project_ranges pr ON p.project_range_id = pr.id
@@ -83,7 +85,9 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
       years_of_exp: project.years_of_exp || 0,
       hiring_org: project.hiring_org || "",
       status: project.is_active ? "open" : "closed",
-      budget_range: project.budget_range || "Not specified",
+      budget_range: project.min_amount && project.max_amount 
+        ? `($${project.min_amount.toLocaleString()} - $${project.max_amount.toLocaleString()})`
+        : project.budget_range || "Not specified",
       is_featured: project.is_featured || false,
       is_urgent: project.is_urgent || false,
       bid_duration: project.bid_duration || 0,
@@ -164,7 +168,9 @@ router.get("/projects/:id", authenticate, async (req: Request & { user?: any }, 
       `SELECT
         p.*,
         ps.name as status_name,
-        pr.name as budget_range
+        pr.name as budget_range,
+        pr.min_amount,
+        pr.max_amount
       FROM projects p
       LEFT JOIN project_statuses ps ON p.project_status_id = ps.id
       LEFT JOIN project_ranges pr ON p.project_range_id = pr.id
@@ -203,6 +209,22 @@ router.get("/projects/:id", authenticate, async (req: Request & { user?: any }, 
       [projectId]
     );
 
+    // Fetch skills for this project
+    const [projectSkills] = await giglancerPool.execute(
+      `SELECT s.id, s.name, s.slug
+      FROM skills s
+      JOIN skills_projects sp ON s.id = sp.skill_id
+      WHERE sp.project_id = ?
+      ORDER BY s.name`,
+      [projectId]
+    );
+
+    const skillsData = (projectSkills as any[]).map(skill => ({
+      id: skill.id,
+      name: skill.name,
+      slug: skill.slug
+    }));
+
     // Format applications data
     const applications = (bids as any[]).map((bid) => ({
       id: bid.id,
@@ -222,18 +244,28 @@ router.get("/projects/:id", authenticate, async (req: Request & { user?: any }, 
         title: project.name,
         description: project.description,
         location: project.job_location,
+        salary: project.min_amount && project.max_amount
+          ? `$${project.min_amount.toLocaleString()} - $${project.max_amount.toLocaleString()}`
+          : "Not specified",
         employment_type: project.employment_type,
         work_mode: project.work_mode,
         years_of_exp: project.years_of_exp,
         hiring_org: project.hiring_org,
         status: project.is_active ? "open" : "closed",
-        budget_range: project.budget_range,
+        budget_range: project.min_amount && project.max_amount
+          ? `($${project.min_amount.toLocaleString()} - $${project.max_amount.toLocaleString()})`
+          : project.budget_range || "Not specified",
         is_featured: project.is_featured,
         is_urgent: project.is_urgent,
         bid_duration: project.bid_duration,
         platform: "giglancer",
         postedAt: project.created_at,
         updatedAt: project.updated_at,
+        skills: skillsData.map(s => s.name),
+        skill_ids: skillsData.map(s => s.id),
+        skills_data: skillsData,
+        project_range_id: project.project_range_id,
+        applicants: applications.length,
       },
       applications: applications,
     });
@@ -325,11 +357,20 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
       if (technical_skills) formattedRequirements += `\n\nTechnical Skills: ${technical_skills}`;
     }
 
+    // Generate slug from title (lowercase, spaces replaced with hyphens)
+    const slug = title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
+
     // Insert project into Giglancer database
     const [result] = await giglancerPool.execute(
       `INSERT INTO projects (
         user_id,
         name,
+        slug,
         description,
         job_location,
         employment_type,
@@ -343,13 +384,14 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         seo_description,
         project_status_id,
         project_range_id,
-        is_active,
+        total_listing_fee,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         giglancerUserId,
         title,
+        slug,
         formattedRequirements,
         location || "Remote",
         employment_type || "contract",
@@ -363,7 +405,7 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         job_seo_description || description?.substring(0, 160),
         status === "open" ? 4 : 1,
         project_range_id || 1,
-        status === "open" ? 1 : 0,
+        0,
       ]
     );
 
@@ -379,8 +421,7 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
         const skillInsertPromises = skill_ids.map((skillId: number) =>
           giglancerPool.execute(
             `INSERT INTO skills_projects (project_id, skill_id, created_at, updated_at)
-             VALUES (?, ?, NOW(), NOW())
-             ON DUPLICATE KEY UPDATE updated_at = NOW()`,
+             VALUES (?, ?, NOW(), NOW())`,
             [insertId, skillId]
           )
         );
@@ -462,6 +503,259 @@ router.post("/projects", authenticate, async (req: Request & { user?: any }, res
     res.status(500).json({
       success: false,
       message: error.message || "Failed to create project",
+    });
+  }
+});
+
+// PUT /api/giglancer/projects/:id - Update project
+router.put("/projects/:id", authenticate, async (req: Request & { user?: any }, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    }
+
+    const projectId = req.params.id.replace("giglancer_", "");
+    const {
+      description,
+      employment_type,
+      work_mode,
+      years_of_exp,
+      location,
+      project_range_id,
+      hiring_org,
+      status,
+      requirements,
+      technical_skills,
+      skill_ids,
+      is_featured,
+      is_urgent,
+      bid_duration,
+      job_seo_title,
+      job_seo_description,
+    } = req.body;
+
+    // Get giglancer_user_id from unified_users table
+    const [unifiedUsers] = await unifiedPool.execute(
+      "SELECT giglancer_user_id FROM unified_users WHERE id = ?",
+      [user.userId]
+    );
+
+    if (!Array.isArray(unifiedUsers) || unifiedUsers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found in unified database",
+      });
+    }
+
+    const giglancerUserId = (unifiedUsers[0] as any).giglancer_user_id;
+
+    if (!giglancerUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "User does not have a Giglancer account",
+      });
+    }
+
+    // Verify project ownership
+    const [projects] = await giglancerPool.execute(
+      "SELECT user_id FROM projects WHERE id = ?",
+      [projectId]
+    );
+
+    if (!Array.isArray(projects) || projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    const project = (projects as any)[0];
+    if (project.user_id !== giglancerUserId) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to edit this project",
+      });
+    }
+
+    console.log(`📝 Updating Giglancer project ${projectId} for user_id: ${giglancerUserId}`);
+
+    // Format requirements with additional details
+    let formattedRequirements = description;
+    if (requirements || technical_skills) {
+      formattedRequirements += "\n\nRequirements:";
+      if (requirements) formattedRequirements += `\n${requirements}`;
+      if (technical_skills) formattedRequirements += `\n\nTechnical Skills: ${technical_skills}`;
+    }
+
+    // Update project in Giglancer database
+    await giglancerPool.execute(
+      `UPDATE projects SET
+        description = ?,
+        job_location = ?,
+        employment_type = ?,
+        work_mode = ?,
+        years_of_exp = ?,
+        hiring_org = ?,
+        is_featured = ?,
+        is_urgent = ?,
+        bid_duration = ?,
+        seo_title = ?,
+        seo_description = ?,
+        project_status_id = ?,
+        project_range_id = ?,
+        updated_at = NOW()
+      WHERE id = ?`,
+      [
+        formattedRequirements,
+        location || "Remote",
+        employment_type || "contract",
+        work_mode || "remote",
+        years_of_exp || 0,
+        hiring_org || "",
+        is_featured || false,
+        is_urgent || false,
+        bid_duration || 30,
+        job_seo_title || "",
+        job_seo_description || "",
+        status === "open" ? 4 : 1,
+        project_range_id || 1,
+        projectId,
+      ]
+    );
+
+    console.log(`✅ Updated Giglancer project with ID: ${projectId}`);
+
+    // Update skills - first delete existing, then insert new
+    if (skill_ids && Array.isArray(skill_ids)) {
+      console.log(`🔗 Updating ${skill_ids.length} skills for project ${projectId}`);
+
+      // Delete existing skills
+      await giglancerPool.execute(
+        "DELETE FROM skills_projects WHERE project_id = ?",
+        [projectId]
+      );
+
+      // Insert new skills
+      if (skill_ids.length > 0) {
+        const skillInsertPromises = skill_ids.map((skillId: number) =>
+          giglancerPool.execute(
+            `INSERT INTO skills_projects (project_id, skill_id, created_at, updated_at)
+             VALUES (?, ?, NOW(), NOW())`,
+            [projectId, skillId]
+          )
+        );
+
+        await Promise.all(skillInsertPromises);
+        console.log(`✅ Updated skills for project ${projectId}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: "Project updated successfully",
+      data: {
+        id: `giglancer_${projectId}`,
+        giglancer_project_id: projectId,
+      },
+    });
+  } catch (error: any) {
+    console.error("❌ Error updating Giglancer project:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update project",
+      error: error.message,
+    });
+  }
+});
+
+// DELETE /api/giglancer/projects/:id - Delete project
+router.delete("/projects/:id", authenticate, async (req: Request & { user?: any }, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    }
+
+    const projectId = req.params.id.replace("giglancer_", "");
+
+    // Get giglancer_user_id from unified_users table
+    const [unifiedUsers] = await unifiedPool.execute(
+      "SELECT giglancer_user_id FROM unified_users WHERE id = ?",
+      [user.userId]
+    );
+
+    if (!Array.isArray(unifiedUsers) || unifiedUsers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found in unified database",
+      });
+    }
+
+    const giglancerUserId = (unifiedUsers[0] as any).giglancer_user_id;
+
+    if (!giglancerUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "User does not have a Giglancer account",
+      });
+    }
+
+    // Verify project ownership
+    const [projects] = await giglancerPool.execute(
+      "SELECT user_id FROM projects WHERE id = ?",
+      [projectId]
+    );
+
+    if (!Array.isArray(projects) || projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    const project = (projects as any)[0];
+    if (project.user_id !== giglancerUserId) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to delete this project",
+      });
+    }
+
+    console.log(`🗑️ Deleting Giglancer project ${projectId} for user_id: ${giglancerUserId}`);
+
+    // Delete skills_projects entries first (foreign key constraint)
+    await giglancerPool.execute(
+      "DELETE FROM skills_projects WHERE project_id = ?",
+      [projectId]
+    );
+
+    console.log(`✅ Deleted skills for project ${projectId}`);
+
+    // Delete the project
+    await giglancerPool.execute(
+      "DELETE FROM projects WHERE id = ?",
+      [projectId]
+    );
+
+    console.log(`✅ Deleted Giglancer project ${projectId}`);
+
+    res.json({
+      success: true,
+      message: "Project deleted successfully",
+    });
+  } catch (error: any) {
+    console.error("❌ Error deleting Giglancer project:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete project",
+      error: error.message,
     });
   }
 });

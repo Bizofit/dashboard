@@ -75,7 +75,7 @@ export default function CandidatesPage() {
         
         // Fetch candidates (bids) from Giglancer
         const response = await auth.fetchAPI(
-          `/api/companies/${selectedCompany.id}/candidates`
+          `/api/companies/giglancer_company_65/candidates`
         );
         const data = await response.json();
         

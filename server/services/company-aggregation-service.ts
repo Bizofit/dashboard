@@ -642,10 +642,10 @@ export class CompanyAggregationService {
       // Check user role and company associations
       const [userRows] = await giglancerPool.execute(
         `SELECT
-          id, email, 	current_company,
-          role_id, is_email_confirmed, created_at
-        FROM users
-        WHERE id = ? OR email = ?`,
+          users.id, users.email, 	users.current_company,
+          users.role_id , users.is_email_confirmed, users.created_at, roles.name as role
+        FROM users INNER JOIN roles ON users.role_id = roles.id
+        WHERE users.id = ? OR users.email = ?`,
         [userIds.giglancerUserId, userIds.email]
       );
 
@@ -666,6 +666,7 @@ export class CompanyAggregationService {
               userId: row.id,
               accountType: row.account_type,
               isVerified: row.is_verified,
+              roleId: row.role_id,
             },
           });
         }
@@ -787,10 +788,10 @@ export class CompanyAggregationService {
         shop_manager: "vendor",
       },
       giglancer: {
-        employer: "hr",
-        freelancer: "freelancer",
-        admin: "company_admin",
-        hr: "hr",
+        "user": "hr",
+        "service provider / freelancer": "freelancer",
+        "admin": "company_admin",
+        "client": "hr",
       },
       screenly: {
         admin: "company_admin",
@@ -1731,8 +1732,8 @@ export class CompanyAggregationService {
 
     try {
       const [rows] = await giglancerPool.execute(
-        `SELECT * FROM projects WHERE client_id = ? OR freelancer_id = ? ORDER BY created_at DESC LIMIT 20`,
-        [userId, userId]
+        `SELECT * FROM projects WHERE user_id = ? ORDER BY created_at DESC LIMIT 20`,
+        [userId]
       );
 
       return (rows as any[]).map((project) => ({
@@ -1956,7 +1957,7 @@ export class CompanyAggregationService {
           u.state_id,
           u.country_id,
           bs.name as bid_status_name,
-          p.title as project_title,
+          p.name as project_title,
           (SELECT COUNT(*) FROM bids WHERE user_id = b.user_id) as total_applications
         FROM bids b
         JOIN users u ON b.user_id = u.id

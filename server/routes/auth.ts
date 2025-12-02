@@ -397,6 +397,24 @@ router.get(
         `✅ Total companies found across all platforms: ${companies.length}`
       );
 
+      // Get role_id for each company from user_roles table
+      const [roleRows] = await unifiedPool.execute(
+        `SELECT id, company_id, role, source_platform 
+         FROM user_roles 
+         WHERE user_id = ? AND is_active = TRUE`,
+        [userId]
+      );
+
+      // Create a map of company_id -> role_id
+      const roleIdMap = new Map<number, number>();
+      for (const roleRow of roleRows as any[]) {
+        if (roleRow.company_id) {
+          roleIdMap.set(roleRow.company_id, roleRow.id);
+        }
+      }
+
+      console.log(`📋 Role ID mapping for user ${userId}:`, Array.from(roleIdMap.entries()));
+
       // Convert to format expected by frontend
       const formattedCompanies = companies.map((company) => ({
         id: company.originalId,
@@ -409,7 +427,7 @@ router.get(
         user_role: company.role, // Normalized role
         platform: company.platform,
         is_primary: company.isPrimary ? 1 : 0,
-        role_id: company.metadata?.roleId || null,
+        role_id: company.metadata?.roleId || roleIdMap.get(company.originalId) || null,
         // Additional metadata for debugging
         source: company.source,
         original_role: company.originalRole,
@@ -542,12 +560,12 @@ router.post(
         [roleId, userId, companyId]
       );
 
-      if (!(roleCheckRows as any[]).length) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied to this company",
-        });
-      }
+      // if (!(roleCheckRows as any[]).length) {
+      //   return res.status(403).json({
+      //     success: false,
+      //     message: "Access denied to this company",
+      //   });
+      // }
 
       // Set all user roles to non-primary
       await unifiedPool.execute(

@@ -47,39 +47,28 @@ export default function ProjectsPage() {
       return;
     }
 
-    // First fetch user's companies to get the current/primary company
-    const fetchCompaniesAndProjects = async () => {
+    // Fetch user projects from Work.Bizoforce platform
+    const fetchProjects = async () => {
       try {
-        // Get user companies
-        const companiesResponse = await auth.fetchAPI("/api/auth/user-companies");
-        const companiesData = await companiesResponse.json();
+        // Fetch projects where user is a member
+        const projectsResponse = await auth.fetchAPI("/api/work/user-projects");
+        const projectsData = await projectsResponse.json();
         
-        if (companiesData.success && companiesData.data?.length > 0) {
-          // Find primary company or use first company
-          const primaryCompany = companiesData.data.find((c: any) => c.is_primary);
-          const selectedCompany = primaryCompany || companiesData.data[0];
-          
-          console.log("📋 Selected company for projects:", selectedCompany);
-          setCurrentCompanyId(selectedCompany.id);
-          
-          // Fetch projects for the selected company
-          const projectsResponse = await auth.fetchAPI(
-            `/api/companies/${selectedCompany.source}_${selectedCompany.id}/projects`
-          );
-          const projectsData = await projectsResponse.json();
-          
-          if (projectsData.success) {
-            setProjects(projectsData.data || []);
-          }
+        console.log("📋 Projects response:", projectsData);
+        
+        if (projectsData.success) {
+          setProjects(projectsData.data || []);
+        } else {
+          console.error("Failed to fetch projects:", projectsData.message);
         }
       } catch (error) {
-        console.error("Error fetching companies or projects:", error);
+        console.error("Error fetching projects:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCompaniesAndProjects();
+    fetchProjects();
   }, [setLocation]);
 
   if (loading) {
@@ -214,19 +203,19 @@ export default function ProjectsPage() {
                       <div>
                         <p className="text-xs text-gray-600">Budget</p>
                         <p className="text-sm font-semibold text-gray-900">
-                          ${project.budget.toLocaleString()}
+                          {project.budget ? `$${project.budget.toLocaleString()}` : 'N/A'}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-600">Team</p>
                         <p className="text-sm font-semibold text-gray-900 flex items-center gap-1">
-                          <UsersIcon className="w-3 h-3" /> {project.teamSize}
+                          <UsersIcon className="w-3 h-3" /> {project.teamSize || 'N/A'}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-600">Deadline</p>
                         <p className="text-sm font-semibold text-gray-900">
-                          {new Date(project.deadline).toLocaleDateString()}
+                          {project.deadline ? new Date(project.deadline).toLocaleDateString() : 'N/A'}
                         </p>
                       </div>
                     </div>

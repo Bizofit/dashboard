@@ -11,6 +11,7 @@ import productsRoutes from "./products.js";
 import giglancerProjectsRoutes from "./giglancer-projects.js";
 import giglancerSkillsRoutes from "./giglancer-skills.js";
 import timesheetsRoutes from "./timesheets.js";
+import workProjectsRoutes from "./work-projects.js";
 
 export function registerRoutes(app: Express) {
   // Authentication routes
@@ -35,6 +36,9 @@ export function registerRoutes(app: Express) {
   // Giglancer routes
   app.use("/api/giglancer", giglancerProjectsRoutes);
   app.use("/api/giglancer", giglancerSkillsRoutes);
+
+  // Work.Bizoforce routes
+  app.use("/api/work", workProjectsRoutes);
 
   // Timesheets routes
   app.use("/api/timesheets", timesheetsRoutes);

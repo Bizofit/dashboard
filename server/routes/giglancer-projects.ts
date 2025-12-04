@@ -63,11 +63,14 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
         ps.name as status,
         pr.name as budget_range,
         pr.min_amount,
-        pr.max_amount
+        pr.max_amount,
+        COUNT(DISTINCT b.id) as bids_count
       FROM projects p
       LEFT JOIN project_statuses ps ON p.project_status_id = ps.id
       LEFT JOIN project_ranges pr ON p.project_range_id = pr.id
+      LEFT JOIN bids b ON p.id = b.project_id
       WHERE p.user_id = ?
+      GROUP BY p.id
       ORDER BY p.created_at DESC`,
       [giglancerUserId]
     );
@@ -85,12 +88,13 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
       years_of_exp: project.years_of_exp || 0,
       hiring_org: project.hiring_org || "",
       status: project.is_active ? "open" : "closed",
-      budget_range: project.min_amount && project.max_amount 
+      budget_range: project.min_amount && project.max_amount
         ? `($${project.min_amount.toLocaleString()} - $${project.max_amount.toLocaleString()})`
         : project.budget_range || "Not specified",
       is_featured: project.is_featured || false,
       is_urgent: project.is_urgent || false,
       bid_duration: project.bid_duration || 0,
+      applications: project.bids_count || 0,
       platform: "giglancer",
       postedAt: project.created_at,
       updatedAt: project.updated_at,

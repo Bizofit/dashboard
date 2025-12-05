@@ -237,4 +237,73 @@ router.get("/project-ranges", authenticate, async (req: Request & { user?: any }
   }
 });
 
+/**
+ * GET /api/giglancer/project-statuses
+ * Get all active project statuses from Giglancer database
+ */
+router.get("/project-statuses", authenticate, async (req: Request & { user?: any }, res: Response) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    }
+
+    console.log(`📊 Fetching active project statuses`);
+
+    const [statuses] = await giglancerPool.execute(
+      `SELECT
+        id,
+        name,
+        project_count
+      FROM project_statuses
+      WHERE is_active = 1
+      ORDER BY id ASC`
+    );
+
+    console.log(`✅ Found ${(statuses as any[]).length} active project statuses`);
+
+    // Format the statuses data
+    const formattedStatuses = (statuses as any[]).map((status) => ({
+      id: status.id,
+      name: status.name,
+      projectCount: status.project_count || 0,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedStatuses,
+    });
+  } catch (error: any) {
+    console.error("❌ Error fetching project statuses:", error);
+
+    // Handle missing tables gracefully
+    if (error.code === "ER_NO_SUCH_TABLE") {
+      console.error(`❌ Table does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Project statuses table not available",
+        data: [],
+      });
+    }
+
+    if (error.code === "ER_BAD_FIELD_ERROR") {
+      console.error(`❌ Field does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Database schema mismatch",
+        data: [],
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch project statuses",
+    });
+  }
+});
+
 export default router;

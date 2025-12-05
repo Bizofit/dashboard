@@ -17,6 +17,7 @@ import PostJobPage from "./pages/PostJob";
 import JobDetailPage from "./pages/JobDetail";
 import EditJobPage from "./pages/EditJob";
 import ProjectsPage from "./pages/Projects";
+import CreateProjectPage from "./pages/CreateProject";
 import CandidatesPage from "./pages/Candidates";
 import TimesheetsPage from "./pages/Timesheets";
 import InvoicesPage from "./pages/Invoices";
@@ -46,6 +47,7 @@ function App() {
         <Route path="/jobs/:jobId/edit" component={EditJobPage} />
         <Route path="/jobs/:jobId" component={JobDetailPage} />
         <Route path="/projects" component={ProjectsPage} />
+        <Route path="/create-project" component={CreateProjectPage} />
         <Route path="/candidates" component={CandidatesPage} />
         <Route path="/timesheets" component={TimesheetsPage} />
         <Route path="/invoices" component={InvoicesPage} />

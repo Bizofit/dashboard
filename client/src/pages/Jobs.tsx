@@ -40,6 +40,8 @@ interface Job {
   years_of_exp?: number;
   hiring_org?: string;
   status: "open" | "closed" | "draft";
+  status_name?: string;
+  project_status_id?: number;
   applications?: number;
   is_featured?: boolean;
   is_urgent?: boolean;
@@ -48,9 +50,17 @@ interface Job {
   updatedAt?: string;
 }
 
+interface ProjectStatus {
+  id: number;
+  name: string;
+  projectCount: number;
+}
+
 export default function JobsPage() {
   const [_, setLocation] = useLocation();
   const [giglancerProjects, setGiglancerProjects] = useState<Job[]>([]);
+  const [projectStatuses, setProjectStatuses] = useState<ProjectStatus[]>([]);
+  const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,14 +69,40 @@ export default function JobsPage() {
       return;
     }
 
-    fetchJobs();
+    // Fetch project statuses first
+    auth
+      .fetchAPI("/api/giglancer/project-statuses")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setProjectStatuses(data.data);
+          // Set default to "Open for Bidding" (id: 2)
+          const openStatus = data.data.find((s: ProjectStatus) => s.name === "Open For Bidding");
+          if (openStatus) {
+            setSelectedStatusId(openStatus.id);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching project statuses:", error);
+      });
   }, [setLocation]);
+
+  // Fetch jobs when selected status changes
+  useEffect(() => {
+    if (selectedStatusId !== null) {
+      fetchJobs();
+    }
+  }, [selectedStatusId]);
 
   const fetchJobs = () => {
     setLoading(true);
+    // Build query string with status filter
+    const queryParams = selectedStatusId ? `?project_status_id=${selectedStatusId}` : '';
+
     // Fetch Giglancer projects
     auth
-      .fetchAPI("/api/giglancer/projects")
+      .fetchAPI(`/api/giglancer/projects${queryParams}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -136,6 +172,39 @@ export default function JobsPage() {
           <Button icon={<Plus className="w-4 h-4" />} onClick={handlePostJob}>
             Post Job
           </Button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-3 border-b border-gray-200 overflow-x-auto">
+          {projectStatuses.map((status) => {
+            const isSelected = selectedStatusId === status.id;
+            return (
+              <button
+                key={status.id}
+                onClick={() => setSelectedStatusId(status.id)}
+                className={`
+                  px-4 py-3 font-medium text-sm whitespace-nowrap transition-colors relative
+                  ${isSelected
+                    ? 'text-orange-600 border-b-2 border-orange-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                  }
+                `}
+              >
+                <div className="flex items-center gap-2">
+                  <span>{status.name}</span>
+                  <span className={`
+                    inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 rounded-full text-xs font-semibold
+                    ${isSelected
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                    }
+                  `}>
+                    {isSelected ? allJobs.length : status.projectCount}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Stats */}

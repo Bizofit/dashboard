@@ -40,7 +40,19 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
       });
     }
 
-    console.log(`📋 Fetching Giglancer projects for user_id: ${giglancerUserId}`);
+    // Get project_status_id from query parameters (optional filtering)
+    const projectStatusId = req.query.project_status_id ? parseInt(req.query.project_status_id as string) : null;
+
+    console.log(`📋 Fetching Giglancer projects for user_id: ${giglancerUserId}${projectStatusId ? ` with status_id: ${projectStatusId}` : ''}`);
+
+    // Build WHERE clause with optional status filter
+    let whereClause = "WHERE p.user_id = ?";
+    const queryParams: any[] = [giglancerUserId];
+
+    if (projectStatusId) {
+      whereClause += " AND p.project_status_id = ?";
+      queryParams.push(projectStatusId);
+    }
 
     // Query projects from Giglancer database
     // According to schema, projects table has user_id column
@@ -60,6 +72,7 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
         p.bid_duration,
         p.created_at,
         p.updated_at,
+        p.project_status_id,
         ps.name as status,
         pr.name as budget_range,
         pr.min_amount,
@@ -69,10 +82,10 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
       LEFT JOIN project_statuses ps ON p.project_status_id = ps.id
       LEFT JOIN project_ranges pr ON p.project_range_id = pr.id
       LEFT JOIN bids b ON p.id = b.project_id
-      WHERE p.user_id = ?
+      ${whereClause}
       GROUP BY p.id
       ORDER BY p.created_at DESC`,
-      [giglancerUserId]
+      queryParams
     );
 
     console.log(`✅ Found ${(projects as any[]).length} projects for Giglancer user ${giglancerUserId}`);
@@ -87,7 +100,9 @@ router.get("/projects", authenticate, async (req: Request & { user?: any }, res:
       work_mode: project.work_mode || "remote",
       years_of_exp: project.years_of_exp || 0,
       hiring_org: project.hiring_org || "",
+      project_status_id: project.project_status_id,
       status: project.is_active ? "open" : "closed",
+      status_name: project.status || "",
       budget_range: project.min_amount && project.max_amount
         ? `($${project.min_amount.toLocaleString()} - $${project.max_amount.toLocaleString()})`
         : project.budget_range || "Not specified",

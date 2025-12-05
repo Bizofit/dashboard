@@ -33,7 +33,7 @@ router.get("/user-projects", authenticate, async (req: Request, res: Response) =
     // Query projects where user is a member
     try {
       const [projects] = await workPool.execute(
-        `SELECT 
+        `SELECT
           p.id,
           p.project_name,
           p.project_summary,
@@ -60,7 +60,7 @@ router.get("/user-projects", authenticate, async (req: Request, res: Response) =
         id: project.id.toString(),
         name: project.project_name,
         description: project.project_summary || "",
-        status: project.completion_percent >= 100 ? "completed" : 
+        status: project.completion_percent >= 100 ? "completed" :
                 project.completion_percent > 0 ? "active" : "paused",
         budget: null, // Work DB doesn't have budget in projects table
         deadline: project.deadline,
@@ -148,7 +148,7 @@ router.get("/user-projects/:projectId", authenticate, async (req: Request, res: 
 
       // Get project details
       const [projectRows] = await workPool.execute(
-        `SELECT 
+        `SELECT
           p.*,
           c.name as client_name,
           c.email as client_email,
@@ -173,7 +173,7 @@ router.get("/user-projects/:projectId", authenticate, async (req: Request, res: 
 
       // Get team members
       const [members] = await workPool.execute(
-        `SELECT 
+        `SELECT
           u.id, u.name, u.email, pm.hourly_rate
         FROM project_members pm
         INNER JOIN users u ON pm.user_id = u.id
@@ -188,7 +188,7 @@ router.get("/user-projects/:projectId", authenticate, async (req: Request, res: 
           name: project.project_name,
           description: project.project_summary,
           notes: project.notes,
-          status: project.completion_percent >= 100 ? "completed" : 
+          status: project.completion_percent >= 100 ? "completed" :
                   project.completion_percent > 0 ? "active" : "paused",
           progress: project.completion_percent,
           startDate: project.start_date,
@@ -216,6 +216,198 @@ router.get("/user-projects/:projectId", authenticate, async (req: Request, res: 
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/work/project-categories
+ * Get all project categories for dropdown
+ */
+router.get("/project-categories", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+
+    console.log(`📂 Fetching project categories`);
+
+    const [categories] = await workPool.execute(
+      `SELECT
+        id,
+        category_name,
+        company_id
+      FROM project_category
+      ORDER BY category_name ASC`
+    );
+
+    console.log(`✅ Found ${(categories as any[]).length} project categories`);
+
+    // Format the categories data
+    const formattedCategories = (categories as any[]).map((category: any) => ({
+      id: category.id,
+      name: category.category_name,
+      companyId: category.company_id,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedCategories,
+    });
+  } catch (error: any) {
+    console.error("❌ Error fetching project categories:", error);
+
+    // Handle missing tables gracefully
+    if (error.code === "ER_NO_SUCH_TABLE") {
+      console.error(`❌ Table does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Project categories table not available",
+        data: [],
+      });
+    }
+
+    if (error.code === "ER_BAD_FIELD_ERROR") {
+      console.error(`❌ Field does not exist: ${error.sqlMessage}`);
+      return res.json({
+        success: true,
+        message: "Database schema mismatch",
+        data: [],
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch project categories",
+    });
+  }
+});
+
+/**
+ * POST /api/work/projects
+ * Create a new project in Work database
+ */
+router.post("/projects", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+
+    // Get work_user_id from unified_users table
+    const { unifiedPool } = await import("../db.js");
+    const [userRows] = await unifiedPool.execute(
+      "SELECT work_user_id FROM unified_users WHERE id = ?",
+      [userId]
+    );
+    const unifiedUser = (userRows as any[])[0];
+    const workUserId = unifiedUser?.work_user_id;
+
+    if (!workUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "User has no Work.Bizoforce account",
+      });
+    }
+
+    const {
+      project_name,
+      category_id,
+      start_date,
+      deadline,
+      project_summary,
+      notes,
+      client_id,
+      project_budget,
+      currency_id,
+      hours_allocated,
+      status,
+      company_id,
+      allow_manual_time_log,
+    } = req.body;
+
+    // Validate required fields
+    if (!project_name || !start_date) {
+      return res.status(400).json({
+        success: false,
+        message: "Project name and start date are required",
+      });
+    }
+
+    console.log(`📝 Creating new project: ${project_name} for user ${workUserId}`);
+
+    // Insert project into Work database
+    const [result] = await workPool.execute(
+      `INSERT INTO projects (
+        company_id,
+        project_name,
+        project_summary,
+        project_admin,
+        start_date,
+        deadline,
+        notes,
+        category_id,
+        client_id,
+        project_budget,
+        currency_id,
+        hours_allocated,
+        status,
+        manual_timelog,
+        completion_percent,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NOW(), NOW())`,
+      [
+        company_id || null,
+        project_name,
+        project_summary || null,
+        workUserId, // project_admin
+        start_date,
+        deadline || null,
+        notes || null,
+        category_id || null,
+        client_id || null,
+        project_budget || null,
+        currency_id || null,
+        hours_allocated || null,
+        status || 'not started',
+        allow_manual_time_log ? 'enable' : 'disable',
+      ]
+    );
+
+    const projectId = (result as any).insertId;
+
+    console.log(`✅ Project created successfully with ID: ${projectId}`);
+
+    res.json({
+      success: true,
+      message: "Project created successfully",
+      data: {
+        id: projectId,
+        project_name,
+        start_date,
+        deadline,
+        status: status || 'not started',
+      },
+    });
+  } catch (error: any) {
+    console.error("❌ Error creating project:", error);
+
+    // Handle missing tables gracefully
+    if (error.code === "ER_NO_SUCH_TABLE") {
+      console.error(`❌ Table does not exist: ${error.sqlMessage}`);
+      return res.status(500).json({
+        success: false,
+        message: "Projects table not available",
+      });
+    }
+
+    if (error.code === "ER_BAD_FIELD_ERROR") {
+      console.error(`❌ Field does not exist: ${error.sqlMessage}`);
+      return res.status(500).json({
+        success: false,
+        message: "Database schema mismatch",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to create project",
     });
   }
 });

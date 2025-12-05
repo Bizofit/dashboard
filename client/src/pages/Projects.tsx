@@ -18,8 +18,6 @@ import {
   TableCell,
   Badge,
 } from "../components/UI/Table";
-import Modal from "../components/UI/Modal";
-import Input, { Textarea, Select } from "../components/UI/Input";
 import { Plus, Target, Eye, Edit, Users as UsersIcon } from "lucide-react";
 
 interface Project {
@@ -38,8 +36,6 @@ export default function ProjectsPage() {
   const [_, setLocation] = useLocation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCompanyId, setCurrentCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
@@ -53,9 +49,9 @@ export default function ProjectsPage() {
         // Fetch projects where user is a member
         const projectsResponse = await auth.fetchAPI("/api/work/user-projects");
         const projectsData = await projectsResponse.json();
-        
+
         console.log("📋 Projects response:", projectsData);
-        
+
         if (projectsData.success) {
           setProjects(projectsData.data || []);
         } else {
@@ -93,7 +89,7 @@ export default function ProjectsPage() {
           </div>
           <Button
             icon={<Plus className="w-4 h-4" />}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setLocation("/create-project")}
           >
             Create Project
           </Button>
@@ -150,7 +146,7 @@ export default function ProjectsPage() {
                 <p className="text-gray-600 mb-6">
                   Create your first project to get started
                 </p>
-                <Button onClick={() => setIsModalOpen(true)}>
+                <Button onClick={() => setLocation("/create-project")}>
                   Create Project
                 </Button>
               </CardContent>
@@ -244,46 +240,6 @@ export default function ProjectsPage() {
           )}
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create New Project"
-        size="lg"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="primary">Create Project</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input
-            label="Project Name"
-            placeholder="Enter project name"
-            required
-          />
-          <Textarea
-            label="Description"
-            placeholder="Describe the project"
-            rows={3}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Budget" type="number" placeholder="0.00" />
-            <Input label="Deadline" type="date" />
-          </div>
-          <Select
-            label="Status"
-            options={[
-              { value: "active", label: "Active" },
-              { value: "paused", label: "Paused" },
-              { value: "completed", label: "Completed" },
-            ]}
-          />
-        </div>
-      </Modal>
     </MainLayout>
   );
 }

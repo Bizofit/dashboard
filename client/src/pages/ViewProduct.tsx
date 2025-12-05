@@ -4,7 +4,7 @@ import MainLayout from "../components/Layout/MainLayout";
 import { auth } from "../lib/auth";
 import { Card, CardContent } from "../components/UI/Card";
 import Button from "../components/UI/Button";
-import { ArrowLeft, ShoppingCart, Minus, Plus, Facebook, Twitter, Pinterest, Instagram, Linkedin } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Minus, Plus, Facebook, Twitter, Share2, Instagram, Linkedin } from "lucide-react";
 
 interface ProductData {
   id: number;
@@ -42,7 +42,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
   const [, setLocation] = useLocation();
   const params = useParams();
   const productId = propProductId || params.productId;
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<ProductData | null>(null);
@@ -85,7 +85,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
 
       setProduct(data.data.product);
       setRelatedProducts(data.data.relatedProducts || []);
-      
+
     } catch (err: any) {
       console.error("Error fetching product:", err);
       setError(err.message || "Failed to load product");
@@ -167,7 +167,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
                   15% OFF
                 </span>
               )}
-              <img 
+              <img
                 src="https://staging.bizoforce.com/wp-content/uploads/woocommerce-placeholder.png"
                 alt={product.title}
                 className="w-full h-auto rounded-lg"
@@ -178,7 +178,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
           {/* Product Info */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.title}</h1>
-            
+
             {product.solution_offered_by && (
               <p className="text-sm text-gray-600 mb-2">
                 Solution Offered By: <span className="text-blue-600">{product.solution_offered_by}</span>
@@ -250,7 +250,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
                 <Twitter className="w-5 h-5 text-gray-600" />
               </button>
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Pinterest className="w-5 h-5 text-gray-600" />
+                <Share2 className="w-5 h-5 text-gray-600" />
               </button>
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <Instagram className="w-5 h-5 text-gray-600" />
@@ -279,7 +279,7 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
 
           <Card>
             <CardContent className="pt-6">
-              <div 
+              <div
                 className="prose max-w-none text-gray-700"
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
@@ -293,8 +293,8 @@ export default function ViewProduct({ productId: propProductId }: ViewProductPro
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedProducts.map((relatedProduct) => (
-                <Card 
-                  key={relatedProduct.id} 
+                <Card
+                  key={relatedProduct.id}
                   className="hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => setLocation(`/products/${relatedProduct.id}/view`)}
                 >

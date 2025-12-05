@@ -9,6 +9,9 @@ import IndividualDashboard from "./pages/IndividualDashboard";
 import CompaniesPage from "./pages/Companies";
 import CompanyDetails from "./pages/CompanyDetails";
 import ProductsPage from "./pages/Products";
+import AddProductPage from "./pages/AddProduct";
+import EditProductPage from "./pages/EditProduct";
+import ViewProductPage from "./pages/ViewProduct";
 import JobsPage from "./pages/Jobs";
 import PostJobPage from "./pages/PostJob";
 import JobDetailPage from "./pages/JobDetail";
@@ -31,6 +34,13 @@ function App() {
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/companies" component={CompaniesPage} />
         <Route path="/products" component={ProductsPage} />
+        <Route path="/products/add" component={AddProductPage} />
+        <Route path="/products/:productId/edit">
+          {(params) => <EditProductPage productId={params.productId} />}
+        </Route>
+        <Route path="/products/:productId/view">
+          {(params) => <ViewProductPage productId={params.productId} />}
+        </Route>
         <Route path="/jobs" component={JobsPage} />
         <Route path="/post-job" component={PostJobPage} />
         <Route path="/jobs/:jobId/edit" component={EditJobPage} />

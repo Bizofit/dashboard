@@ -150,9 +150,7 @@ export default function Products() {
               </p>
             </div>
             <Button
-              onClick={() =>
-                window.open("https://bizoforce.com/wp-admin/post-new.php?post_type=product", "_blank")
-              }
+              onClick={() => setLocation("/products/add")}
               className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -294,7 +292,7 @@ export default function Products() {
                   {/* Actions */}
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => window.open(product.permalink, "_blank")}
+                      onClick={() => setLocation(`/products/${product.id}/view`)}
                       variant="outline"
                       className="flex-1 text-sm"
                     >
@@ -302,12 +300,7 @@ export default function Products() {
                       View
                     </Button>
                     <Button
-                      onClick={() =>
-                        window.open(
-                          `https://bizoforce.com/wp-admin/post.php?post=${product.id}&action=edit`,
-                          "_blank"
-                        )
-                      }
+                      onClick={() => setLocation(`/products/${product.id}/edit`)}
                       className="flex-1 bg-orange-500 hover:bg-orange-600 text-sm"
                     >
                       <Edit3 className="w-4 h-4 mr-1" />

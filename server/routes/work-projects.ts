@@ -42,6 +42,10 @@ router.get("/user-projects", authenticate, async (req: Request, res: Response) =
           p.completion_percent,
           p.client_id,
           p.company_id,
+          p.category_id,
+          p.project_budget,
+          p.hours_allocated,
+          p.feedback,
           p.created_at,
           p.updated_at,
           pm.hourly_rate,
@@ -62,7 +66,7 @@ router.get("/user-projects", authenticate, async (req: Request, res: Response) =
         description: project.project_summary || "",
         status: project.completion_percent >= 100 ? "completed" :
                 project.completion_percent > 0 ? "active" : "paused",
-        budget: null, // Work DB doesn't have budget in projects table
+        budget: project.project_budget,
         deadline: project.deadline,
         progress: project.completion_percent || 0,
         teamSize: null, // Would need separate query to count team members
@@ -71,6 +75,9 @@ router.get("/user-projects", authenticate, async (req: Request, res: Response) =
         clientName: project.client_name,
         companyName: project.company_name,
         companyId: project.company_id,
+        categoryId: project.category_id,
+        hoursAllocated: project.hours_allocated,
+        clientFeedback: project.feedback,
         hourlyRate: project.hourly_rate,
         createdAt: project.created_at,
         updatedAt: project.updated_at,
@@ -186,20 +193,31 @@ router.get("/user-projects/:projectId", authenticate, async (req: Request, res: 
         data: {
           id: project.id,
           name: project.project_name,
-          description: project.project_summary,
-          notes: project.notes,
-          status: project.completion_percent >= 100 ? "completed" :
-                  project.completion_percent > 0 ? "active" : "paused",
-          progress: project.completion_percent,
+          categoryId: project.category_id,
           startDate: project.start_date,
           deadline: project.deadline,
+          manualTimelog: project.manual_timelog,
+          description: project.project_summary,
+          notes: project.notes,
+          progress: project.completion_percent || 0,
+          calculateTaskProgress: project.calculate_task_progress,
+          clientId: project.client_id,
           clientName: project.client_name,
           clientEmail: project.client_email,
+          clientFeedback: project.client_feedback,
+          readOnlyMode: project.read_only_mode,
+          projectBudget: project.project_budget,
+          currencyId: project.currency_id,
+          hoursAllocated: project.hours_allocated,
+          status: project.status,
           companyName: project.company_name,
           companyId: project.company_id,
           projectAdminName: project.project_admin_name,
+          projectAdmin: project.project_admin,
           teamMembers: members,
           platform: "work",
+          createdAt: project.created_at,
+          updatedAt: project.updated_at,
         },
       });
     } catch (error: any) {
@@ -305,6 +323,14 @@ router.post("/projects", authenticate, async (req: Request, res: Response) => {
       });
     }
 
+    // Get company_id from Work database users table
+    const [workUserRows] = await workPool.execute(
+      "SELECT company_id FROM users WHERE id = ?",
+      [workUserId]
+    );
+    const workUser = (workUserRows as any[])[0];
+    const company_id = workUser?.company_id;
+
     const {
       project_name,
       category_id,
@@ -317,7 +343,6 @@ router.post("/projects", authenticate, async (req: Request, res: Response) => {
       currency_id,
       hours_allocated,
       status,
-      company_id,
       allow_manual_time_log,
     } = req.body;
 
@@ -374,6 +399,27 @@ router.post("/projects", authenticate, async (req: Request, res: Response) => {
 
     console.log(`✅ Project created successfully with ID: ${projectId}`);
 
+    // Add the project creator as a project member
+    const defaultHourlyRate = 0.00; // Default hourly rate
+    await workPool.execute(
+      `INSERT INTO project_members (
+        company_id,
+        user_id,
+        project_id,
+        hourly_rate,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, NOW(), NOW())`,
+      [
+        company_id || null,
+        workUserId,
+        projectId,
+        defaultHourlyRate,
+      ]
+    );
+
+    console.log(`✅ Added user ${workUserId} as project member`);
+
     res.json({
       success: true,
       message: "Project created successfully",
@@ -408,6 +454,199 @@ router.post("/projects", authenticate, async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: error.message || "Failed to create project",
+    });
+  }
+});
+
+/**
+ * PUT /api/work/projects/:projectId
+ * Update an existing project in Work database
+ */
+router.put("/projects/:projectId", authenticate, async (req: Request, res: Response) => {
+  try {
+    const { projectId } = req.params;
+    const userId = (req as any).user.userId;
+
+    // Get work_user_id from unified_users table
+    const { unifiedPool } = await import("../db.js");
+    const [userRows] = await unifiedPool.execute(
+      "SELECT work_user_id FROM unified_users WHERE id = ?",
+      [userId]
+    );
+    const unifiedUser = (userRows as any[])[0];
+    const workUserId = unifiedUser?.work_user_id;
+
+    if (!workUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "User has no Work.Bizoforce account",
+      });
+    }
+
+    // Verify user has access to this project (is a member)
+    const [memberCheck] = await workPool.execute(
+      "SELECT id FROM project_members WHERE project_id = ? AND user_id = ?",
+      [projectId, workUserId]
+    );
+
+    if ((memberCheck as any[]).length === 0) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied to this project",
+      });
+    }
+
+    const {
+      project_name,
+      category_id,
+      start_date,
+      deadline,
+      project_summary,
+      notes,
+      client_id,
+      project_budget,
+      currency_id,
+      hours_allocated,
+      status,
+      allow_manual_time_log,
+      completion_percent,
+      calculate_progress_through_tasks,
+      client_feedback,
+      read_only_mode,
+    } = req.body;
+
+    // Validate required fields
+    if (!project_name || !start_date) {
+      return res.status(400).json({
+        success: false,
+        message: "Project name and start date are required",
+      });
+    }
+
+    console.log(`📝 Updating project ${projectId}: ${project_name}`);
+
+    // Build dynamic UPDATE query
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
+
+    updateFields.push("project_name = ?");
+    updateValues.push(project_name);
+
+    updateFields.push("start_date = ?");
+    updateValues.push(start_date);
+
+    if (deadline !== undefined) {
+      updateFields.push("deadline = ?");
+      updateValues.push(deadline || null);
+    }
+
+    if (project_summary !== undefined) {
+      updateFields.push("project_summary = ?");
+      updateValues.push(project_summary || null);
+    }
+
+    if (notes !== undefined) {
+      updateFields.push("notes = ?");
+      updateValues.push(notes || null);
+    }
+
+    if (category_id !== undefined) {
+      updateFields.push("category_id = ?");
+      updateValues.push(category_id || null);
+    }
+
+    if (client_id !== undefined) {
+      updateFields.push("client_id = ?");
+      updateValues.push(client_id || null);
+    }
+
+    if (project_budget !== undefined) {
+      updateFields.push("project_budget = ?");
+      updateValues.push(project_budget || null);
+    }
+
+    if (currency_id !== undefined) {
+      updateFields.push("currency_id = ?");
+      updateValues.push(currency_id || null);
+    }
+
+    if (hours_allocated !== undefined) {
+      updateFields.push("hours_allocated = ?");
+      updateValues.push(hours_allocated || null);
+    }
+
+    if (status !== undefined) {
+      updateFields.push("status = ?");
+      updateValues.push(status);
+    }
+
+    if (allow_manual_time_log !== undefined) {
+      updateFields.push("manual_timelog = ?");
+      updateValues.push(allow_manual_time_log ? "enable" : "disable");
+    }
+
+    if (completion_percent !== undefined) {
+      updateFields.push("completion_percent = ?");
+      updateValues.push(completion_percent || 0);
+    }
+
+    if (calculate_progress_through_tasks !== undefined) {
+      updateFields.push("calculate_task_progress = ?");
+      updateValues.push(calculate_progress_through_tasks ? "true" : "false");
+    }
+
+    if (client_feedback !== undefined) {
+      updateFields.push("feedback = ?");
+      updateValues.push(client_feedback || null);
+    }
+
+    updateFields.push("updated_at = NOW()");
+
+    // Add projectId to values array for WHERE clause
+    updateValues.push(projectId);
+
+    // Execute UPDATE query
+    await workPool.execute(
+      `UPDATE projects SET ${updateFields.join(", ")} WHERE id = ?`,
+      updateValues
+    );
+
+    console.log(`✅ Project ${projectId} updated successfully`);
+
+    res.json({
+      success: true,
+      message: "Project updated successfully",
+      data: {
+        id: projectId,
+        project_name,
+        start_date,
+        deadline,
+        status,
+      },
+    });
+  } catch (error: any) {
+    console.error("❌ Error updating project:", error);
+
+    // Handle missing tables gracefully
+    if (error.code === "ER_NO_SUCH_TABLE") {
+      console.error(`❌ Table does not exist: ${error.sqlMessage}`);
+      return res.status(500).json({
+        success: false,
+        message: "Projects table not available",
+      });
+    }
+
+    if (error.code === "ER_BAD_FIELD_ERROR") {
+      console.error(`❌ Field does not exist: ${error.sqlMessage}`);
+      return res.status(500).json({
+        success: false,
+        message: "Database schema mismatch",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update project",
     });
   }
 });

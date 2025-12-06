@@ -222,6 +222,7 @@ export default function ProjectsPage() {
                         size="sm"
                         icon={<Eye className="w-4 h-4" />}
                         className="flex-1"
+                        onClick={() => setLocation(`/projects/${project.id}`)}
                       >
                         View Details
                       </Button>
@@ -229,6 +230,7 @@ export default function ProjectsPage() {
                         variant="ghost"
                         size="sm"
                         icon={<Edit className="w-4 h-4" />}
+                        onClick={() => setLocation(`/projects/${project.id}/edit`)}
                       >
                         Edit
                       </Button>
